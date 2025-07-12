@@ -1,0 +1,384 @@
+# Timber - House Manager Web App
+
+## Project Overview
+
+A comprehensive house manager web app for tracking major appliances and home maintenance items. Users can log their home assets, view maintenance timelines, cost projections, and receive proactive warnings about upcoming maintenance needs.
+
+## Tech Stack
+
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript (strict mode)
+- **Styling**: Tailwind CSS
+- **Forms**: React Hook Form with Zod validation
+- **State Management**: TanStack React Query for server state
+- **Testing**: Jest + React Testing Library
+- **Linting**: ESLint + Prettier
+- **Package Manager**: npm
+
+## Code Organization
+
+### Directory Structure
+
+```
+src/
+├── app/                 # Next.js App Router pages
+│   ├── (auth)/         # Auth-related pages
+│   ├── dashboard/      # Dashboard pages
+│   ├── appliances/     # Appliance management pages
+│   └── maintenance/    # Maintenance scheduling pages
+├── components/         # Reusable UI components
+│   ├── ui/            # Base UI components (buttons, inputs, etc.)
+│   ├── forms/         # Form components
+│   ├── charts/        # Data visualization components
+│   └── layout/        # Layout components
+├── lib/               # Utility functions and configurations
+│   ├── utils.ts       # General utilities
+│   ├── validations.ts # Zod schemas
+│   ├── constants.ts   # App constants
+│   └── db.ts         # Database utilities
+├── types/             # TypeScript type definitions
+│   ├── appliances.ts  # Appliance-related types
+│   ├── maintenance.ts # Maintenance-related types
+│   └── user.ts       # User-related types
+├── hooks/             # Custom React hooks
+└── data/              # Static data and seed files
+```
+
+## Domain-Specific Guidelines
+
+### Appliance Categories
+
+Use these standardized categories:
+
+- `hvac` - Heating, Ventilation, Air Conditioning
+- `plumbing` - Water heater, pipes, fixtures
+- `electrical` - Panels, outlets, lighting
+- `roofing` - Roof, gutters, siding
+- `flooring` - Carpet, hardwood, tile
+- `kitchen` - Appliances, countertops, cabinets
+- `exterior` - Deck, fence, driveway, landscaping
+- `safety` - Smoke detectors, security systems
+
+### Maintenance Priority Levels
+
+- `critical` - Safety issues, immediate attention required
+- `high` - Prevents damage, should be addressed soon
+- `medium` - Routine maintenance, can be scheduled
+- `low` - Cosmetic or efficiency improvements
+
+### Cost Estimation Ranges
+
+- Use ranges instead of exact values: `$500-$800`
+- Include labor and materials separately when possible
+- Reference regional cost variations
+
+## Naming Conventions
+
+### Components
+
+- PascalCase for component names: `ApplianceCard`, `MaintenanceTimeline`
+- Descriptive names indicating purpose: `CostEstimationChart`, `WarningAlert`
+- Suffix with component type: `ApplianceForm`, `MaintenanceModal`
+
+### Files & Directories
+
+- kebab-case for file names: `appliance-card.tsx`, `maintenance-timeline.tsx`
+- Use descriptive directory names: `maintenance-scheduling/`, `cost-estimation/`
+
+### Functions & Variables
+
+- camelCase for functions and variables
+- Use descriptive names: `calculateMaintenanceCost`, `getApplianceLifespan`
+- Boolean variables start with `is`, `has`, `can`: `isExpired`, `hasWarning`
+
+### Types & Interfaces
+
+- PascalCase with descriptive names: `ApplianceData`, `MaintenanceRecord`
+- Use `Type` suffix for union types: `ApplianceCategoryType`
+- Use `Props` suffix for component props: `ApplianceCardProps`
+
+## Component Architecture
+
+### Component Structure
+
+```typescript
+// 1. Imports (external first, then internal)
+import { useState, useEffect } from 'react'
+import { Button } from '@/components/ui/button'
+
+// 2. Types
+interface ComponentProps {
+  // props definition
+}
+
+// 3. Component
+export function ComponentName({ prop }: ComponentProps) {
+  // 4. State and hooks
+  const [state, setState] = useState()
+
+  // 5. Effects
+  useEffect(() => {
+    // effect logic
+  }, [])
+
+  // 6. Event handlers
+  const handleClick = () => {
+    // handler logic
+  }
+
+  // 7. Render
+  return (
+    <div>
+      {/* JSX */}
+    </div>
+  )
+}
+```
+
+### Form Components
+
+- Use React Hook Form for all forms
+- Implement validation with Zod schemas and @hookform/resolvers
+- Include loading states and error handling
+- Use TypeScript for form data types
+- Follow this pattern:
+
+```typescript
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
+import { z } from 'zod'
+
+const schema = z.object({
+  name: z.string().min(1, 'Name is required'),
+})
+
+type FormData = z.infer<typeof schema>
+
+export function ExampleForm() {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+  })
+
+  const onSubmit = async (data: FormData) => {
+    // Handle form submission
+  }
+
+  return (
+    <form onSubmit={handleSubmit(onSubmit)}>
+      <input {...register('name')} />
+      {errors.name && <span>{errors.name.message}</span>}
+      <button type="submit" disabled={isSubmitting}>
+        Submit
+      </button>
+    </form>
+  )
+}
+```
+
+### Data Display Components
+
+- Use TanStack React Query for server state
+- Implement loading skeletons
+- Handle empty states gracefully
+- Use consistent spacing and typography
+- Include accessibility attributes
+- Follow this pattern:
+
+```typescript
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+
+export function ExampleDataComponent() {
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ['example'],
+    queryFn: () => fetchData(),
+  })
+
+  const queryClient = useQueryClient()
+
+  const mutation = useMutation({
+    mutationFn: createData,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['example'] })
+    },
+  })
+
+  if (isLoading) return <div>Loading...</div>
+  if (error) return <div>Error: {error.message}</div>
+
+  return <div>{/* Render data */}</div>
+}
+```
+
+## Styling Guidelines
+
+### Tailwind Usage
+
+- Use semantic color names: `bg-red-500` for errors, `bg-green-500` for success
+- Consistent spacing scale: prefer `4`, `8`, `12`, `16`, `24` for margins/padding
+- Use responsive breakpoints: `sm:`, `md:`, `lg:`, `xl:`
+- Prefer composition over custom CSS
+
+### Design System
+
+- Primary colors: Blue shades for main actions
+- Warning colors: Yellow/orange for maintenance alerts
+- Critical colors: Red for urgent issues
+- Success colors: Green for completed tasks
+
+### Component Variants
+
+- Use consistent button variants: `primary`, `secondary`, `destructive`, `outline`
+- Implement size variants: `sm`, `md`, `lg`
+- Use status variants: `default`, `warning`, `error`, `success`
+
+## Testing Strategy
+
+### Unit Tests
+
+- Test all utility functions
+- Test component rendering and interactions
+- Test form validation logic
+- Test data calculations (cost estimation, timeline calculations)
+
+### Integration Tests
+
+- Test form submission workflows
+- Test data fetching and display
+- Test navigation between pages
+- Test maintenance scheduling logic
+
+### Test File Organization
+
+- Place tests in `__tests__/` directory
+- Mirror source file structure
+- Use descriptive test names: `should calculate correct maintenance cost`
+
+## Performance Considerations
+
+### Next.js Optimization
+
+- Use dynamic imports for large components
+- Implement proper caching strategies
+- Use Next.js Image component for images
+- Implement ISR for data that changes infrequently
+
+### Data Management
+
+- Use React Query for server state management
+- Implement proper loading states
+- Use pagination for large datasets
+- Consider virtualization for long lists
+
+## Accessibility
+
+### ARIA Labels
+
+- Use semantic HTML elements
+- Provide proper ARIA labels for interactive elements
+- Ensure keyboard navigation works
+- Test with screen readers
+
+### Color & Contrast
+
+- Ensure sufficient color contrast
+- Don't rely solely on color for information
+- Provide alternative text for images
+- Use focus indicators
+
+## Error Handling
+
+### Client-Side Errors
+
+- Use Error Boundaries for component errors
+- Implement proper loading and error states
+- Show user-friendly error messages
+- Log errors for debugging
+
+### Form Validation
+
+- Validate on both client and server
+- Show inline validation errors
+- Use consistent error message format
+- Provide clear guidance for fixes
+
+## Development Workflow
+
+### Git Workflow
+
+- Use conventional commits: `feat:`, `fix:`, `docs:`, `style:`, `refactor:`
+- Create feature branches: `feature/appliance-management`
+- Write descriptive commit messages
+- Keep commits focused and atomic
+
+### Code Quality
+
+- Run `npm run lint` before commits
+- Use `npm run format` for consistent formatting
+- Run `npm run type-check` to catch TypeScript errors
+- Write tests for new features
+
+### Environment Setup
+
+- Use environment variables for configuration
+- Document required environment variables
+- Provide example `.env.local` file
+- Keep sensitive data out of version control
+
+## API Design
+
+### Endpoint Naming
+
+- Use RESTful conventions: `/api/appliances`, `/api/maintenance`
+- Use HTTP methods appropriately: GET, POST, PUT, DELETE
+- Version APIs: `/api/v1/appliances`
+
+### Response Format
+
+- Use consistent response structure
+- Include proper HTTP status codes
+- Provide meaningful error messages
+- Use TypeScript for API types
+
+## Security Considerations
+
+### Data Protection
+
+- Validate all user inputs
+- Sanitize data before database operations
+- Use parameterized queries
+- Implement proper authentication
+
+### Privacy
+
+- Store only necessary user data
+- Implement data retention policies
+- Provide data export/deletion options
+- Follow GDPR guidelines if applicable
+
+## Documentation
+
+### Code Documentation
+
+- Document complex business logic
+- Explain calculation formulas
+- Document API endpoints
+- Keep README updated
+
+### User Documentation
+
+- Provide feature guides
+- Document data entry best practices
+- Explain maintenance recommendations
+- Include troubleshooting guides
+
+---
+
+Remember: The goal is to help users proactively manage their home maintenance and avoid costly surprises. Every feature should contribute to this mission.
