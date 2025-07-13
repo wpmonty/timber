@@ -82,7 +82,8 @@ Use these standardized categories:
 
 ### Files & Directories
 
-- kebab-case for file names: `appliance-card.tsx`, `maintenance-timeline.tsx`
+- PascalCase for component file names: `ApplianceCard.tsx`, `MaintenanceTimeline.tsx`
+- camelCase for utils and other file names.
 - Use descriptive directory names: `maintenance-scheduling/`, `cost-estimation/`
 
 ### Functions & Variables
@@ -96,6 +97,7 @@ Use these standardized categories:
 - PascalCase with descriptive names: `ApplianceData`, `MaintenanceRecord`
 - Use `Type` suffix for union types: `ApplianceCategoryType`
 - Use `Props` suffix for component props: `ApplianceCardProps`
+- Use `*.type.ts` as the filename for any exported type groups
 
 ## Component Architecture
 

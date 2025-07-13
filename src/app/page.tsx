@@ -1,5 +1,6 @@
 import { FormExample } from '@/components/examples/form-example';
 import { QueryExample } from '@/components/examples/query-example';
+import Link from 'next/link';
 
 export default function Home() {
   return (
@@ -12,6 +13,19 @@ export default function Home() {
             Framework Setup Complete: Next.js + TypeScript + Tailwind + React Hook Form + React
             Query
           </p>
+
+          {/* Dashboard Link */}
+          <div className="mb-8">
+            <Link
+              href="/dashboard"
+              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              🏠 View Dashboard
+            </Link>
+            <p className="text-sm text-gray-500 mt-2">
+              See the mock dashboard with home appliances and maintenance data
+            </p>
+          </div>
         </div>
 
         {/* Tech Stack Grid */}
