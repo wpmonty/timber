@@ -3,9 +3,6 @@ import { Inter } from 'next/font/google';
 import './globals.css';
 import { QueryProvider } from '@/components/providers/QueryProvider';
 import { LeftNavigation } from '@/components/layout/LeftNavigation';
-import { useProperties } from '@/hooks/api/properties';
-import { useEffect, useState } from 'react';
-import { PropertyData } from '@/types/property.types';
 
 const inter = Inter({ subsets: ['latin'] });
 
