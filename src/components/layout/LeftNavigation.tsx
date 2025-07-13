@@ -1,10 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { Home, Settings, AlertTriangle, Bell, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
+import { PropertyData } from '@/types/property.types';
+import { useProperties } from '@/hooks/api/properties';
+import { useEffect, useState } from 'react';
 
 interface NavigationItem {
   title: string;
@@ -38,21 +41,42 @@ const getNavigationItems = (slug: string): NavigationItem[] => [
   },
 ];
 
-export function LeftNavigation({ slug }: { slug: string }) {
+export function LeftNavigation() {
+  const { data: properties, isLoading, error } = useProperties();
+  const [currentProperty, setCurrentProperty] = useState<PropertyData | null>(null);
+
   const pathname = usePathname();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (properties && properties.length > 0) {
+      setCurrentProperty(properties[0]);
+    }
+  }, [properties]);
+
+  if (isLoading) {
+    return <div>Loading...</div>;
+  }
+  if (error) {
+    return <div>Error: {error.message}</div>;
+  }
 
   const isActive = (href: string) => {
-    if (href === `/property/${slug}`) {
-      return pathname === `/property/${slug}`;
+    if (href === `/property/${currentProperty?.id}`) {
+      return pathname === `/property/${currentProperty?.id}`;
     }
     return pathname.startsWith(href);
   };
+
+  if (!currentProperty || !properties) {
+    return null;
+  }
 
   return (
     <div className="flex flex-col w-72 bg-white border-r border-gray-200 min-h-screen fixed">
       {/* Logo/Brand */}
       <div className="p-6 border-b border-gray-200">
-        <Link href="/dashboard" className="flex items-center gap-3">
+        <Link href="/" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">T</span>
           </div>
@@ -65,8 +89,22 @@ export function LeftNavigation({ slug }: { slug: string }) {
 
       {/* Navigation Items */}
       <nav className="flex-1 p-4">
+        <select
+          className="w-full mb-4 bg-gray-100 text-gray-700 border border-gray-300 rounded-md py-2 px-3"
+          value={currentProperty.id}
+          onChange={e => {
+            const propertyId = e.target.value;
+            router.push(`/property/${propertyId}`);
+          }}
+        >
+          {properties?.map(property => (
+            <option key={property.id} value={property.id}>
+              {property.name}
+            </option>
+          ))}
+        </select>
         <div className="space-y-2">
-          {getNavigationItems(slug).map(item => {
+          {getNavigationItems(currentProperty.id).map(item => {
             const Icon = item.icon;
             const active = isActive(item.href);
 

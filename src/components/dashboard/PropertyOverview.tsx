@@ -30,7 +30,6 @@ export function PropertyOverview({
   logsLoading,
   logsError,
 }: PropertyOverviewProps) {
-  console.log('PropertyOverview', properties?.length, systems?.length, logs?.length);
   if (propertiesLoading || systemsLoading || logsLoading) {
     return (
       <Card>
