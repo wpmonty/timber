@@ -2,39 +2,162 @@
 
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { formatCurrency, getSeverityColor } from '@/lib/utils';
-import { mockWarnings, mockMaintenanceAlerts } from '@/data/mock-property-data';
+import { formatCurrency, calculateAge } from '@/lib/utils';
+import { useSystems } from '@/hooks/api/systems';
+import { useLogs } from '@/hooks/api/logs';
+import { mockLifecycleData } from '@/data/mock-property-data';
+
+type AlertSeverity = 'critical' | 'high' | 'medium' | 'low';
+
+interface Alert {
+  id: string;
+  title: string;
+  type: string;
+  severity: AlertSeverity;
+  timeframe: string;
+  estimatedCost?: { min: number; max: number };
+  actionRequired: boolean;
+}
 
 export function WarningAlerts() {
-  // Combine warnings and maintenance alerts
-  const allAlerts = [
-    ...mockWarnings.map(warning => ({
-      id: warning.id,
-      title: warning.message,
-      type: warning.type,
-      severity: warning.severity,
-      timeframe: warning.timeframe,
-      estimatedCost: warning.estimatedCost,
-      actionRequired: warning.actionRequired,
-    })),
-    ...mockMaintenanceAlerts.map(alert => ({
-      id: alert.id,
-      title: alert.message,
-      type: alert.type,
-      severity: alert.severity,
-      timeframe: alert.dueDate ? `Due: ${alert.dueDate.toLocaleDateString()}` : 'Overdue',
-      estimatedCost: alert.estimatedCost,
-      actionRequired: alert.actionRequired,
-    })),
-  ];
+  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems();
+  const { data: logs, isLoading: logsLoading, error: logsError } = useLogs();
+
+  if (systemsLoading || logsLoading) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>System Alerts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-center py-8">
+            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  if (systemsError || logsError) {
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>System Alerts</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="text-center py-8">
+            <div className="text-red-500 text-2xl mb-2">⚠️</div>
+            <p className="text-gray-600">Unable to load system alerts</p>
+          </div>
+        </CardContent>
+      </Card>
+    );
+  }
+
+  const maintainables = systems || [];
+  const maintenanceLogs = logs || [];
+
+  // Generate alerts from real data
+  const generateAlerts = (): Alert[] => {
+    const alerts: Alert[] = [];
+
+    maintainables.forEach(maintainable => {
+      const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
+      const age = maintainable.dateInstalled
+        ? calculateAge(new Date(maintainable.dateInstalled))
+        : 0;
+
+      // Check for maintenance issues
+      if (
+        maintainable.statuses.includes('needs-maintenance') ||
+        maintainable.statuses.includes('needs-repair')
+      ) {
+        alerts.push({
+          id: `maintenance-${maintainable.id}`,
+          title: `${maintainable.name} Needs Attention`,
+          type: 'maintenance-due',
+          severity: maintainable.statuses.includes('needs-repair') ? 'high' : 'medium',
+          timeframe: 'overdue',
+          estimatedCost: lifecycleData ? { min: 150, max: 500 } : undefined,
+          actionRequired: true,
+        });
+      }
+
+      // Check for replacement needs
+      if (maintainable.statuses.includes('needs-replacement')) {
+        alerts.push({
+          id: `replacement-${maintainable.id}`,
+          title: `${maintainable.name} Needs Replacement`,
+          type: 'replacement-needed',
+          severity: 'critical',
+          timeframe: 'immediate',
+          estimatedCost: lifecycleData?.replacementCostEstimate,
+          actionRequired: true,
+        });
+      }
+
+      // Check for near end of life
+      if (lifecycleData && lifecycleData.remainingLifespan <= 3) {
+        alerts.push({
+          id: `eol-${maintainable.id}`,
+          title: `${maintainable.name} Approaching End of Life`,
+          type: 'replacement-needed',
+          severity: lifecycleData.remainingLifespan <= 1 ? 'high' : 'medium',
+          timeframe: `within ${lifecycleData.remainingLifespan} year${lifecycleData.remainingLifespan !== 1 ? 's' : ''}`,
+          estimatedCost: lifecycleData.replacementCostEstimate,
+          actionRequired: lifecycleData.remainingLifespan <= 1,
+        });
+      }
+
+      // Check for warranty expiration
+      if (maintainable.warrantyExpiration) {
+        const warrantyDate = new Date(maintainable.warrantyExpiration);
+        const monthsToExpiry = Math.floor(
+          (warrantyDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 30)
+        );
+
+        if (monthsToExpiry <= 6 && monthsToExpiry > 0) {
+          alerts.push({
+            id: `warranty-${maintainable.id}`,
+            title: `${maintainable.name} Warranty Expiring Soon`,
+            type: 'warranty-expiring',
+            severity: 'medium',
+            timeframe: `in ${monthsToExpiry} month${monthsToExpiry !== 1 ? 's' : ''}`,
+            estimatedCost: { min: 150, max: 300 },
+            actionRequired: false,
+          });
+        }
+      }
+
+      // Check for no recent maintenance
+      const recentLogs = maintenanceLogs.filter(
+        log =>
+          log.mId === maintainable.id &&
+          new Date(log.dateCompleted).getTime() > new Date().getTime() - 365 * 24 * 60 * 60 * 1000
+      );
+
+      if (recentLogs.length === 0 && age > 2) {
+        alerts.push({
+          id: `no-maintenance-${maintainable.id}`,
+          title: `${maintainable.name} No Recent Maintenance`,
+          type: 'no-maintenance-history',
+          severity: 'high',
+          timeframe: 'overdue',
+          estimatedCost: { min: 150, max: 250 },
+          actionRequired: true,
+        });
+      }
+    });
+
+    return alerts;
+  };
+
+  const allAlerts = generateAlerts();
 
   // Sort by severity (critical first)
   const sortedAlerts = allAlerts.sort((a, b) => {
     const severityOrder = { critical: 0, high: 1, medium: 2, low: 3 };
-    return (
-      severityOrder[a.severity as keyof typeof severityOrder] -
-      severityOrder[b.severity as keyof typeof severityOrder]
-    );
+    return severityOrder[a.severity] - severityOrder[b.severity];
   });
 
   const criticalAlerts = sortedAlerts.filter(alert => alert.severity === 'critical');

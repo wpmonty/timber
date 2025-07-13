@@ -49,7 +49,7 @@ export function LeftNavigation() {
   };
 
   return (
-    <div className="flex flex-col w-72 bg-white border-r border-gray-200 min-h-screen">
+    <div className="flex flex-col w-72 bg-white border-r border-gray-200 min-h-screen fixed">
       {/* Logo/Brand */}
       <div className="p-6 border-b border-gray-200">
         <Link href="/dashboard" className="flex items-center gap-3">

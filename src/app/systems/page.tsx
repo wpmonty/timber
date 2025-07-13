@@ -4,8 +4,10 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { mockMaintainables, mockLifecycleData } from '@/data/mock-property-data';
+import { useSystems } from '@/hooks/api/systems';
+import { useLogs } from '@/hooks/api/logs';
 import { MaintainableData, MaintainableLifecycleData } from '@/types/maintainables.types';
+import { mockLifecycleData } from '@/data/mock-property-data';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 
@@ -15,7 +17,9 @@ interface MaintainableTableRowProps {
 }
 
 function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableTableRowProps) {
-  const age = maintainableData.dateInstalled ? calculateAge(maintainableData.dateInstalled) : 0;
+  const age = maintainableData.dateInstalled
+    ? calculateAge(new Date(maintainableData.dateInstalled))
+    : 0;
   const isNearEndOfLife = lifecycleData.remainingLifespan <= 3;
   const needsMaintenance =
     maintainableData.statuses.includes('needs-maintenance') ||
@@ -202,8 +206,41 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
 }
 
 export default function MaintainablesPage() {
+  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems();
+  const { data: logs, isLoading: logsLoading, error: logsError } = useLogs();
+
+  if (systemsLoading || logsLoading) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p className="mt-4 text-gray-600">Loading systems...</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (systemsError || logsError) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="flex items-center justify-center min-h-96">
+          <div className="text-center">
+            <div className="text-red-500 text-4xl mb-4">⚠️</div>
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Error Loading Data</h2>
+            <p className="text-gray-600">{systemsError?.message || logsError?.message}</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const maintainables = systems || [];
+  const maintenanceLogs = logs || [];
+
   // Sort maintainables by category and name
-  const sortedMaintainables = [...mockMaintainables].sort((a, b) => {
+  const sortedMaintainables = [...maintainables].sort((a, b) => {
     if (a.category !== b.category) {
       return a.category.localeCompare(b.category);
     }
@@ -211,7 +248,7 @@ export default function MaintainablesPage() {
   });
 
   // Group maintainables by category for stats
-  const maintainablesByCategory = mockMaintainables.reduce(
+  const maintainablesByCategory = maintainables.reduce(
     (acc, maintainable) => {
       if (!acc[maintainable.category]) {
         acc[maintainable.category] = [];
@@ -222,11 +259,11 @@ export default function MaintainablesPage() {
     {} as Record<string, MaintainableData[]>
   );
 
-  const needMaintenanceCount = mockMaintainables.filter(maintainable =>
+  const needMaintenanceCount = maintainables.filter(maintainable =>
     maintainable.statuses.some(status => ['needs-maintenance', 'needs-repair'].includes(status))
   ).length;
 
-  const underWarrantyCount = mockMaintainables.filter(
+  const underWarrantyCount = maintainables.filter(
     maintainable =>
       maintainable.warrantyExpiration && new Date(maintainable.warrantyExpiration) > new Date()
   ).length;
@@ -257,7 +294,7 @@ export default function MaintainablesPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-gray-900">{mockMaintainables.length}</div>
+              <div className="text-2xl font-bold text-gray-900">{maintainables.length}</div>
               <div className="text-sm text-gray-600">Total Systems</div>
             </div>
           </CardContent>
@@ -273,7 +310,7 @@ export default function MaintainablesPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-green-600">13</div>
+              <div className="text-2xl font-bold text-green-600">{maintenanceLogs.length}</div>
               <div className="text-sm text-gray-600">Recent Logs</div>
             </div>
           </CardContent>
@@ -281,8 +318,8 @@ export default function MaintainablesPage() {
         <Card>
           <CardContent className="p-6">
             <div className="text-center">
-              <div className="text-2xl font-bold text-blue-600">4</div>
-              <div className="text-sm text-gray-600">Upcoming Maintenance</div>
+              <div className="text-2xl font-bold text-blue-600">{underWarrantyCount}</div>
+              <div className="text-sm text-gray-600">Under Warranty</div>
             </div>
           </CardContent>
         </Card>
@@ -292,7 +329,7 @@ export default function MaintainablesPage() {
       <Card className="mb-4">
         <CardHeader>
           <div className="flex justify-between items-center">
-            <CardTitle>All Maintainables ({mockMaintainables.length})</CardTitle>
+            <CardTitle>All Maintainables ({maintainables.length})</CardTitle>
             <div className="flex gap-2">
               <Badge variant="outline">Sort: Category</Badge>
               <Badge variant="outline">View: Table</Badge>
@@ -303,46 +340,58 @@ export default function MaintainablesPage() {
 
       {/* Maintainables Table */}
       <div className="space-y-4">
-        {sortedMaintainables.map(maintainable => {
-          const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
-          if (!lifecycleData) return null;
+        {sortedMaintainables.length > 0 ? (
+          sortedMaintainables.map(maintainable => {
+            const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
+            if (!lifecycleData) return null;
 
-          return (
-            <MaintainableTableRow
-              key={maintainable.id}
-              maintainableData={maintainable}
-              lifecycleData={lifecycleData}
-            />
-          );
-        })}
+            return (
+              <MaintainableTableRow
+                key={maintainable.id}
+                maintainableData={maintainable}
+                lifecycleData={lifecycleData}
+              />
+            );
+          })
+        ) : (
+          <div className="text-center py-12">
+            <div className="text-gray-400 text-6xl mb-4">🏠</div>
+            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Systems Found</h3>
+            <p className="text-gray-600">Start by adding your first appliance or system.</p>
+          </div>
+        )}
       </div>
 
       {/* Category Summary */}
-      <div className="mt-12">
-        <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Summary</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          {Object.entries(maintainablesByCategory).map(([category, maintainables]) => (
-            <Card key={category}>
-              <CardContent className="p-4">
-                <h3 className="font-medium text-gray-900 capitalize mb-2">
-                  {category.replace('-', ' ')}
-                </h3>
-                <div className="text-2xl font-bold text-gray-700 mb-1">{maintainables.length}</div>
-                <div className="text-sm text-gray-600">
-                  {
-                    maintainables.filter(app =>
-                      app.statuses.some(status =>
-                        ['needs-maintenance', 'needs-repair'].includes(status)
-                      )
-                    ).length
-                  }{' '}
-                  need attention
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+      {maintainables.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Summary</h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {Object.entries(maintainablesByCategory).map(([category, maintainables]) => (
+              <Card key={category}>
+                <CardContent className="p-4">
+                  <h3 className="font-medium text-gray-900 capitalize mb-2">
+                    {category.replace('-', ' ')}
+                  </h3>
+                  <div className="text-2xl font-bold text-gray-700 mb-1">
+                    {maintainables.length}
+                  </div>
+                  <div className="text-sm text-gray-600">
+                    {
+                      maintainables.filter(app =>
+                        app.statuses.some(status =>
+                          ['needs-maintenance', 'needs-repair'].includes(status)
+                        )
+                      ).length
+                    }{' '}
+                    need attention
+                  </div>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
