@@ -45,8 +45,13 @@ const getServiceTypeBadgeVariant = (serviceType: MaintenanceServiceType) => {
   }
 };
 
-export default function LogsPage() {
-  const { data: logs, isLoading, error } = useLogs();
+interface LogsPageProps {
+  params: { id: string };
+}
+
+export default function LogsPage({ params }: LogsPageProps) {
+  const { id } = params;
+  const { data: logs, isLoading, error } = useLogs(id);
   const [sortField, setSortField] = useState<'dateCompleted' | 'cost' | 'maintainableName'>(
     'dateCompleted'
   );

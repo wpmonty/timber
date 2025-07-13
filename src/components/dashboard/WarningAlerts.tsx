@@ -6,6 +6,8 @@ import { formatCurrency, calculateAge } from '@/lib/utils';
 import { useSystems } from '@/hooks/api/systems';
 import { useLogs } from '@/hooks/api/logs';
 import { mockLifecycleData } from '@/data/mock-property-data';
+import { MaintainableData } from '@/types/maintainables.types';
+import { MaintenanceLogEntry } from '@/types/maintenance';
 
 type AlertSeverity = 'critical' | 'high' | 'medium' | 'low';
 
@@ -19,10 +21,21 @@ interface Alert {
   actionRequired: boolean;
 }
 
-export function WarningAlerts() {
-  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems();
-  const { data: logs, isLoading: logsLoading, error: logsError } = useLogs();
-
+export function WarningAlerts({
+  systems,
+  logs,
+  systemsLoading,
+  logsLoading,
+  systemsError,
+  logsError,
+}: {
+  systems: MaintainableData[];
+  logs: MaintenanceLogEntry[];
+  systemsLoading: boolean;
+  logsLoading: boolean;
+  systemsError: Error | null;
+  logsError: Error | null;
+}) {
   if (systemsLoading || logsLoading) {
     return (
       <Card>

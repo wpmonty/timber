@@ -205,9 +205,14 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
   );
 }
 
-export default function MaintainablesPage() {
-  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems();
-  const { data: logs, isLoading: logsLoading, error: logsError } = useLogs();
+interface MaintainablesPageProps {
+  params: { id: string };
+}
+
+export default function MaintainablesPage({ params }: MaintainablesPageProps) {
+  const { id } = params;
+  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
+  const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
 
   if (systemsLoading || logsLoading) {
     return (

@@ -1,17 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSystem, updateSystem, deleteSystem } from '@/data/fake-db';
+import { getSystems, updateSystem, deleteSystem } from '@/data/fake-db';
 
 interface Params {
   params: { id: string };
 }
 
-// GET /api/systems/:id – return single system
+// GET /api/systems/:id – return all systems for a property
 export function GET(_request: NextRequest, { params }: Params) {
-  const system = getSystem(params.id);
-  if (!system) {
-    return NextResponse.json({ message: 'Not found' }, { status: 404 });
-  }
-  return NextResponse.json(system);
+  const systems = getSystems(params.id);
+  return NextResponse.json(systems);
 }
 
 // PATCH /api/systems/:id – update system

@@ -1,10 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSystems, createSystem } from '@/data/fake-db';
-
-// GET /api/systems – list systems
-export function GET() {
-  return NextResponse.json(getSystems());
-}
+import { createSystem } from '@/data/fake-db';
 
 // POST /api/systems – create system
 export async function POST(request: NextRequest) {

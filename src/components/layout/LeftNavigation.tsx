@@ -13,37 +13,37 @@ interface NavigationItem {
   badge?: string;
 }
 
-const navigationItems: NavigationItem[] = [
+const getNavigationItems = (slug: string): NavigationItem[] => [
   {
     title: 'Dashboard',
-    href: '/dashboard',
+    href: `/property/${slug}`,
     icon: Home,
   },
   {
     title: 'Systems & Appliances',
-    href: '/systems',
+    href: `/property/${slug}/systems`,
     icon: Settings,
   },
   {
     title: 'Maintenance Logs',
-    href: '/logs',
+    href: `/property/${slug}/logs`,
     icon: List,
     badge: '4',
   },
   {
     title: 'Alerts',
-    href: '/alerts',
+    href: `/property/${slug}/alerts`,
     icon: AlertTriangle,
     badge: '2',
   },
 ];
 
-export function LeftNavigation() {
+export function LeftNavigation({ slug }: { slug: string }) {
   const pathname = usePathname();
 
   const isActive = (href: string) => {
-    if (href === '/dashboard') {
-      return pathname === '/dashboard';
+    if (href === `/property/${slug}`) {
+      return pathname === `/property/${slug}`;
     }
     return pathname.startsWith(href);
   };
@@ -66,7 +66,7 @@ export function LeftNavigation() {
       {/* Navigation Items */}
       <nav className="flex-1 p-4">
         <div className="space-y-2">
-          {navigationItems.map(item => {
+          {getNavigationItems(slug).map(item => {
             const Icon = item.icon;
             const active = isActive(item.href);
 

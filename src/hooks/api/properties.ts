@@ -11,7 +11,7 @@ export function useProperties() {
   return useQuery({ queryKey: ['properties'], queryFn: fetchProperties });
 }
 
-export function useProperty(id: string | undefined) {
+export function useProperty(id: string) {
   return useQuery({
     queryKey: ['property', id],
     queryFn: async () => {

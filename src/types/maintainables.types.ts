@@ -21,6 +21,7 @@ export type MaintainableStatusType =
 
 export interface MaintainableData {
   id: string;
+  pId: string; // property id
   name: string;
   category: MaintainableCategoryType;
   brand: string | null;

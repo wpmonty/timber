@@ -1,21 +1,21 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaintainableData } from '@/types/maintainables.types';
 
-const fetchSystems = async (): Promise<MaintainableData[]> => {
-  const res = await fetch('/api/systems');
+const fetchSystems = async (pId: string): Promise<MaintainableData[]> => {
+  const res = await fetch(`/api/systems/${pId}`);
   if (!res.ok) throw new Error('Failed to fetch systems');
   return res.json();
 };
 
-export function useSystems() {
-  return useQuery({ queryKey: ['systems'], queryFn: fetchSystems });
+export function useSystems(pId: string) {
+  return useQuery({ queryKey: ['systems', pId], queryFn: () => fetchSystems(pId) });
 }
 
-export function useSystem(id: string | undefined) {
+export function useSystem(id: string) {
   return useQuery({
     queryKey: ['systems', id],
     queryFn: async () => {
-      const res = await fetch(`/api/systems/${id}`);
+      const res = await fetch(`/api/system/${id}`);
       if (!res.ok) throw new Error('Failed to fetch system');
       return res.json();
     },

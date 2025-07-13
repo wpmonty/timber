@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatRelativeTime } from '@/lib/utils';
-import { useLogs } from '@/hooks/api/logs';
 import { MaintenanceLogEntry } from '@/types/maintenance';
 
 const getServiceTypeIcon = (serviceType: string) => {
@@ -107,9 +106,15 @@ function MaintenanceLogItem({ log }: MaintenanceLogItemProps) {
   );
 }
 
-export function MaintenanceLogs() {
-  const { data: logs, isLoading, error } = useLogs();
-
+export function MaintenanceLogs({
+  logs,
+  isLoading,
+  error,
+}: {
+  logs: MaintenanceLogEntry[];
+  isLoading: boolean;
+  error: Error | null;
+}) {
   if (isLoading) {
     return (
       <Card>

@@ -3,19 +3,34 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { useProperties } from '@/hooks/api/properties';
-import { useSystems } from '@/hooks/api/systems';
-import { useLogs } from '@/hooks/api/logs';
+import { PropertyData } from '@/types/property.types';
+import { MaintainableData } from '@/types/maintainables.types';
+import { MaintenanceLogEntry } from '@/types/maintenance';
 
-export function PropertyOverview() {
-  const {
-    data: properties,
-    isLoading: propertiesLoading,
-    error: propertiesError,
-  } = useProperties();
-  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems();
-  const { data: logs, isLoading: logsLoading, error: logsError } = useLogs();
+interface PropertyOverviewProps {
+  properties: PropertyData[] | undefined;
+  systems: MaintainableData[] | undefined;
+  logs: MaintenanceLogEntry[] | undefined;
+  propertiesLoading: boolean;
+  propertiesError: Error | null;
+  systemsLoading: boolean;
+  systemsError: Error | null;
+  logsLoading: boolean;
+  logsError: Error | null;
+}
 
+export function PropertyOverview({
+  properties,
+  systems,
+  logs,
+  propertiesLoading,
+  propertiesError,
+  systemsLoading,
+  systemsError,
+  logsLoading,
+  logsError,
+}: PropertyOverviewProps) {
+  console.log('PropertyOverview', properties?.length, systems?.length, logs?.length);
   if (propertiesLoading || systemsLoading || logsLoading) {
     return (
       <Card>
@@ -51,7 +66,7 @@ export function PropertyOverview() {
   const maintainables = systems || [];
   const maintenanceLogs = logs || [];
 
-  if (!property) {
+  if (!property || !systems || !logs) {
     return (
       <Card>
         <CardHeader>

@@ -3,7 +3,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { useSystems } from '@/hooks/api/systems';
 import { MaintainableData, MaintainableLifecycleData } from '@/types/maintainables.types';
 import { mockLifecycleData } from '@/data/mock-property-data';
 
@@ -176,9 +175,15 @@ function ApplianceCard({ maintainableData, lifecycleData }: ApplianceCardProps) 
   );
 }
 
-export function MaintainablesGrid() {
-  const { data: systems, isLoading, error } = useSystems();
-
+export function MaintainablesGrid({
+  systems,
+  isLoading,
+  error,
+}: {
+  systems: MaintainableData[];
+  isLoading: boolean;
+  error: Error | null;
+}) {
   if (isLoading) {
     return (
       <div className="space-y-6">
@@ -209,7 +214,7 @@ export function MaintainablesGrid() {
     );
   }
 
-  if (systems.length === 0) {
+  if (systems.length === 0 || systems === undefined) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">

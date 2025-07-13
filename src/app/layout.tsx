@@ -18,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body className={inter.className}>
         <QueryProvider>
           <div className="flex min-h-screen bg-gray-50">
-            <LeftNavigation />
+            <LeftNavigation slug="home-1" />
             <main className="flex-1 overflow-auto ml-32">{children}</main>
           </div>
         </QueryProvider>

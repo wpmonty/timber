@@ -1,14 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaintenanceLogEntry } from '@/types/maintenance';
 
-const fetchLogs = async (): Promise<MaintenanceLogEntry[]> => {
-  const res = await fetch('/api/logs');
+const fetchLogs = async (pId: string): Promise<MaintenanceLogEntry[]> => {
+  const res = await fetch(`/api/logs/${pId}`);
   if (!res.ok) throw new Error('Failed to fetch logs');
   return res.json();
 };
 
-export function useLogs() {
-  return useQuery({ queryKey: ['logs'], queryFn: fetchLogs });
+export function useLogs(id: string) {
+  return useQuery({ queryKey: ['logs', id], queryFn: () => fetchLogs(id) });
 }
 
 export function useLog(id: string | undefined) {
