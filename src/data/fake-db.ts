@@ -25,7 +25,9 @@ export function getSystem(id: string): MaintainableData | undefined {
   return db.maintainables.find(m => m.id === id);
 }
 
-export function createSystem(data: Omit<MaintainableData, 'id' | 'createdAt' | 'updatedAt'>): MaintainableData {
+export function createSystem(
+  data: Omit<MaintainableData, 'id' | 'createdAt' | 'updatedAt'>
+): MaintainableData {
   const now = new Date();
   const newItem: MaintainableData = {
     ...data,
@@ -37,7 +39,10 @@ export function createSystem(data: Omit<MaintainableData, 'id' | 'createdAt' | '
   return newItem;
 }
 
-export function updateSystem(id: string, patch: Partial<MaintainableData>): MaintainableData | undefined {
+export function updateSystem(
+  id: string,
+  patch: Partial<MaintainableData>
+): MaintainableData | undefined {
   const item = getSystem(id);
   if (!item) return undefined;
   Object.assign(item, patch, { updatedAt: new Date() });
@@ -66,7 +71,10 @@ export function createLog(data: Omit<MaintenanceLogEntry, 'id'>): MaintenanceLog
   return newItem;
 }
 
-export function updateLog(id: string, patch: Partial<MaintenanceLogEntry>): MaintenanceLogEntry | undefined {
+export function updateLog(
+  id: string,
+  patch: Partial<MaintenanceLogEntry>
+): MaintenanceLogEntry | undefined {
   const log = getLog(id);
   if (!log) return undefined;
   Object.assign(log, patch);

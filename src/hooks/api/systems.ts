@@ -43,11 +43,7 @@ export function useCreateSystem() {
 
 export function useUpdateSystem() {
   const queryClient = useQueryClient();
-  return useMutation<
-    MaintainableData,
-    Error,
-    { id: string; data: Partial<MaintainableData> }
-  >({
+  return useMutation<MaintainableData, Error, { id: string; data: Partial<MaintainableData> }>({
     mutationFn: async ({ id, data }: { id: string; data: Partial<MaintainableData> }) => {
       const res = await fetch(`/api/systems/${id}`, {
         method: 'PATCH',

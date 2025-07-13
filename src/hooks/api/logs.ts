@@ -25,8 +25,18 @@ export function useLog(id: string | undefined) {
 
 export function useCreateLog() {
   const queryClient = useQueryClient();
-  return useMutation<MaintenanceLogEntry, Error, { id: string; data: Partial<MaintenanceLogEntry> | undefined }>({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<MaintenanceLogEntry> | undefined }) => {
+  return useMutation<
+    MaintenanceLogEntry,
+    Error,
+    { id: string; data: Partial<MaintenanceLogEntry> | undefined }
+  >({
+    mutationFn: async ({
+      id,
+      data,
+    }: {
+      id: string;
+      data: Partial<MaintenanceLogEntry> | undefined;
+    }) => {
       const res = await fetch(`/api/log/${id}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,7 +53,11 @@ export function useCreateLog() {
 
 export function useUpdateLog() {
   const queryClient = useQueryClient();
-  return useMutation<MaintenanceLogEntry, Error, { id: string; data: Partial<MaintenanceLogEntry> }>({
+  return useMutation<
+    MaintenanceLogEntry,
+    Error,
+    { id: string; data: Partial<MaintenanceLogEntry> }
+  >({
     mutationFn: async ({ id, data }: { id: string; data: Partial<MaintenanceLogEntry> }) => {
       const res = await fetch(`/api/log/${id}`, {
         method: 'PATCH',
