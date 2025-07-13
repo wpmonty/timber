@@ -2,6 +2,8 @@ import { PropertyOverview } from '@/components/dashboard/PropertyOverview';
 import { MaintainablesGrid } from '@/components/dashboard/MaintainablesGrid';
 import { MaintenanceLogs } from '@/components/dashboard/MaintenanceLogs';
 import { WarningAlerts } from '@/components/dashboard/WarningAlerts';
+import { Button } from '@/components/ui/button';
+import Link from 'next/link';
 
 export default function DashboardPage() {
   return (
@@ -9,10 +11,19 @@ export default function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Property Dashboard</h1>
-          <p className="mt-2 text-gray-600">
-            Monitor your systems & appliances maintenance schedules
-          </p>
+          <div className="flex justify-between items-center">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Property Dashboard</h1>
+              <p className="mt-2 text-gray-600">
+                Monitor your systems & appliances maintenance schedules
+              </p>
+            </div>
+            <div className="flex gap-3">
+              <Link href="/systems">
+                <Button variant="outline">View All Systems</Button>
+              </Link>
+            </div>
+          </div>
         </div>
 
         {/* Property Overview */}
