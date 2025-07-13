@@ -13,6 +13,7 @@ A comprehensive house manager web app for tracking major appliances and home mai
 
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript (strict mode)
+- **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS
 - **Forms**: React Hook Form with Zod validation
 - **State Management**: TanStack React Query for server state
@@ -25,6 +26,7 @@ A comprehensive house manager web app for tracking major appliances and home mai
 
 - Node.js 18+ 
 - npm
+- Supabase account and project
 
 ### Installation
 
@@ -39,12 +41,30 @@ cd timber
 npm install
 ```
 
-3. Start the development server
+3. Set up environment variables
+Create a `.env.local` file in the root directory:
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_PROJECT_ID=your_supabase_project_id
+SUPABASE_ACCESS_TOKEN=your_account_access_token
+```
+
+4. Set up the database
+```bash
+# Generate TypeScript types from Supabase schema
+npm run db:typegen
+
+# Seed the database with sample data
+npm run db:seed
+```
+
+5. Start the development server
 ```bash
 npm run dev
 ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. Open [http://localhost:3000](http://localhost:3000) in your browser
 
 ## 🛠️ Available Scripts
 
@@ -58,20 +78,50 @@ npm run dev
 - `npm run test` - Run Jest tests
 - `npm run test:watch` - Run tests in watch mode
 - `npm run test:coverage` - Run tests with coverage
+- `npm run db:seed` - Seed database with sample data
+- `npm run db:typegen` - Generate TypeScript types from Supabase schema
+
+## 🗄️ Database Setup
+
+This project uses Supabase as the database backend. The database configuration is handled through environment variables:
+
+### Environment Variables
+
+- `SUPABASE_URL`: Your Supabase project URL
+- `SUPABASE_SERVICE_ROLE_KEY`: Your Supabase service role key (for server-side operations)
+- `SUPABASE_PROJECT_ID`: Your Supabase project ID (for type generation)
+- `SUPABASE_ACCESS_TOKEN`: You Supabase account level access token (for type generation)
+
+### Database Commands
+
+- **Type Generation**: `npm run db:typegen` - Generates TypeScript types from your Supabase schema
+- **Seeding**: `npm run db:seed` - Populates the database with sample data for development
+
+### Schema Management
+
+The database schema is managed directly in Supabase. TypeScript types are automatically generated from the schema using the `db:typegen` script.
 
 ## 📁 Project Structure
 
 ```
 src/
 ├── app/                 # Next.js App Router pages
+│   ├── api/            # API routes
+│   └── property/       # Property management pages
 ├── components/          # Reusable UI components
 │   ├── ui/             # Base UI components
-│   ├── forms/          # Form components
-│   ├── examples/       # Framework examples
+│   ├── dashboard/      # Dashboard components
+│   ├── layout/         # Layout components
 │   └── providers/      # Context providers
 ├── lib/                # Utility functions
+│   └── supabase.ts     # Supabase client configuration
 ├── types/              # TypeScript definitions
-└── hooks/              # Custom React hooks
+│   └── supabase.types.ts # Auto-generated Supabase types
+├── hooks/              # Custom React hooks
+│   └── api/            # API-specific hooks
+├── data/               # Static data and mock data
+└── scripts/            # Database scripts
+    └── seed.ts         # Database seeding script
 ```
 
 ## 🧪 Testing
@@ -96,6 +146,7 @@ This project follows strict development guidelines defined in `.cursorrules`:
 - **Component Architecture**: Consistent structure with TypeScript
 - **Form Management**: React Hook Form with Zod validation
 - **Data Fetching**: TanStack React Query patterns
+- **Database Operations**: Supabase client with TypeScript types
 - **Styling**: Tailwind CSS utility classes
 - **Testing**: Jest with React Testing Library
 
@@ -105,6 +156,7 @@ The homepage includes working examples of:
 
 - **React Hook Form**: Form validation with Zod schemas
 - **React Query**: Data fetching with loading and error states
+- **Supabase Integration**: Database operations with TypeScript types
 - **TypeScript**: Full type safety throughout
 - **Tailwind CSS**: Responsive design patterns
 
@@ -113,6 +165,7 @@ The homepage includes working examples of:
 - See `.cursorrules` for detailed development guidelines
 - Component patterns and architecture decisions
 - Domain-specific naming conventions
+- Database schema and API design
 - Testing strategies and best practices
 
 ## 🤝 Contributing
@@ -120,7 +173,8 @@ The homepage includes working examples of:
 1. Follow the coding standards defined in `.cursorrules`
 2. Write tests for new features
 3. Run `npm run lint` and `npm run type-check` before committing
-4. Use conventional commit messages
+4. Run `npm run db:typegen` after schema changes
+5. Use conventional commit messages
 
 ## 📄 License
 
