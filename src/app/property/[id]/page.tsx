@@ -17,11 +17,7 @@ interface PropertyPageProps {
 export default function PropertyPage({ params }: PropertyPageProps) {
   const { id } = params;
 
-  const {
-    data: properties,
-    isLoading: propertiesLoading,
-    error: propertiesError,
-  } = useProperty(id);
+  const { data: property, isLoading: propertyLoading, error: propertyError } = useProperty(id);
   const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
   const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
 
@@ -31,7 +27,15 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       <div className="mb-8">
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Property {id}</h1>
+            {property ? (
+              <h1 className="text-3xl font-bold text-gray-900">{property.name}</h1>
+            ) : (
+              <div className="max-w-md mx-auto rounded-lg">
+                <div className="animate-pulse">
+                  <div className="h-6 bg-gray-200 rounded mb-4"></div>
+                </div>
+              </div>
+            )}
             <p className="mt-2 text-gray-600">
               Monitor your systems & appliances maintenance schedules
             </p>
@@ -47,11 +51,11 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       {/* Property Overview */}
       <div className="mb-8">
         <PropertyOverview
-          properties={properties ? [properties] : undefined}
+          property={property ? property : undefined}
           systems={systems ? systems : undefined}
           logs={logs ? logs : undefined}
-          propertiesLoading={propertiesLoading}
-          propertiesError={propertiesError}
+          propertyLoading={propertyLoading}
+          propertyError={propertyError}
           systemsLoading={systemsLoading}
           systemsError={systemsError}
           logsLoading={logsLoading}

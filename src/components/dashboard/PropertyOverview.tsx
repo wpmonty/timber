@@ -8,11 +8,11 @@ import { MaintainableData } from '@/types/maintainables.types';
 import { MaintenanceLogEntry } from '@/types/maintenance';
 
 interface PropertyOverviewProps {
-  properties: PropertyData[] | undefined;
+  property: PropertyData | undefined;
   systems: MaintainableData[] | undefined;
   logs: MaintenanceLogEntry[] | undefined;
-  propertiesLoading: boolean;
-  propertiesError: Error | null;
+  propertyLoading: boolean;
+  propertyError: Error | null;
   systemsLoading: boolean;
   systemsError: Error | null;
   logsLoading: boolean;
@@ -20,17 +20,17 @@ interface PropertyOverviewProps {
 }
 
 export function PropertyOverview({
-  properties,
+  property,
   systems,
   logs,
-  propertiesLoading,
-  propertiesError,
+  propertyLoading,
+  propertyError,
   systemsLoading,
   systemsError,
   logsLoading,
   logsError,
 }: PropertyOverviewProps) {
-  if (propertiesLoading || systemsLoading || logsLoading) {
+  if (propertyLoading || systemsLoading || logsLoading) {
     return (
       <Card>
         <CardHeader>
@@ -45,7 +45,7 @@ export function PropertyOverview({
     );
   }
 
-  if (propertiesError || systemsError || logsError) {
+  if (propertyError || systemsError || logsError) {
     return (
       <Card>
         <CardHeader>
@@ -61,7 +61,6 @@ export function PropertyOverview({
     );
   }
 
-  const property = properties?.[0]; // Assuming single property for now
   const maintainables = systems || [];
   const maintenanceLogs = logs || [];
 
