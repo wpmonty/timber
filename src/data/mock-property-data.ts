@@ -28,6 +28,7 @@ export const mockMaintainables: MaintainableData[] = [
   // HVAC - AC with warranty expiring, Furnace needing maintenance
   {
     id: 'hvac-1',
+    pId: 'home-1',
     name: 'Central Air Conditioning',
     category: 'hvac',
     brand: 'Carrier',
@@ -47,6 +48,7 @@ export const mockMaintainables: MaintainableData[] = [
   },
   {
     id: 'hvac-2',
+    pId: 'home-1',
     name: 'Gas Furnace',
     category: 'hvac',
     brand: 'Lennox',
@@ -67,6 +69,7 @@ export const mockMaintainables: MaintainableData[] = [
   // Roofing - needs replacement in 3 years
   {
     id: 'roofing-1',
+    pId: 'home-1',
     name: 'Asphalt Shingle Roof',
     serialNumber: null,
     category: 'roofing',
@@ -87,6 +90,7 @@ export const mockMaintainables: MaintainableData[] = [
   // Kitchen maintainables
   {
     id: 'kitchen-1',
+    pId: 'home-1',
     name: 'Refrigerator',
     category: 'kitchen',
     brand: 'Whirlpool',
@@ -106,6 +110,7 @@ export const mockMaintainables: MaintainableData[] = [
   },
   {
     id: 'kitchen-2',
+    pId: 'home-1',
     name: 'Dishwasher',
     category: 'kitchen',
     brand: 'KitchenAid',
@@ -126,6 +131,7 @@ export const mockMaintainables: MaintainableData[] = [
   // Plumbing - sink recently repaired
   {
     id: 'plumbing-1',
+    pId: 'home-1',
     name: 'Water Heater',
     category: 'plumbing',
     brand: 'Rheem',
@@ -145,6 +151,7 @@ export const mockMaintainables: MaintainableData[] = [
   },
   {
     id: 'plumbing-2',
+    pId: 'home-1',
     name: 'Kitchen Sink & Disposal',
     serialNumber: null,
     category: 'plumbing',
@@ -165,6 +172,7 @@ export const mockMaintainables: MaintainableData[] = [
   // Electrical
   {
     id: 'electrical-1',
+    pId: 'home-1',
     name: 'Main Electrical Panel',
     serialNumber: null,
     category: 'electrical',
@@ -185,6 +193,7 @@ export const mockMaintainables: MaintainableData[] = [
   // Safety
   {
     id: 'safety-1',
+    pId: 'home-1',
     name: 'Smoke Detectors',
     serialNumber: null,
     category: 'safety',
@@ -344,6 +353,7 @@ export const mockMaintenanceLogs: MaintenanceLogEntry[] = [
   {
     id: 'log-1',
     mId: 'hvac-1',
+    pId: 'home-1',
     maintainableName: 'Central Air Conditioning',
     category: 'hvac',
     serviceType: 'repair',
@@ -356,6 +366,7 @@ export const mockMaintenanceLogs: MaintenanceLogEntry[] = [
   {
     id: 'log-2',
     mId: 'plumbing-2',
+    pId: 'home-1',
     maintainableName: 'Kitchen Sink & Disposal',
     category: 'plumbing',
     serviceType: 'repair',
@@ -368,6 +379,7 @@ export const mockMaintenanceLogs: MaintenanceLogEntry[] = [
   {
     id: 'log-3',
     mId: 'safety-1',
+    pId: 'home-1',
     maintainableName: 'Smoke Detectors',
     category: 'safety',
     serviceType: 'routine-maintenance',
@@ -380,6 +392,7 @@ export const mockMaintenanceLogs: MaintenanceLogEntry[] = [
   {
     id: 'log-4',
     mId: 'kitchen-1',
+    pId: 'home-1',
     maintainableName: 'Refrigerator',
     category: 'kitchen',
     serviceType: 'routine-maintenance',

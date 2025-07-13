@@ -1,30 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { getSystem, updateSystem, deleteSystem } from '@/data/fake-db';
+import { getSystems, updateSystem, deleteSystem } from '@/data/fake-db';
 
 interface Params {
-  params: { id: string };
+  params: { propertyId: string };
 }
 
-// GET /api/systems/:id – return single system
+// GET /api/systems/:id – return all systems for a property
 export function GET(_request: NextRequest, { params }: Params) {
-  const system = getSystem(params.id);
-  if (!system) {
-    return NextResponse.json({ message: 'Not found' }, { status: 404 });
-  }
-  return NextResponse.json(system);
+  const systems = getSystems(params.propertyId);
+  return NextResponse.json(systems);
 }
 
 // PATCH /api/systems/:id – update system
 export async function PATCH(request: NextRequest, { params }: Params) {
   const body = await request.json();
-  const updated = updateSystem(params.id, body);
+  const updated = updateSystem(params.propertyId, body);
   if (!updated) return NextResponse.json({ message: 'Not found' }, { status: 404 });
   return NextResponse.json(updated);
 }
 
 // DELETE /api/systems/:id – delete system
 export function DELETE(_request: NextRequest, { params }: Params) {
-  const ok = deleteSystem(params.id);
+  const ok = deleteSystem(params.propertyId);
   if (!ok) return NextResponse.json({ message: 'Not found' }, { status: 404 });
-  return NextResponse.json({ message: `System ${params.id} deleted` });
+  return NextResponse.json({ message: `System ${params.propertyId} deleted` });
 }

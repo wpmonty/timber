@@ -76,6 +76,7 @@ export interface MaintenanceAlert {
 export interface MaintenanceLogEntry {
   id: string;
   mId: string;
+  pId: string;
   maintainableName: string;
   category: string;
   serviceType: MaintenanceServiceType;

@@ -17,8 +17,8 @@ export const db = {
 };
 
 // ---------- Maintainables (Systems) ----------
-export function getSystems(): MaintainableData[] {
-  return db.maintainables;
+export function getSystems(pId: string): MaintainableData[] {
+  return db.maintainables.filter(m => m.pId === pId);
 }
 
 export function getSystem(id: string): MaintainableData | undefined {
@@ -57,8 +57,8 @@ export function deleteSystem(id: string): boolean {
 }
 
 // ---------- Logs ----------
-export function getLogs(): MaintenanceLogEntry[] {
-  return db.logs;
+export function getLogs(pId: string): MaintenanceLogEntry[] {
+  return db.logs.filter(l => l.pId === pId);
 }
 
 export function getLog(id: string): MaintenanceLogEntry | undefined {
@@ -102,6 +102,20 @@ export function updateProperty(id: string, patch: Partial<PropertyData>): Proper
   if (!prop) return undefined;
   Object.assign(prop, patch, { updatedAt: new Date() });
   return prop;
+}
+
+export function createProperty(
+  data: Omit<PropertyData, 'id' | 'createdAt' | 'updatedAt'>
+): PropertyData {
+  const now = new Date();
+  const newItem: PropertyData = {
+    ...data,
+    id: generateId('prop'),
+    createdAt: now,
+    updatedAt: now,
+  } as PropertyData;
+  db.properties.push(newItem);
+  return newItem;
 }
 
 // ---------- Helpers ----------

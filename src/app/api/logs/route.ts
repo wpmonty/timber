@@ -1,7 +1,9 @@
-import { NextResponse } from 'next/server';
-import { getLogs } from '@/data/fake-db';
+import { NextRequest, NextResponse } from 'next/server';
+import { createLog } from '@/data/fake-db';
 
-// GET /api/logs – returns all maintenance logs
-export function GET() {
-  return NextResponse.json(getLogs());
+// POST /api/logs – create log
+export async function POST(request: NextRequest) {
+  const body = await request.json();
+  const created = createLog(body);
+  return NextResponse.json(created, { status: 201 });
 }
