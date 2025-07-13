@@ -1,21 +1,14 @@
-// @ts-nocheck
-import { NextResponse } from 'next/server';
-import { mockMaintainables } from '@/data/mock-property-data';
+import { NextRequest, NextResponse } from 'next/server';
+import { getSystems, createSystem } from '@/data/fake-db';
 
-// Handles GET /api/systems – returns all mocked systems (maintainables)
-export async function GET() {
-  return NextResponse.json(mockMaintainables);
+// GET /api/systems – list systems
+export function GET() {
+  return NextResponse.json(getSystems());
 }
 
-// Handles POST /api/systems – stubbed create behaviour
-export async function POST(request: Request) {
+// POST /api/systems – create system
+export async function POST(request: NextRequest) {
   const body = await request.json();
-
-  // In a real implementation you would persist to DB. For now we just echo back
-  const created = {
-    ...body,
-    id: body.id ?? `temp-${Date.now()}`,
-  };
-
+  const created = createSystem(body);
   return NextResponse.json(created, { status: 201 });
 }

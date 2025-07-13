@@ -1,4 +1,3 @@
-// @ts-nocheck
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaintainableData } from '@/types/maintainables.types';
 
@@ -58,7 +57,7 @@ export function useUpdateSystem() {
       if (!res.ok) throw new Error('Failed to update system');
       return res.json();
     },
-    onSuccess: (_data, variables) => {
+    onSuccess: (_data: MaintainableData, variables: { id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });
       queryClient.invalidateQueries({ queryKey: ['systems', variables.id] });
     },
