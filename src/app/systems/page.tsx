@@ -232,119 +232,115 @@ export default function MaintainablesPage() {
   ).length;
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Appliances & Systems</h1>
-              <p className="mt-2 text-gray-600">
-                Comprehensive view of all your maintainable home appliances and systems
-              </p>
-            </div>
-            <div className="flex gap-3">
-              <Link href="/dashboard">
-                <Button variant="outline">← Back to Dashboard</Button>
-              </Link>
-              <Button>Add</Button>
-              <Button>Log</Button>
-            </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+      {/* Header */}
+      <div className="mb-8">
+        <div className="flex justify-between items-center">
+          <div>
+            <h1 className="text-3xl font-bold text-gray-900">Appliances & Systems</h1>
+            <p className="mt-2 text-gray-600">
+              Comprehensive view of all your maintainable home appliances and systems
+            </p>
+          </div>
+          <div className="flex gap-3">
+            <Link href="/dashboard">
+              <Button variant="outline">← Back to Dashboard</Button>
+            </Link>
+            <Button>Add</Button>
+            <Button>Log</Button>
           </div>
         </div>
+      </div>
 
-        {/* Summary Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-gray-900">{mockMaintainables.length}</div>
-                <div className="text-sm text-gray-600">Total Systems</div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-orange-600">{needMaintenanceCount}</div>
-                <div className="text-sm text-gray-600">Need Maintenance</div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-green-600">13</div>
-                <div className="text-sm text-gray-600">Recent Logs</div>
-              </div>
-            </CardContent>
-          </Card>
-          <Card>
-            <CardContent className="p-6">
-              <div className="text-center">
-                <div className="text-2xl font-bold text-blue-600">4</div>
-                <div className="text-sm text-gray-600">Upcoming Maintenance</div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Table Header */}
-        <Card className="mb-4">
-          <CardHeader>
-            <div className="flex justify-between items-center">
-              <CardTitle>All Maintainables ({mockMaintainables.length})</CardTitle>
-              <div className="flex gap-2">
-                <Badge variant="outline">Sort: Category</Badge>
-                <Badge variant="outline">View: Table</Badge>
-              </div>
+      {/* Summary Stats */}
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-gray-900">{mockMaintainables.length}</div>
+              <div className="text-sm text-gray-600">Total Systems</div>
             </div>
-          </CardHeader>
+          </CardContent>
         </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-orange-600">{needMaintenanceCount}</div>
+              <div className="text-sm text-gray-600">Need Maintenance</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-green-600">13</div>
+              <div className="text-sm text-gray-600">Recent Logs</div>
+            </div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-6">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-blue-600">4</div>
+              <div className="text-sm text-gray-600">Upcoming Maintenance</div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-        {/* Maintainables Table */}
-        <div className="space-y-4">
-          {sortedMaintainables.map(maintainable => {
-            const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
-            if (!lifecycleData) return null;
-
-            return (
-              <MaintainableTableRow
-                key={maintainable.id}
-                maintainableData={maintainable}
-                lifecycleData={lifecycleData}
-              />
-            );
-          })}
-        </div>
-
-        {/* Category Summary */}
-        <div className="mt-12">
-          <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Summary</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {Object.entries(maintainablesByCategory).map(([category, maintainables]) => (
-              <Card key={category}>
-                <CardContent className="p-4">
-                  <h3 className="font-medium text-gray-900 capitalize mb-2">
-                    {category.replace('-', ' ')}
-                  </h3>
-                  <div className="text-2xl font-bold text-gray-700 mb-1">
-                    {maintainables.length}
-                  </div>
-                  <div className="text-sm text-gray-600">
-                    {
-                      maintainables.filter(app =>
-                        app.statuses.some(status =>
-                          ['needs-maintenance', 'needs-repair'].includes(status)
-                        )
-                      ).length
-                    }{' '}
-                    need attention
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+      {/* Table Header */}
+      <Card className="mb-4">
+        <CardHeader>
+          <div className="flex justify-between items-center">
+            <CardTitle>All Maintainables ({mockMaintainables.length})</CardTitle>
+            <div className="flex gap-2">
+              <Badge variant="outline">Sort: Category</Badge>
+              <Badge variant="outline">View: Table</Badge>
+            </div>
           </div>
+        </CardHeader>
+      </Card>
+
+      {/* Maintainables Table */}
+      <div className="space-y-4">
+        {sortedMaintainables.map(maintainable => {
+          const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
+          if (!lifecycleData) return null;
+
+          return (
+            <MaintainableTableRow
+              key={maintainable.id}
+              maintainableData={maintainable}
+              lifecycleData={lifecycleData}
+            />
+          );
+        })}
+      </div>
+
+      {/* Category Summary */}
+      <div className="mt-12">
+        <h2 className="text-xl font-semibold text-gray-900 mb-6">Category Summary</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          {Object.entries(maintainablesByCategory).map(([category, maintainables]) => (
+            <Card key={category}>
+              <CardContent className="p-4">
+                <h3 className="font-medium text-gray-900 capitalize mb-2">
+                  {category.replace('-', ' ')}
+                </h3>
+                <div className="text-2xl font-bold text-gray-700 mb-1">{maintainables.length}</div>
+                <div className="text-sm text-gray-600">
+                  {
+                    maintainables.filter(app =>
+                      app.statuses.some(status =>
+                        ['needs-maintenance', 'needs-repair'].includes(status)
+                      )
+                    ).length
+                  }{' '}
+                  need attention
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </div>
       </div>
     </div>
