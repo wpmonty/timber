@@ -1,12 +1,19 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { getProperty, updateProperty } from '@/data/fake-db';
+import { supabaseServer } from '@/lib/supabase';
 
 interface Params {
   params: { propertyId: string };
 }
 
 // GET /api/property/:id – returns property by id (only one mock property)
-export function GET(_request: NextRequest, { params }: Params) {
+export async function GET(_request: NextRequest, { params }: Params) {
+  const { data, error } = await supabaseServer
+    .from('properties')
+    .select('*')
+    .eq('id', 'ec5aab9e-c5f4-473d-b557-8b72ea83e77d');
+  console.log(data);
+  console.log(error);
   const prop = getProperty(params.propertyId);
   if (!prop) return NextResponse.json({ message: 'Not found' }, { status: 404 });
   return NextResponse.json(prop);
