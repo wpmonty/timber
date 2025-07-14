@@ -2,11 +2,12 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Settings, AlertTriangle, Bell, List } from 'lucide-react';
+import { Home, Settings, AlertTriangle, Bell, List, LogOut, User } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Property } from '@/types/property.types';
 import { useProperties } from '@/hooks/api/properties';
+import { useAuth } from '@/hooks/useAuth';
 import { useEffect, useState } from 'react';
 
 interface NavigationItem {
@@ -42,6 +43,7 @@ const getNavigationItems = (slug: string): NavigationItem[] => [
 ];
 
 export function LeftNavigation() {
+  const { user, isLoading: authLoading, signOut } = useAuth();
   const { data: properties, isLoading, error } = useProperties();
   const [currentProperty, setCurrentProperty] = useState<Property | null>(null);
 
@@ -53,6 +55,11 @@ export function LeftNavigation() {
       setCurrentProperty(properties[0]);
     }
   }, [properties]);
+
+  // Don't show navigation if user is not authenticated
+  if (authLoading || !user) {
+    return null;
+  }
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -66,6 +73,15 @@ export function LeftNavigation() {
       return pathname === `/property/${currentProperty?.id}`;
     }
     return pathname.startsWith(href);
+  };
+
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+      router.push('/login');
+    } catch (error) {
+      console.error('Error signing out:', error);
+    }
   };
 
   if (!currentProperty || !properties) {
@@ -139,11 +155,32 @@ export function LeftNavigation() {
       </nav>
 
       {/* Footer */}
-      <div className="p-4 border-t border-gray-200">
+      <div className="p-4 border-t border-gray-200 space-y-4">
+        {/* User Info */}
+        <div className="flex items-center gap-3 text-sm text-gray-600">
+          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+            <User className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 truncate">{user.email}</p>
+          </div>
+        </div>
+
+        {/* Notifications */}
         <div className="flex items-center gap-3 text-sm text-gray-600">
           <Bell className="w-4 h-4" />
           <span>Notifications</span>
         </div>
+
+        {/* Logout */}
+        <Button
+          onClick={handleSignOut}
+          variant="ghost"
+          className="w-full justify-start gap-3 text-left font-normal text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
+        </Button>
       </div>
     </div>
   );

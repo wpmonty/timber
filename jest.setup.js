@@ -17,7 +17,10 @@ if (typeof global.Response === 'undefined') {
     }
     json = async () => this._body;
     static json(data, init = {}) {
-      return new ResponseStub(JSON.stringify(data), { ...init, headers: { 'Content-Type': 'application/json', ...(init.headers || {}) } });
+      return new ResponseStub(JSON.stringify(data), {
+        ...init,
+        headers: { 'Content-Type': 'application/json', ...(init.headers || {}) },
+      });
     }
   };
   // @ts-ignore

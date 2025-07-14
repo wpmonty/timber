@@ -1,8 +1,15 @@
 import { FormExample } from '@/components/examples/form-example';
 import { QueryExample } from '@/components/examples/query-example';
 import Link from 'next/link';
+import { getCurrentUser } from '@/lib/auth';
+import { redirect } from 'next/navigation';
 
-export default function Home() {
+export default async function Home() {
+  // Redirect authenticated users to dashboard
+  const user = await getCurrentUser();
+  if (user) {
+    redirect('/property');
+  }
   return (
     <main className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -14,16 +21,24 @@ export default function Home() {
             Query
           </p>
 
-          {/* Dashboard Link */}
-          <div className="mb-8">
-            <Link
-              href="/property/67392fae-eade-4471-8de8-5d6c2faf873b"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              🏠 View Dashboard
-            </Link>
-            <p className="text-sm text-gray-500 mt-2">
-              See the mock dashboard with home appliances and maintenance data
+          {/* Auth Links */}
+          <div className="mb-8 space-y-4">
+            <div className="flex justify-center space-x-4">
+              <Link
+                href="/login"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                Sign In
+              </Link>
+              <Link
+                href="/signup"
+                className="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
+              >
+                Sign Up
+              </Link>
+            </div>
+            <p className="text-sm text-gray-500 text-center">
+              Sign in to access your home management dashboard
             </p>
           </div>
         </div>
