@@ -19,6 +19,7 @@ export type Database = {
           created_at: string
           data: Json | null
           id: string
+          property_id: string
           system_id: string | null
           updated_at: string
         }
@@ -26,6 +27,7 @@ export type Database = {
           created_at?: string
           data?: Json | null
           id?: string
+          property_id: string
           system_id?: string | null
           updated_at?: string
         }
@@ -33,10 +35,18 @@ export type Database = {
           created_at?: string
           data?: Json | null
           id?: string
+          property_id?: string
           system_id?: string | null
           updated_at?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "logs_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "logs_system_id_fkey"
             columns: ["system_id"]

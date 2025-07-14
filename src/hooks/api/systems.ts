@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MaintainableData } from '@/types/maintainables.types';
+import { Maintainable } from '@/types/maintainables.types';
 
-const fetchSystems = async (pId: string): Promise<MaintainableData[]> => {
+const fetchSystems = async (pId: string): Promise<Maintainable[]> => {
   const res = await fetch(`/api/systems/${pId}`);
   if (!res.ok) throw new Error('Failed to fetch systems');
   return res.json();
@@ -26,7 +26,7 @@ export function useSystem(id: string) {
 export function useCreateSystem() {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: async (data: Partial<MaintainableData>) => {
+    mutationFn: async (data: Partial<Maintainable>) => {
       const res = await fetch('/api/systems', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -43,8 +43,8 @@ export function useCreateSystem() {
 
 export function useUpdateSystem() {
   const queryClient = useQueryClient();
-  return useMutation<MaintainableData, Error, { id: string; data: Partial<MaintainableData> }>({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<MaintainableData> }) => {
+  return useMutation<Maintainable, Error, { id: string; data: Partial<Maintainable> }>({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Maintainable> }) => {
       const res = await fetch(`/api/systems/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -53,7 +53,7 @@ export function useUpdateSystem() {
       if (!res.ok) throw new Error('Failed to update system');
       return res.json();
     },
-    onSuccess: (_data: MaintainableData, variables: { id: string }) => {
+    onSuccess: (_data: Maintainable, variables: { id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });
       queryClient.invalidateQueries({ queryKey: ['systems', variables.id] });
     },

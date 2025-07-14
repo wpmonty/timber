@@ -3,13 +3,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { PropertyData } from '@/types/property.types';
-import { MaintainableData } from '@/types/maintainables.types';
-import { MaintenanceLogEntry } from '@/types/maintenance';
+import { Property } from '@/types/property.types';
+import { Maintainable } from '@/types/maintainables.types';
+import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 interface PropertyOverviewProps {
-  property: PropertyData | undefined;
-  systems: MaintainableData[] | undefined;
+  property: Property | undefined;
+  systems: Maintainable[] | undefined;
   logs: MaintenanceLogEntry[] | undefined;
   propertyLoading: boolean;
   propertyError: Error | null;
@@ -81,33 +81,37 @@ export function PropertyOverview({
     );
   }
 
-  const homeAge = calculateAge(new Date(property.yearBuilt, 0, 1));
+  const homeAge = calculateAge(new Date(property.data.yearBuilt, 0, 1));
 
   // Calculate stats from real data
-  const maintainablesNeedingMaintenance = maintainables.filter(maintainable =>
-    maintainable.statuses.some(status => ['needs-maintenance', 'needs-repair'].includes(status))
+  const maintainablesNeedingMaintenance = maintainables.filter(
+    maintainable =>
+      maintainable.data.status === 'needs-maintenance' ||
+      maintainable.data.status === 'needs-repair'
   ).length;
 
-  const criticalIssues = maintainables.filter(maintainable =>
-    maintainable.statuses.some(status => ['needs-replacement', 'needs-repair'].includes(status))
+  const criticalIssues = maintainables.filter(
+    maintainable =>
+      maintainable.data.status === 'needs-replacement' ||
+      maintainable.data.status === 'needs-repair'
   ).length;
 
-  const totalMaintenanceCost = maintenanceLogs.reduce((sum, log) => sum + log.cost, 0);
+  const totalMaintenanceCost = maintenanceLogs.reduce((sum, log) => sum + log.data.cost, 0);
 
   const avgAge =
     maintainables.length > 0
       ? maintainables.reduce((sum, maintainable) => {
-          const age = maintainable.dateInstalled
-            ? calculateAge(new Date(maintainable.dateInstalled))
+          const age = maintainable.data.dateInstalled
+            ? calculateAge(new Date(maintainable.data.dateInstalled))
             : 0;
           return sum + age;
         }, 0) / maintainables.length
       : 0;
 
   const thisYearLogs = maintenanceLogs.filter(
-    log => new Date(log.dateCompleted).getFullYear() === new Date().getFullYear()
+    log => new Date(log.data.dateCompleted).getFullYear() === new Date().getFullYear()
   );
-  const thisYearCost = thisYearLogs.reduce((sum, log) => sum + log.cost, 0);
+  const thisYearCost = thisYearLogs.reduce((sum, log) => sum + log.data.cost, 0);
 
   return (
     <Card>
@@ -127,7 +131,7 @@ export function PropertyOverview({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Year Built:</span>
-                  <span className="font-medium">{property.yearBuilt}</span>
+                  <span className="font-medium">{property.data.yearBuilt}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Property Age:</span>
@@ -135,17 +139,15 @@ export function PropertyOverview({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Square Footage:</span>
-                  <span className="font-medium">
-                    {property.squareFootage.toLocaleString()} sq ft
-                  </span>
+                  <span className="font-medium">{property.data.squareFootage} sq ft</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bedrooms:</span>
-                  <span className="font-medium">{property.bedrooms}</span>
+                  <span className="font-medium">{property.data.bedrooms}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bathrooms:</span>
-                  <span className="font-medium">{property.bathrooms}</span>
+                  <span className="font-medium">{property.data.bathrooms}</span>
                 </div>
               </div>
             </div>
@@ -174,8 +176,7 @@ export function PropertyOverview({
                     {
                       maintainables.filter(
                         m =>
-                          m.statuses.includes('needs-maintenance') ||
-                          m.statuses.includes('operational')
+                          m.data.status === 'needs-maintenance' || m.data.status === 'operational'
                       ).length
                     }
                   </Badge>
@@ -221,20 +222,20 @@ export function PropertyOverview({
                 <div className="flex justify-between">
                   <span className="text-gray-600">Property Type:</span>
                   <span className="font-medium capitalize">
-                    {property.homeType.replace('-', ' ')}
+                    {property.data.homeType.replace('-', ' ')}
                   </span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Stories:</span>
-                  <span className="font-medium">{property.stories}</span>
+                  <span className="font-medium">{property.data.stories}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Garages:</span>
-                  <span className="font-medium">{property.garages}</span>
+                  <span className="font-medium">{property.data.garages}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Lot Size:</span>
-                  <span className="font-medium">{property.lotSize} acres</span>
+                  <span className="font-medium">{property.data.lotSize} acres</span>
                 </div>
               </div>
             </div>

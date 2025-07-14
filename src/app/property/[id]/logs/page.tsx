@@ -5,7 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { useLogs } from '@/hooks/api/logs';
 import { formatCurrency, formatDate, formatRelativeTime } from '@/lib/utils';
-import { MaintenanceServiceType } from '@/types/maintenance';
+import { MaintenanceServiceType } from '@/types/maintenance.types';
 
 const getServiceTypeIcon = (serviceType: MaintenanceServiceType) => {
   switch (serviceType) {
@@ -107,7 +107,7 @@ export default function LogsPage({ params }: LogsPageProps) {
   };
 
   const filteredLogs = logs.filter(
-    log => filterServiceType === 'all' || log.serviceType === filterServiceType
+    log => filterServiceType === 'all' || log.data.serviceType === filterServiceType
   );
 
   const sortedLogs = [...filteredLogs].sort((a, b) => {
@@ -115,16 +115,16 @@ export default function LogsPage({ params }: LogsPageProps) {
 
     switch (sortField) {
       case 'dateCompleted':
-        aValue = new Date(a.dateCompleted).getTime();
-        bValue = new Date(b.dateCompleted).getTime();
+        aValue = new Date(a.data.dateCompleted).getTime();
+        bValue = new Date(b.data.dateCompleted).getTime();
         break;
       case 'cost':
-        aValue = a.cost;
-        bValue = b.cost;
+        aValue = a.data.cost;
+        bValue = b.data.cost;
         break;
       case 'maintainableName':
-        aValue = a.maintainableName.toLowerCase();
-        bValue = b.maintainableName.toLowerCase();
+        aValue = a.data.name.toLowerCase();
+        bValue = b.data.name.toLowerCase();
         break;
       default:
         return 0;
@@ -254,47 +254,47 @@ export default function LogsPage({ params }: LogsPageProps) {
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div>
                           <div className="text-sm font-medium text-gray-900">
-                            {formatDate(new Date(log.dateCompleted))}
+                            {formatDate(new Date(log.data.dateCompleted))}
                           </div>
                           <div className="text-sm text-gray-500">
-                            {formatRelativeTime(new Date(log.dateCompleted))}
+                            {formatRelativeTime(new Date(log.data.dateCompleted))}
                           </div>
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm font-medium text-gray-900">
-                          {log.maintainableName}
-                        </div>
+                        <div className="text-sm font-medium text-gray-900">{log.data.name}</div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm text-gray-900 capitalize">
-                          {log.category.replace('-', ' ')}
+                          {log.data.category.replace('-', ' ')}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <span className="text-lg">{getServiceTypeIcon(log.serviceType)}</span>
-                          <Badge variant={getServiceTypeBadgeVariant(log.serviceType) as any}>
-                            {log.serviceType.replace('-', ' ')}
+                          <span className="text-lg">
+                            {getServiceTypeIcon(log.data.serviceType)}
+                          </span>
+                          <Badge variant={getServiceTypeBadgeVariant(log.data.serviceType) as any}>
+                            {log.data.serviceType.replace('-', ' ')}
                           </Badge>
                         </div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-900 max-w-xs truncate">
-                          {log.description}
+                          {log.data.description}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
                         <div className="text-sm font-medium text-gray-900">
-                          {formatCurrency(log.cost)}
+                          {formatCurrency(log.data.cost)}
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="text-sm text-gray-900">{log.serviceProvider}</div>
+                        <div className="text-sm text-gray-900">{log.data.serviceProvider}</div>
                       </td>
                       <td className="px-6 py-4">
                         <div className="text-sm text-gray-500 max-w-xs truncate">
-                          {log.notes || '-'}
+                          {log.data.notes || '-'}
                         </div>
                       </td>
                     </tr>

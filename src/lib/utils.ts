@@ -85,3 +85,9 @@ export function getSeverityColor(severity: string): string {
       return 'text-gray-600 bg-gray-50';
   }
 }
+
+export function flattenSupabaseData<T>(data: T): T {
+  // move data kvs to top level
+  const { data: dataWithoutData, ...rest } = data as any;
+  return { ...rest, ...dataWithoutData };
+}

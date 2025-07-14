@@ -3,22 +3,36 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { MaintainableData, MaintainableLifecycleData } from '@/types/maintainables.types';
-import { mockLifecycleData } from '@/data/mock-property-data';
+import { Maintainable, MaintainableLifecycleData } from '@/types/maintainables.types';
+
+const mockLifecycleData: MaintainableLifecycleData[] = [
+  {
+    mId: '1',
+    currentAge: 0,
+    remainingLifespan: 0,
+    replacementCostEstimate: {
+      min: 0,
+      max: 0,
+    },
+    nextMaintenanceDate: null,
+    maintenanceFrequency: 'monthly',
+    isUnderWarranty: false,
+  },
+];
 
 interface ApplianceCardProps {
-  maintainableData: MaintainableData;
+  maintainable: Maintainable;
   lifecycleData: MaintainableLifecycleData;
 }
 
-function ApplianceCard({ maintainableData, lifecycleData }: ApplianceCardProps) {
+function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
+  const maintainableData = maintainable.data;
   const age = maintainableData.dateInstalled
     ? calculateAge(new Date(maintainableData.dateInstalled))
     : 0;
   const isNearEndOfLife = lifecycleData.remainingLifespan <= 3;
   const needsMaintenance =
-    maintainableData.statuses.includes('needs-maintenance') ||
-    maintainableData.statuses.includes('needs-repair');
+    maintainableData.status === 'needs-maintenance' || maintainableData.status === 'needs-repair';
 
   // Category icons
   const getCategoryIcon = (category: string) => {
@@ -77,8 +91,8 @@ function ApplianceCard({ maintainableData, lifecycleData }: ApplianceCardProps) 
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <Badge variant={getStatusColor(maintainableData.statuses[0]) as any} size="sm">
-              {maintainableData.statuses[0].replace('-', ' ')}
+            <Badge variant={getStatusColor(maintainableData.status) as any} size="sm">
+              {maintainableData.status.replace('-', ' ')}
             </Badge>
             {maintainableData.warrantyExpiration &&
               new Date(maintainableData.warrantyExpiration) > new Date() && (
@@ -180,7 +194,7 @@ export function MaintainablesGrid({
   isLoading,
   error,
 }: {
-  systems: MaintainableData[];
+  systems: Maintainable[];
   isLoading: boolean;
   error: Error | null;
 }) {
@@ -232,14 +246,15 @@ export function MaintainablesGrid({
 
   // Group systems by category
   const appliancesByCategory = systems.reduce(
-    (acc, maintainableData) => {
+    (acc, maintainable) => {
+      const maintainableData = maintainable.data;
       if (!acc[maintainableData.category]) {
         acc[maintainableData.category] = [];
       }
-      acc[maintainableData.category].push(maintainableData);
+      acc[maintainableData.category].push(maintainable);
       return acc;
     },
-    {} as Record<string, MaintainableData[]>
+    {} as Record<string, Maintainable[]>
   );
 
   return (
@@ -255,16 +270,14 @@ export function MaintainablesGrid({
             {category.replace('-', ' ')} ({systems.length})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {systems.map(maintainableData => {
-              const lifecycleData = mockLifecycleData.find(
-                data => data.mId === maintainableData.id
-              );
+            {systems.map(system => {
+              const lifecycleData = mockLifecycleData.find(data => data.mId === system.id);
               if (!lifecycleData) return null;
 
               return (
                 <ApplianceCard
-                  key={maintainableData.id}
-                  maintainableData={maintainableData}
+                  key={system.id}
+                  maintainable={system}
                   lifecycleData={lifecycleData}
                 />
               );

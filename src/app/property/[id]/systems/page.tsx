@@ -6,24 +6,33 @@ import { Button } from '@/components/ui/button';
 import { formatCurrency, calculateAge } from '@/lib/utils';
 import { useSystems } from '@/hooks/api/systems';
 import { useLogs } from '@/hooks/api/logs';
-import { MaintainableData, MaintainableLifecycleData } from '@/types/maintainables.types';
-import { mockLifecycleData } from '@/data/mock-property-data';
+import { Maintainable, MaintainableLifecycleData } from '@/types/maintainables.types';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 
 interface MaintainableTableRowProps {
-  maintainableData: MaintainableData;
-  lifecycleData: MaintainableLifecycleData;
+  maintainable: Maintainable;
 }
 
-function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableTableRowProps) {
-  const age = maintainableData.dateInstalled
-    ? calculateAge(new Date(maintainableData.dateInstalled))
+function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
+  const mockLifecycleData: MaintainableLifecycleData = {
+    mId: maintainable.id,
+    currentAge: 0,
+    remainingLifespan: 0,
+    replacementCostEstimate: {
+      min: 0,
+      max: 0,
+    },
+    nextMaintenanceDate: null,
+    maintenanceFrequency: 'monthly',
+    isUnderWarranty: false,
+  };
+  const age = maintainable.data.dateInstalled
+    ? calculateAge(new Date(maintainable.data.dateInstalled))
     : 0;
-  const isNearEndOfLife = lifecycleData.remainingLifespan <= 3;
+  const isNearEndOfLife = mockLifecycleData.remainingLifespan <= 3;
   const needsMaintenance =
-    maintainableData.statuses.includes('needs-maintenance') ||
-    maintainableData.statuses.includes('needs-repair');
+    maintainable.data.status === 'needs-maintenance' || maintainable.data.status === 'needs-repair';
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -74,13 +83,13 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
           {/* Maintainable Info */}
           <div className="lg:col-span-3">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{getCategoryIcon(maintainableData.category)}</span>
+              <span className="text-2xl">{getCategoryIcon(maintainable.data.category)}</span>
               <div>
-                <h3 className="font-semibold text-gray-900">{maintainableData.name}</h3>
+                <h3 className="font-semibold text-gray-900">{maintainable.data.name}</h3>
                 <p className="text-sm text-gray-600">
-                  {maintainableData.brand} {maintainableData.model}
+                  {maintainable.data.brand} {maintainable.data.model}
                 </p>
-                <p className="text-xs text-gray-500 capitalize">{maintainableData.category}</p>
+                <p className="text-xs text-gray-500 capitalize">{maintainable.data.category}</p>
               </div>
             </div>
           </div>
@@ -91,8 +100,8 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
               <div className="text-sm flex flex-row justify-between">
                 <span className="text-gray-600">Status:</span>
                 <span className="font-medium ml-1">
-                  <Badge variant={getStatusColor(maintainableData.statuses[0]) as any} size="sm">
-                    {maintainableData.statuses[0].replace('-', ' ')}
+                  <Badge variant={getStatusColor(maintainable.data.status) as any} size="sm">
+                    {maintainable.data.status.replace('-', ' ')}
                   </Badge>
                 </span>
               </div>
@@ -101,17 +110,17 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
                 <span className="font-medium ml-1">
                   <Badge
                     variant={
-                      maintainableData.condition === 'excellent'
+                      maintainable.data.condition === 'excellent'
                         ? 'success'
-                        : maintainableData.condition === 'good'
+                        : maintainable.data.condition === 'good'
                           ? 'info'
-                          : maintainableData.condition === 'fair'
+                          : maintainable.data.condition === 'fair'
                             ? 'warning'
                             : 'error'
                     }
                     size="sm"
                   >
-                    {maintainableData.condition}
+                    {maintainable.data.condition}
                   </Badge>
                 </span>
               </div>
@@ -139,7 +148,7 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
               </div>
               <div className="text-sm">
                 <span className="text-gray-600">Location:</span>
-                <span className="font-medium ml-1">{maintainableData.location}</span>
+                <span className="font-medium ml-1">{maintainable.data.location}</span>
               </div>
             </div>
           </div>
@@ -149,21 +158,23 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
             <div className="space-y-2">
               <div className="text-sm">
                 <span className="text-gray-600">Remaining:</span>
-                <span className="font-medium ml-1">{lifecycleData.remainingLifespan} years</span>
+                <span className="font-medium ml-1">
+                  {mockLifecycleData.remainingLifespan} years
+                </span>
               </div>
               <div className="w-full bg-gray-200 rounded-full h-2">
                 <div
                   className={`h-2 rounded-full transition-all duration-300 float-right ${
-                    lifecycleData.remainingLifespan <= 1
+                    mockLifecycleData.remainingLifespan <= 1
                       ? 'bg-red-500'
-                      : lifecycleData.remainingLifespan <= 3
+                      : mockLifecycleData.remainingLifespan <= 3
                         ? 'bg-orange-500'
-                        : lifecycleData.remainingLifespan <= 5
+                        : mockLifecycleData.remainingLifespan <= 5
                           ? 'bg-yellow-500'
                           : 'bg-green-500'
                   }`}
                   style={{
-                    width: `${Math.max(5, (lifecycleData.remainingLifespan / maintainableData.expectedLifespan) * 100)}%`,
+                    width: `${Math.max(5, (mockLifecycleData.remainingLifespan / maintainable.data.expectedLifespan) * 100)}%`,
                   }}
                 />
               </div>
@@ -175,8 +186,8 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
             <div className="text-sm">
               <span className="text-gray-600">Replacement:</span>
               <p className="font-medium text-gray-900">
-                {formatCurrency(lifecycleData.replacementCostEstimate.min)} -{' '}
-                {formatCurrency(lifecycleData.replacementCostEstimate.max)}
+                {formatCurrency(mockLifecycleData.replacementCostEstimate.min)} -{' '}
+                {formatCurrency(mockLifecycleData.replacementCostEstimate.max)}
               </p>
             </div>
           </div>
@@ -192,11 +203,11 @@ function MaintainableTableRow({ maintainableData, lifecycleData }: MaintainableT
         </div>
 
         {/* Notes */}
-        {maintainableData.notes && (
+        {maintainable.data.notes && (
           <div className="mt-4 pt-4 border-t">
             <div className="text-sm p-3 bg-gray-50 rounded">
               <span className="text-gray-600 font-medium">Notes:</span>
-              <p className="text-gray-700 mt-1">{maintainableData.notes}</p>
+              <p className="text-gray-700 mt-1">{maintainable.data.notes}</p>
             </div>
           </div>
         )}
@@ -246,31 +257,34 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
 
   // Sort maintainables by category and name
   const sortedMaintainables = [...maintainables].sort((a, b) => {
-    if (a.category !== b.category) {
-      return a.category.localeCompare(b.category);
+    if (a.data.category !== b.data.category) {
+      return a.data.category.localeCompare(b.data.category);
     }
-    return a.name.localeCompare(b.name);
+    return a.data.name.localeCompare(b.data.name);
   });
 
   // Group maintainables by category for stats
   const maintainablesByCategory = maintainables.reduce(
     (acc, maintainable) => {
-      if (!acc[maintainable.category]) {
-        acc[maintainable.category] = [];
+      if (!acc[maintainable.data.category]) {
+        acc[maintainable.data.category] = [];
       }
-      acc[maintainable.category].push(maintainable);
+      acc[maintainable.data.category].push(maintainable);
       return acc;
     },
-    {} as Record<string, MaintainableData[]>
+    {} as Record<string, Maintainable[]>
   );
 
-  const needMaintenanceCount = maintainables.filter(maintainable =>
-    maintainable.statuses.some(status => ['needs-maintenance', 'needs-repair'].includes(status))
+  const needMaintenanceCount = maintainables.filter(
+    maintainable =>
+      maintainable.data.status === 'needs-maintenance' ||
+      maintainable.data.status === 'needs-repair'
   ).length;
 
   const underWarrantyCount = maintainables.filter(
     maintainable =>
-      maintainable.warrantyExpiration && new Date(maintainable.warrantyExpiration) > new Date()
+      maintainable.data.warrantyExpiration &&
+      new Date(maintainable.data.warrantyExpiration) > new Date()
   ).length;
 
   return (
@@ -347,16 +361,7 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
       <div className="space-y-4">
         {sortedMaintainables.length > 0 ? (
           sortedMaintainables.map(maintainable => {
-            const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
-            if (!lifecycleData) return null;
-
-            return (
-              <MaintainableTableRow
-                key={maintainable.id}
-                maintainableData={maintainable}
-                lifecycleData={lifecycleData}
-              />
-            );
+            return <MaintainableTableRow key={maintainable.id} maintainable={maintainable} />;
           })
         ) : (
           <div className="text-center py-12">
@@ -383,10 +388,10 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
                   </div>
                   <div className="text-sm text-gray-600">
                     {
-                      maintainables.filter(app =>
-                        app.statuses.some(status =>
-                          ['needs-maintenance', 'needs-repair'].includes(status)
-                        )
+                      maintainables.filter(
+                        app =>
+                          app.data.status === 'needs-maintenance' ||
+                          app.data.status === 'needs-repair'
                       ).length
                     }{' '}
                     need attention

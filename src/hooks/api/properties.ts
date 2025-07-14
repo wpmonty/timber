@@ -1,7 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { PropertyData } from '@/types/property.types';
+import { Property } from '@/types/property.types';
 
-const fetchProperties = async (): Promise<PropertyData[]> => {
+const fetchProperties = async (): Promise<Property[]> => {
   const res = await fetch('/api/properties');
   if (!res.ok) throw new Error('Failed to fetch properties');
   return res.json();
@@ -25,8 +25,8 @@ export function useProperty(id: string) {
 
 export function useUpdateProperty() {
   const queryClient = useQueryClient();
-  return useMutation<PropertyData, Error, { id: string; data: Partial<PropertyData> }>({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<PropertyData> }) => {
+  return useMutation<Property, Error, { id: string; data: Partial<Property> }>({
+    mutationFn: async ({ id, data }: { id: string; data: Partial<Property> }) => {
       const res = await fetch(`/api/property/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },

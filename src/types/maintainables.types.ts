@@ -1,4 +1,32 @@
 import { ConditionType } from './general.types';
+import { Database } from './supabase.types';
+
+export type MaintainableDatabaseEntry = Database['public']['Tables']['systems']['Row'];
+// hydrate the data key from basic json to our own data type
+export type Maintainable = Omit<MaintainableDatabaseEntry, 'data'> & { data: MaintainableData };
+
+const test: Maintainable = {
+  id: '1',
+  created_at: '2021-01-01',
+  updated_at: '2021-01-01',
+  property_id: '1',
+  data: {
+    name: 'test',
+    category: 'hvac',
+    brand: 'test',
+    model: 'test',
+    serialNumber: 'test',
+    dateInstalled: 'test',
+    datePurchased: 'test',
+    purchasePrice: 100,
+    condition: 'good',
+    status: 'operational',
+    warrantyExpiration: 'test',
+    expectedLifespan: 10,
+    location: 'test',
+    notes: 'test',
+  },
+};
 
 export type MaintainableCategoryType =
   | 'hvac'
@@ -20,24 +48,20 @@ export type MaintainableStatusType =
   | 'under-warranty';
 
 export interface MaintainableData {
-  id: string;
-  pId: string; // property id
   name: string;
   category: MaintainableCategoryType;
   brand: string | null;
   model: string | null;
   serialNumber: string | null;
-  dateInstalled: Date | null;
-  datePurchased: Date | null;
+  dateInstalled: string | null;
+  datePurchased: string | null;
   purchasePrice: number | null;
   condition: MaintainableConditionType;
-  statuses: MaintainableStatusType[];
-  warrantyExpiration: Date | null;
+  status: MaintainableStatusType;
+  warrantyExpiration: string | null;
   expectedLifespan: number; // in years
   location: string; // room or area in home; can be empty string
   notes: string; // can be empty string
-  createdAt: Date;
-  updatedAt: Date;
 }
 
 export interface MaintainableLifecycleData {

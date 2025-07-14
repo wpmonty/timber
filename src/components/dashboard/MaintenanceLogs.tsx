@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, formatRelativeTime } from '@/lib/utils';
-import { MaintenanceLogEntry } from '@/types/maintenance';
+import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 const getServiceTypeIcon = (serviceType: string) => {
   switch (serviceType) {
@@ -74,31 +74,31 @@ function MaintenanceLogItem({ log }: MaintenanceLogItemProps) {
   return (
     <div className="flex items-start gap-3 p-3 border rounded-lg hover:bg-gray-50 transition-colors">
       <div className="flex-shrink-0 w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center">
-        <span className="text-sm">{getCategoryIcon(log.category)}</span>
+        <span className="text-sm">{getCategoryIcon(log.data.category)}</span>
       </div>
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-1">
-          <h4 className="font-medium text-gray-900 truncate">{log.maintainableName}</h4>
-          <Badge variant={getServiceTypeColor(log.serviceType) as any} size="sm">
-            {log.serviceType.replace('-', ' ')}
+          <h4 className="font-medium text-gray-900 truncate">{log.data.name}</h4>
+          <Badge variant={getServiceTypeColor(log.data.serviceType) as any} size="sm">
+            {log.data.serviceType.replace('-', ' ')}
           </Badge>
         </div>
 
-        <p className="text-sm text-gray-600 mb-2">{log.description}</p>
+        <p className="text-sm text-gray-600 mb-2">{log.data.description}</p>
 
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3 text-xs text-gray-500">
-            <span>{formatRelativeTime(new Date(log.dateCompleted))}</span>
+            <span>{formatRelativeTime(new Date(log.data.dateCompleted))}</span>
             <span>•</span>
-            <span>{log.serviceProvider}</span>
+            <span>{log.data.serviceProvider}</span>
           </div>
-          <div className="font-medium text-gray-900">{formatCurrency(log.cost)}</div>
+          <div className="font-medium text-gray-900">{formatCurrency(log.data.cost)}</div>
         </div>
 
-        {log.notes && (
+        {log.data.notes && (
           <div className="mt-2 p-2 bg-gray-50 rounded text-xs text-gray-600">
-            <strong>Notes:</strong> {log.notes}
+            <strong>Notes:</strong> {log.data.notes}
           </div>
         )}
       </div>
@@ -156,15 +156,16 @@ export function MaintenanceLogs({
 
   // Sort logs by date (most recent first)
   const sortedLogs = [...maintenanceLogs].sort(
-    (a, b) => new Date(b.dateCompleted).getTime() - new Date(a.dateCompleted).getTime()
+    (a, b) => new Date(b.data.dateCompleted).getTime() - new Date(a.data.dateCompleted).getTime()
   );
 
   // Calculate total cost
-  const totalCost = maintenanceLogs.reduce((sum, log) => sum + log.cost, 0);
+  const totalCost = maintenanceLogs.reduce((sum, log) => sum + log.data.cost, 0);
 
   // Calculate recent logs (last 90 days)
   const recentLogs = maintenanceLogs.filter(
-    log => new Date(log.dateCompleted).getTime() > new Date().getTime() - 90 * 24 * 60 * 60 * 1000
+    log =>
+      new Date(log.data.dateCompleted).getTime() > new Date().getTime() - 90 * 24 * 60 * 60 * 1000
   );
 
   return (
@@ -214,9 +215,9 @@ export function MaintenanceLogs({
                         index === 0 ? 'bg-red-500' : index === 1 ? 'bg-blue-500' : 'bg-green-500'
                       }`}
                     ></span>
-                    <span className="text-gray-600">{log.description}</span>
+                    <span className="text-gray-600">{log.data.description}</span>
                     <span className="font-medium text-gray-900 ml-auto">
-                      {formatCurrency(log.cost)}
+                      {formatCurrency(log.data.cost)}
                     </span>
                   </div>
                 ))}

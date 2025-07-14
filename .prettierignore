@@ -7,3 +7,5 @@ coverage
 *.json
 *.lock
 *.log 
+./src/types/supabase.types.ts
+./src/scripts/seed.js
