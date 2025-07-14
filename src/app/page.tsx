@@ -1,8 +1,12 @@
+'use client';
+
 import { FormExample } from '@/components/examples/form-example';
 import { QueryExample } from '@/components/examples/query-example';
 import Link from 'next/link';
+import { useUser } from '@/hooks/useUser';
 
 export default function Home() {
+  const { isAuthenticated } = useUser();
   return (
     <main className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -16,14 +20,33 @@ export default function Home() {
 
           {/* Dashboard Link */}
           <div className="mb-8">
-            <Link
-              href="/property/67392fae-eade-4471-8de8-5d6c2faf873b"
-              className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-            >
-              🏠 View Dashboard
-            </Link>
+            {isAuthenticated ? (
+              <Link
+                href="/dashboard"
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                🏠 Go to Dashboard
+              </Link>
+            ) : (
+              <div className="space-x-4">
+                <Link
+                  href="/login"
+                  className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  🔐 Sign In
+                </Link>
+                <Link
+                  href="/signup"
+                  className="inline-flex items-center px-6 py-3 bg-gray-100 text-gray-700 font-medium rounded-lg hover:bg-gray-200 transition-colors"
+                >
+                  📝 Sign Up
+                </Link>
+              </div>
+            )}
             <p className="text-sm text-gray-500 mt-2">
-              See the mock dashboard with home appliances and maintenance data
+              {isAuthenticated
+                ? 'Access your authenticated dashboard'
+                : 'Sign in to access your personalized dashboard'}
             </p>
           </div>
         </div>
