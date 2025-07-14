@@ -13,5 +13,6 @@
     "browser": true,
     "es2021": true,
     "node": true
-  }
+  },
+  "ignorePatterns": ["src/types/supabase.types.ts", "src/scripts/seed.js"]
 }

@@ -3,11 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { useSystems } from '@/hooks/api/systems';
-import { useLogs } from '@/hooks/api/logs';
-import { mockLifecycleData } from '@/data/mock-property-data';
-import { MaintainableData } from '@/types/maintainables.types';
-import { MaintenanceLogEntry } from '@/types/maintenance';
+import { Maintainable, MaintainableLifecycleData } from '@/types/maintainables.types';
+import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 type AlertSeverity = 'critical' | 'high' | 'medium' | 'low';
 
@@ -29,7 +26,7 @@ export function WarningAlerts({
   systemsError,
   logsError,
 }: {
-  systems: MaintainableData[];
+  systems: Maintainable[];
   logs: MaintenanceLogEntry[];
   systemsLoading: boolean;
   logsLoading: boolean;
@@ -75,56 +72,67 @@ export function WarningAlerts({
     const alerts: Alert[] = [];
 
     maintainables.forEach(maintainable => {
-      const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
-      const age = maintainable.dateInstalled
-        ? calculateAge(new Date(maintainable.dateInstalled))
+      const mockLifecycleData: MaintainableLifecycleData = {
+        mId: maintainable.id,
+        currentAge: 0,
+        remainingLifespan: 0,
+        replacementCostEstimate: {
+          min: 0,
+          max: 0,
+        },
+        nextMaintenanceDate: null,
+        maintenanceFrequency: 'monthly',
+        isUnderWarranty: false,
+      };
+      const age = maintainable.data.dateInstalled
+        ? calculateAge(new Date(maintainable.data.dateInstalled))
         : 0;
 
       // Check for maintenance issues
       if (
-        maintainable.statuses.includes('needs-maintenance') ||
-        maintainable.statuses.includes('needs-repair')
+        maintainable.data.status === 'needs-maintenance' ||
+        maintainable.data.status === 'needs-repair'
       ) {
         alerts.push({
           id: `maintenance-${maintainable.id}`,
-          title: `${maintainable.name} Needs Attention`,
+          title: `${maintainable.data.name} Needs Attention`,
           type: 'maintenance-due',
-          severity: maintainable.statuses.includes('needs-repair') ? 'high' : 'medium',
+          severity: maintainable.data.status === 'needs-repair' ? 'high' : 'medium',
           timeframe: 'overdue',
-          estimatedCost: lifecycleData ? { min: 150, max: 500 } : undefined,
+          estimatedCost: mockLifecycleData ? { min: 150, max: 500 } : undefined,
           actionRequired: true,
         });
       }
 
       // Check for replacement needs
-      if (maintainable.statuses.includes('needs-replacement')) {
+      if (maintainable.data.status === 'needs-replacement') {
         alerts.push({
           id: `replacement-${maintainable.id}`,
-          title: `${maintainable.name} Needs Replacement`,
+          title: `${maintainable.data.name} Needs Replacement`,
           type: 'replacement-needed',
           severity: 'critical',
           timeframe: 'immediate',
-          estimatedCost: lifecycleData?.replacementCostEstimate,
+          estimatedCost: mockLifecycleData?.replacementCostEstimate,
           actionRequired: true,
         });
       }
 
       // Check for near end of life
-      if (lifecycleData && lifecycleData.remainingLifespan <= 3) {
+      if (mockLifecycleData && mockLifecycleData.remainingLifespan <= 3) {
         alerts.push({
           id: `eol-${maintainable.id}`,
-          title: `${maintainable.name} Approaching End of Life`,
+          title: `${maintainable.data.name} Approaching End of Life`,
           type: 'replacement-needed',
-          severity: lifecycleData.remainingLifespan <= 1 ? 'high' : 'medium',
-          timeframe: `within ${lifecycleData.remainingLifespan} year${lifecycleData.remainingLifespan !== 1 ? 's' : ''}`,
-          estimatedCost: lifecycleData.replacementCostEstimate,
-          actionRequired: lifecycleData.remainingLifespan <= 1,
+          severity: mockLifecycleData.remainingLifespan <= 1 ? 'high' : 'medium',
+          timeframe: `within ${mockLifecycleData.remainingLifespan} year${mockLifecycleData.remainingLifespan !== 1 ? 's' : ''}`,
+          estimatedCost: mockLifecycleData.replacementCostEstimate,
+          actionRequired: mockLifecycleData.remainingLifespan <= 1,
         });
       }
 
       // Check for warranty expiration
-      if (maintainable.warrantyExpiration) {
-        const warrantyDate = new Date(maintainable.warrantyExpiration);
+      if (maintainable.data.warrantyExpiration) {
+        const warrantyDate = new Date(maintainable.data.warrantyExpiration);
         const monthsToExpiry = Math.floor(
           (warrantyDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 30)
         );
@@ -132,7 +140,7 @@ export function WarningAlerts({
         if (monthsToExpiry <= 6 && monthsToExpiry > 0) {
           alerts.push({
             id: `warranty-${maintainable.id}`,
-            title: `${maintainable.name} Warranty Expiring Soon`,
+            title: `${maintainable.data.name} Warranty Expiring Soon`,
             type: 'warranty-expiring',
             severity: 'medium',
             timeframe: `in ${monthsToExpiry} month${monthsToExpiry !== 1 ? 's' : ''}`,
@@ -145,14 +153,15 @@ export function WarningAlerts({
       // Check for no recent maintenance
       const recentLogs = maintenanceLogs.filter(
         log =>
-          log.mId === maintainable.id &&
-          new Date(log.dateCompleted).getTime() > new Date().getTime() - 365 * 24 * 60 * 60 * 1000
+          log.data.name === maintainable.data.name &&
+          new Date(log.data.dateCompleted).getTime() >
+            new Date().getTime() - 365 * 24 * 60 * 60 * 1000
       );
 
       if (recentLogs.length === 0 && age > 2) {
         alerts.push({
           id: `no-maintenance-${maintainable.id}`,
-          title: `${maintainable.name} No Recent Maintenance`,
+          title: `${maintainable.data.name} No Recent Maintenance`,
           type: 'no-maintenance-history',
           severity: 'high',
           timeframe: 'overdue',

@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { Home, Settings, AlertTriangle, Bell, List } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
-import { PropertyData } from '@/types/property.types';
+import { Property } from '@/types/property.types';
 import { useProperties } from '@/hooks/api/properties';
 import { useEffect, useState } from 'react';
 
@@ -43,7 +43,7 @@ const getNavigationItems = (slug: string): NavigationItem[] => [
 
 export function LeftNavigation() {
   const { data: properties, isLoading, error } = useProperties();
-  const [currentProperty, setCurrentProperty] = useState<PropertyData | null>(null);
+  const [currentProperty, setCurrentProperty] = useState<Property | null>(null);
 
   const pathname = usePathname();
   const router = useRouter();
@@ -99,7 +99,7 @@ export function LeftNavigation() {
         >
           {properties?.map(property => (
             <option key={property.id} value={property.id}>
-              {property.name}
+              {property.address}
             </option>
           ))}
         </select>

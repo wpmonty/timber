@@ -8,12 +8,47 @@ A comprehensive house manager web app for tracking major appliances and home mai
 
 - **Framework**: Next.js 14 with App Router
 - **Language**: TypeScript (strict mode)
+- **Database**: Supabase (PostgreSQL)
 - **Styling**: Tailwind CSS
 - **Forms**: React Hook Form with Zod validation
 - **State Management**: TanStack React Query for server state
 - **Testing**: Jest + React Testing Library
 - **Linting**: ESLint + Prettier
 - **Package Manager**: npm
+
+## Database Setup
+
+### Supabase Configuration
+
+This project uses Supabase as the database backend. The database configuration is handled through:
+
+- `src/lib/supabase.ts` - Supabase client configuration
+- `src/types/supabase.types.ts` - Auto-generated TypeScript types from Supabase schema
+
+### Environment Variables
+
+Required environment variables in `.env.local`:
+
+```bash
+SUPABASE_URL=your_supabase_project_url
+SUPABASE_SERVICE_ROLE_KEY=your_supabase_service_role_key
+SUPABASE_PROJECT_ID=your_supabase_project_id
+```
+
+### Database Commands
+
+- `npm run db:typegen` - Generate TypeScript types from Supabase schema
+- `npm run db:seed` - Seed database with sample data
+
+### Database Client Usage
+
+```typescript
+// Server-side operations (API routes)
+import { supabaseServer } from '@/lib/supabase';
+
+// Use for all database operations in API routes
+const { data, error } = await supabaseServer.from('properties').select('*');
+```
 
 ## Code Organization
 
@@ -22,26 +57,32 @@ A comprehensive house manager web app for tracking major appliances and home mai
 ```
 src/
 ├── app/                 # Next.js App Router pages
+│   ├── api/            # API routes for database operations
 │   ├── (auth)/         # Auth-related pages
 │   ├── dashboard/      # Dashboard pages
-│   ├── appliances/     # Appliance management pages
+│   ├── property/       # Property management pages
 │   └── maintenance/    # Maintenance scheduling pages
 ├── components/         # Reusable UI components
 │   ├── ui/            # Base UI components (buttons, inputs, etc.)
 │   ├── forms/         # Form components
 │   ├── charts/        # Data visualization components
+│   ├── dashboard/     # Dashboard-specific components
 │   └── layout/        # Layout components
 ├── lib/               # Utility functions and configurations
 │   ├── utils.ts       # General utilities
+│   ├── supabase.ts    # Supabase client configuration
 │   ├── validations.ts # Zod schemas
-│   ├── constants.ts   # App constants
-│   └── db.ts         # Database utilities
+│   └── constants.ts   # App constants
 ├── types/             # TypeScript type definitions
-│   ├── appliances.ts  # Appliance-related types
+│   ├── supabase.types.ts # Auto-generated Supabase types
+│   ├── general.types.ts  # General shared types
 │   ├── maintenance.ts # Maintenance-related types
-│   └── user.ts       # User-related types
+│   └── property.types.ts # Property-related types
 ├── hooks/             # Custom React hooks
-└── data/              # Static data and seed files
+│   └── api/           # API-specific hooks for data fetching
+├── data/              # Static data and seed files
+└── scripts/           # Database scripts
+    └── seed.ts        # Database seeding script
 ```
 
 ## Domain-Specific Guidelines
@@ -275,9 +316,34 @@ export function ExampleDataComponent() {
 ### Data Management
 
 - Use React Query for server state management
-- Implement proper loading states
+- Create custom hooks in `src/hooks/api/` for data fetching
+- Implement proper loading states and error handling
 - Use pagination for large datasets
 - Consider virtualization for long lists
+
+### Database Queries
+
+- Use Supabase query builder for type-safe database operations
+- Implement proper error handling for database operations
+- Use transactions for complex operations
+- Use auto-generated Supabase types for type safety
+
+### Database Operations Pattern
+
+```typescript
+// API route example
+import { supabaseServer } from '@/lib/supabase';
+
+export async function GET(request: Request) {
+  const { data, error } = await supabaseServer.from('properties').select('*');
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json(data);
+}
+```
 
 ## Accessibility
 
@@ -327,36 +393,89 @@ export function ExampleDataComponent() {
 - Run `npm run type-check` to catch TypeScript errors
 - Write tests for new features
 
+### Database Changes
+
+1. Make schema changes in Supabase dashboard
+2. Run `npm run db:typegen` to update TypeScript types
+3. Update API routes and components as needed
+4. Test changes thoroughly
+
 ### Environment Setup
 
 - Use environment variables for configuration
-- Document required environment variables
-- Provide example `.env.local` file
+- Set up Supabase project and obtain required credentials
+- Create `.env.local` with required Supabase environment variables
+- Run `npm run db:seed` to populate development data
 - Keep sensitive data out of version control
+
+### Database Seeding
+
+- Use `npm run db:seed` to populate the database with sample data
+- Seed script located at `src/scripts/seed.ts`
+- Customize seed data as needed for development
 
 ## API Design
 
+### Database Operations
+
+All database operations should use the Supabase client from `src/lib/supabase.ts`:
+
+```typescript
+// API route example
+import { supabaseServer } from '@/lib/supabase';
+
+export async function GET(request: Request) {
+  const { data, error } = await supabaseServer.from('properties').select('*');
+
+  if (error) {
+    return Response.json({ error: error.message }, { status: 500 });
+  }
+
+  return Response.json(data);
+}
+```
+
 ### Endpoint Naming
 
-- Use RESTful conventions: `/api/appliances`, `/api/maintenance`
+- Use RESTful conventions: `/api/properties`, `/api/systems`, `/api/logs`
 - Use HTTP methods appropriately: GET, POST, PUT, DELETE
-- Version APIs: `/api/v1/appliances`
+- Follow Next.js App Router conventions for dynamic routes
 
 ### Response Format
 
 - Use consistent response structure
 - Include proper HTTP status codes
 - Provide meaningful error messages
-- Use TypeScript for API types
+- Use TypeScript for API types based on Supabase schema
+
+### Type Safety
+
+- Use auto-generated Supabase types: `Database['public']['Tables']['table_name']['Row']`
+- Regenerate types after schema changes: `npm run db:typegen`
+- Import types from `src/types/supabase.types.ts`
 
 ## Security Considerations
 
 ### Data Protection
 
-- Validate all user inputs
-- Sanitize data before database operations
-- Use parameterized queries
-- Implement proper authentication
+- Use Supabase Row Level Security (RLS) policies
+- Validate all user inputs with Zod schemas
+- Use Supabase's service role key only for server-side operations
+- Implement proper authentication and authorization
+
+### API Security
+
+- Use environment variables for sensitive configuration
+- Implement rate limiting for API endpoints
+- Validate request data before database operations
+- Use HTTPS in production
+
+### Database Security
+
+- Configure Row Level Security (RLS) policies in Supabase
+- Use service role key only in server-side API routes
+- Never expose service role key to client-side code
+- Implement proper user authentication flow
 
 ### Privacy
 

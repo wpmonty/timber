@@ -1,5 +1,10 @@
+import { Database } from './supabase.types';
+
+type PropertyDatabaseEntry = Database['public']['Tables']['properties']['Row'];
+// hydrate the data key from basic json to our own data type
+export type Property = Omit<PropertyDatabaseEntry, 'data'> & { data: PropertyData };
+
 export interface PropertyData {
-  id: string;
   name: string;
   address: string;
   yearBuilt: number;
@@ -10,17 +15,6 @@ export interface PropertyData {
   stories: number;
   garages: number;
   lotSize?: number;
-  createdAt: Date;
-  updatedAt: Date;
-}
-
-export interface PropertyOwner {
-  id: string;
-  name: string;
-  email: string;
-  phone?: string;
-  emergencyContact?: string;
-  emergencyPhone?: string;
 }
 
 export interface PropertyStats {
@@ -31,10 +25,3 @@ export interface PropertyStats {
   totalMaintenanceCost: number;
   avgMaintainableAge: number;
 }
-
-export type PropertyLocationData = {
-  city: string;
-  state: string;
-  zipCode: string;
-  climate: 'hot' | 'temperate' | 'cold' | 'humid' | 'dry';
-};

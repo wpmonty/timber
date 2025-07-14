@@ -17,7 +17,7 @@ export default function Home() {
           {/* Dashboard Link */}
           <div className="mb-8">
             <Link
-              href="/property/home-1"
+              href="/property/67392fae-eade-4471-8de8-5d6c2faf873b"
               className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
             >
               🏠 View Dashboard

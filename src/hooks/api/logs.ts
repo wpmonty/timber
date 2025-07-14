@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MaintenanceLogEntry } from '@/types/maintenance';
+import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 const fetchLogs = async (pId: string): Promise<MaintenanceLogEntry[]> => {
   const res = await fetch(`/api/logs/${pId}`);
