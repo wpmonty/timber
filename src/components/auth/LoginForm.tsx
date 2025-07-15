@@ -24,7 +24,7 @@ export function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const redirectTo = searchParams.get('redirectTo') || '/property';
+  const redirectTo = searchParams.get('redirectTo') || '/properties';
 
   const {
     register,
@@ -35,19 +35,25 @@ export function LoginForm() {
   });
 
   const onSubmit = async (data: LoginFormData) => {
+    console.log('🔥 Login form submitted:', { email: data.email });
     setIsLoading(true);
     setAuthError(null);
 
     try {
+      console.log('🔥 Calling signIn...');
       const { error } = await signIn(data.email, data.password);
+
+      console.log('🔥 SignIn result:', { error: error?.message || 'none' });
 
       if (error) {
         setAuthError(error.message);
       } else {
+        console.log('🔥 Login successful, redirecting to:', redirectTo);
         // Redirect to intended page or dashboard
         router.push(redirectTo);
       }
     } catch (error) {
+      console.error('🔥 Login error:', error);
       setAuthError('An unexpected error occurred. Please try again.');
     } finally {
       setIsLoading(false);
@@ -69,7 +75,7 @@ export function LoginForm() {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <form onSubmit={handleSubmit(onSubmit)} method="post" className="space-y-4">
         {/* Email Field */}
         <div>
           <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">

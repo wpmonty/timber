@@ -2,7 +2,7 @@
 
 import { createContext, useEffect, useState, ReactNode } from 'react';
 import { useRouter } from 'next/navigation';
-import { supabaseClient } from '@/lib/supabase';
+import { supabaseBrowserClient } from '@/lib/supabase.browser';
 import { AuthUser, AuthContextType, AuthError } from '@/types/auth.types';
 
 // Create the auth context
@@ -23,7 +23,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     const getInitialSession = async () => {
       const {
         data: { session },
-      } = await supabaseClient.auth.getSession();
+      } = await supabaseBrowserClient.auth.getSession();
       setUser((session?.user as AuthUser) ?? null);
       setIsLoading(false);
     };
@@ -33,7 +33,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabaseClient.auth.onAuthStateChange(async (event, session) => {
+    } = supabaseBrowserClient.auth.onAuthStateChange(async (event, session) => {
       console.log('Auth state changed:', event, session?.user?.email);
 
       setUser((session?.user as AuthUser) ?? null);
@@ -61,7 +61,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signIn = async (email: string, password: string): Promise<{ error?: AuthError }> => {
     try {
-      const { error } = await supabaseClient.auth.signInWithPassword({
+      const { error } = await supabaseBrowserClient.auth.signInWithPassword({
         email,
         password,
       });
@@ -78,7 +78,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signUp = async (email: string, password: string): Promise<{ error?: AuthError }> => {
     try {
-      const { error } = await supabaseClient.auth.signUp({
+      const { error } = await supabaseBrowserClient.auth.signUp({
         email,
         password,
       });
@@ -95,7 +95,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
   const signOut = async (): Promise<void> => {
     try {
-      await supabaseClient.auth.signOut();
+      await supabaseBrowserClient.auth.signOut();
     } catch (error) {
       console.error('Error signing out:', error);
     }
@@ -105,7 +105,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
     try {
       const {
         data: { user },
-      } = await supabaseClient.auth.getUser();
+      } = await supabaseBrowserClient.auth.getUser();
       setUser(user as AuthUser);
     } catch (error) {
       console.error('Error refreshing user:', error);

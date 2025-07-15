@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase.server';
 
 interface Params {
   params: { propertyId: string };
@@ -7,7 +7,8 @@ interface Params {
 
 // GET /api/logs – returns all maintenance logs
 export async function GET(_request: NextRequest, { params }: Params) {
-  const { data, error } = await supabaseServer
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
     .from('logs')
     .select('*')
     .eq('property_id', params.propertyId);

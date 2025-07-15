@@ -1,15 +1,8 @@
 import { FormExample } from '@/components/examples/form-example';
 import { QueryExample } from '@/components/examples/query-example';
 import Link from 'next/link';
-import { getCurrentUser } from '@/lib/auth';
-import { redirect } from 'next/navigation';
 
 export default async function Home() {
-  // Redirect authenticated users to dashboard
-  const user = await getCurrentUser();
-  if (user) {
-    redirect('/property');
-  }
   return (
     <main className="min-h-screen bg-gray-50 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
