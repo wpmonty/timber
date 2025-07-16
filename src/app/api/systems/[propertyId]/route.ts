@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { supabaseServer } from '@/lib/supabase';
+import { createSupabaseServerClient } from '@/lib/supabase.server';
 
 interface Params {
   params: { propertyId: string };
@@ -7,7 +7,8 @@ interface Params {
 
 // GET /api/systems/:id – return all systems for a property
 export async function GET(_request: NextRequest, { params }: Params) {
-  const { data, error } = await supabaseServer
+  const supabase = await createSupabaseServerClient();
+  const { data, error } = await supabase
     .from('systems')
     .select('*')
     .eq('property_id', params.propertyId);
@@ -19,7 +20,8 @@ export async function GET(_request: NextRequest, { params }: Params) {
 // PATCH /api/systems/:id – update system
 export async function PATCH(request: NextRequest, { params }: Params) {
   const body = await request.json();
-  const { data: updated, error } = await supabaseServer
+  const supabase = await createSupabaseServerClient();
+  const { data: updated, error } = await supabase
     .from('systems')
     .update(body)
     .eq('id', params.propertyId)
@@ -31,7 +33,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 
 // DELETE /api/systems/:id – delete system
 export async function DELETE(_request: NextRequest, { params }: Params) {
-  const { data: deleted, error } = await supabaseServer
+  const supabase = await createSupabaseServerClient();
+  const { data: deleted, error } = await supabase
     .from('systems')
     .delete()
     .eq('id', params.propertyId)

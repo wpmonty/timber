@@ -1,11 +1,13 @@
 import 'dotenv/config';
-import { supabaseServer } from '../lib/supabase';
+
 import { Database } from '../types/supabase.types';
 import { PropertyData } from '../types/property.types';
 import { MaintainableData } from '../types/maintainables.types';
 import { MaintenanceLogEntryData } from '@/types/maintenance.types';
+import { createClient } from '@supabase/supabase-js';
 
 // PROPERTY
+const ownerId = 'ad7f1699-b0b3-4882-b210-d2fd92fb62b2';
 
 type NewProperty = Database['public']['Tables']['properties']['Insert'];
 type PropertyDataPayload = Omit<PropertyData, 'address'>;
@@ -24,7 +26,7 @@ const propertyData: PropertyDataPayload = {
 
 const newProperty: NewProperty = {
   address: '3124 Maple Street, Toronto, ON',
-  owner_id: 'acab4aad-36d2-49da-8087-aa62ad0b394c',
+  owner_id: ownerId,
   data: propertyData,
 };
 
@@ -84,15 +86,17 @@ const newLog = (propertyId: string, systemId: string): NewLog => {
 // SEED FUNCTION
 
 const seed = async () => {
-  const { data: propertyData, error: propertyError } = await supabaseServer
+  console.log('SUPABASE_URL', process.env.SUPABASE_URL);
+  const supabase = createClient(process.env.SUPABASE_URL!, process.env.SUPABASE_SERVICE_ROLE_KEY!);
+  const { data: propertyData, error: propertyError } = await supabase
     .from('properties')
-    .insert(newProperty)
+    .insert([newProperty])
     .select();
 
   if (!propertyError && propertyData && propertyData.length > 0) {
     console.log('Property created successfully', propertyData[0].id);
 
-    const { data: systemData, error: systemError } = await supabaseServer
+    const { data: systemData, error: systemError } = await supabase
       .from('systems')
       .insert(newSystem(propertyData[0].id))
       .select();
@@ -100,7 +104,7 @@ const seed = async () => {
     if (!systemError && systemData && systemData.length > 0) {
       console.log('System created successfully', systemData[0].id);
 
-      const { data: logData, error: logError } = await supabaseServer
+      const { data: logData, error: logError } = await supabase
         .from('logs')
         .insert(newLog(propertyData[0].id, systemData[0].id))
         .select();
@@ -114,7 +118,7 @@ const seed = async () => {
       console.error('Error creating system');
     }
   } else {
-    console.error('Error creating property');
+    console.error('Error creating property', propertyError);
   }
 };
 

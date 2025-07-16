@@ -17,9 +17,15 @@ interface PropertyPageProps {
 export default function PropertyPage({ params }: PropertyPageProps) {
   const { id } = params;
 
+  // TODO combine into super query
   const { data: property, isLoading: propertyLoading, error: propertyError } = useProperty(id);
   const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
   const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
+
+  // TODO make proper 404 page
+  if (!property) {
+    return <div className="text-center text-2xl font-bold">Property not found</div>;
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
