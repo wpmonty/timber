@@ -5,7 +5,7 @@ interface Params {
   params: { systemId: string };
 }
 
-// GET /api/log/:id – return single log
+// GET /api/system/:id – return single system
 export async function GET(_request: NextRequest, { params }: Params) {
   const supabase = await createSupabaseServerClient();
   const { data: system, error } = await supabase
@@ -22,7 +22,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
   return NextResponse.json(system);
 }
 
-// POST /api/log/:id – create log with provided id
+// POST /api/system/:id – create system with provided id
 export async function POST(request: NextRequest, { params }: Params) {
   const body = await request.json();
   const supabase = await createSupabaseServerClient();
@@ -32,7 +32,7 @@ export async function POST(request: NextRequest, { params }: Params) {
   return NextResponse.json(created, { status: 201 });
 }
 
-// PATCH /api/log/:id – update log
+// PATCH /api/system/:id – update system
 export async function PATCH(request: NextRequest, { params }: Params) {
   const body = await request.json();
   const supabase = await createSupabaseServerClient();
@@ -46,7 +46,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   return NextResponse.json(updated);
 }
 
-// DELETE /api/log/:id – delete log
+// DELETE /api/system/:id – delete system
 export async function DELETE(_request: NextRequest, { params }: Params) {
   const supabase = await createSupabaseServerClient();
   const { data: deleted, error } = await supabase

@@ -24,8 +24,9 @@ Successfully implemented a complete authentication system for the Timber app usi
 ```
 src/
 ├── lib/
-│   ├── supabase.ts           # Enhanced Supabase client configuration
-│   └── auth.ts               # Server-side authentication utilities
+│   ├── supabase.middleware.ts # Supabase backend middleware for route protection
+│   ├── supabase.browser.ts    # Supabase browser client for auth utility only
+│   └── supabase.server.ts     # Supabase server client for all DB requests
 ├── types/
 │   └── auth.types.ts         # Authentication TypeScript types
 ├── hooks/
@@ -43,8 +44,8 @@ src/
 │   │   ├── layout.tsx        # Authentication pages layout
 │   │   ├── login/page.tsx    # Login page
 │   │   └── signup/page.tsx   # Signup page
-│   └── property/
-│       └── page.tsx          # Protected property dashboard
+│   └── properties/
+│       └── page.tsx          # Protected properties dashboard
 └── middleware.ts             # Route protection middleware
 ```
 
@@ -67,7 +68,7 @@ src/
 - Automatic logout on token expiration
 
 ### 3. Route Protection (`middleware.ts`)
-- Protects `/property/*` and `/dashboard/*` routes
+- Protects `/property/*` and `/properties` routes
 - Redirects unauthenticated users to login
 - Redirects authenticated users away from auth pages
 - Preserves intended destination with redirect parameters
@@ -141,85 +142,6 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_anon_key
 4. Set up Row Level Security policies
 5. Add user table if needed
 
-### 3. Database Schema (Recommended)
-```sql
--- Enable RLS on existing tables
-ALTER TABLE properties ENABLE ROW LEVEL SECURITY;
-ALTER TABLE systems ENABLE ROW LEVEL SECURITY;
-ALTER TABLE logs ENABLE ROW LEVEL SECURITY;
-
--- Create policies for user-specific access
-CREATE POLICY "Users can only see their own properties" ON properties
-  FOR ALL USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can only see their own systems" ON systems
-  FOR ALL USING (auth.uid() = user_id);
-
-CREATE POLICY "Users can only see their own logs" ON logs
-  FOR ALL USING (auth.uid() = user_id);
-```
-
-### 4. Run the Application
-```bash
-npm install
-npm run dev
-```
-
-## 📝 Usage Examples
-
-### Using the Auth Hook
-```typescript
-'use client';
-
-import { useAuth } from '@/hooks/useAuth';
-
-export function UserProfile() {
-  const { user, isLoading, signOut } = useAuth();
-
-  if (isLoading) return <div>Loading...</div>;
-  if (!user) return <div>Please log in</div>;
-
-  return (
-    <div>
-      <h1>Welcome, {user.email}</h1>
-      <button onClick={signOut}>Sign Out</button>
-    </div>
-  );
-}
-```
-
-### Server-side Authentication
-```typescript
-import { requireAuth } from '@/lib/auth';
-
-export default async function ProtectedPage() {
-  const user = await requireAuth();
-  
-  return (
-    <div>
-      <h1>Protected Content</h1>
-      <p>User: {user.email}</p>
-    </div>
-  );
-}
-```
-
-### API Route Protection
-```typescript
-import { getCurrentUser } from '@/lib/auth';
-
-export async function GET(request: Request) {
-  const user = await getCurrentUser();
-  
-  if (!user) {
-    return Response.json({ error: 'Unauthorized' }, { status: 401 });
-  }
-  
-  // Return user-specific data
-  return Response.json({ user: user.email });
-}
-```
-
 ## 🔄 Session Lifecycle
 
 ### Authentication Events
@@ -235,17 +157,6 @@ export async function GET(request: Request) {
 - **Manual Cleanup**: On logout and auth errors
 
 ## 🎯 Testing Checklist
-
-### Manual Tests Completed
-✅ **Registration Flow**: New user can create account
-✅ **Login Flow**: Existing user can log in
-✅ **Route Protection**: Unauthenticated users redirected to login
-✅ **Session Persistence**: User stays logged in across page refreshes
-✅ **Logout Flow**: User can log out and is redirected appropriately
-✅ **Form Validation**: All form fields validate correctly
-✅ **Error Handling**: Proper error messages for invalid credentials
-✅ **Responsive Design**: Forms work on all screen sizes
-✅ **Build Success**: Application builds without errors
 
 ### Automated Tests (Recommended)
 - [ ] Unit tests for auth utilities
@@ -280,33 +191,3 @@ export async function GET(request: Request) {
 - Verify Supabase project settings
 - Test with different browsers
 - Check network requests in developer tools
-
-## 📊 Performance Considerations
-
-### Optimization
-- **Middleware Caching**: Session validation caching
-- **Component Lazy Loading**: Auth components loaded on demand
-- **Token Refresh**: Optimized token refresh intervals
-- **Database Queries**: Efficient user lookup queries
-
-### Monitoring
-- **Authentication Metrics**: Track login/signup success rates
-- **Session Duration**: Monitor average session length
-- **Error Rates**: Track authentication error frequency
-- **Performance**: Measure auth flow response times
-
----
-
-## 🎉 Conclusion
-
-The authentication system is now fully implemented and ready for production use. It provides a secure, user-friendly experience with proper session management and route protection. The system is designed to be easily extensible for future enhancements while maintaining security best practices.
-
-**Key Achievements:**
-- ✅ Complete email/password authentication
-- ✅ Secure session management
-- ✅ Route protection middleware
-- ✅ Responsive UI components
-- ✅ TypeScript type safety
-- ✅ Production-ready build
-
-The implementation follows Next.js 14 App Router best practices and integrates seamlessly with the existing Timber application architecture.

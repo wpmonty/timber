@@ -1,26 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase.server';
 
-// GET /api/properties – returns list of user's properties
-// export async function GET(request: NextRequest) {
-//   const user = await requireAuth();
-//   try {
-//     const supabase = await createSupabaseServerClient();
-//     const { data, error } = await supabase.from('properties').select('*').eq('user_id', user.id);
-
-//     if (error) {
-//       return NextResponse.json({ error: error.message }, { status: 500 });
-//     }
-
-//     // Ensure proper JSON serialization
-//     return NextResponse.json(JSON.parse(JSON.stringify(data || [])));
-//   } catch (error) {
-//     console.error('Error fetching properties:', error);
-//     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
-//   }
-// }
-
-export async function GET(request: NextRequest, response: NextResponse) {
+export async function GET() {
   const supabase = await createSupabaseServerClient();
 
   const { data, error } = await supabase.from('properties').select('*');

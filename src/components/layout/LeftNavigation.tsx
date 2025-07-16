@@ -44,7 +44,11 @@ const getNavigationItems = (slug: string): NavigationItem[] => [
 
 export function LeftNavigation() {
   const { user, isLoading: authLoading, signOut } = useAuth();
-  const { data: properties, isLoading, error } = useProperties();
+  const {
+    data: properties,
+    isLoading: propertiesLoading,
+    error: propertiesError,
+  } = useProperties();
   const [currentProperty, setCurrentProperty] = useState<Property | null>(null);
 
   const pathname = usePathname();
@@ -56,16 +60,8 @@ export function LeftNavigation() {
     }
   }, [properties]);
 
-  // Don't show navigation if user is not authenticated
-  if (authLoading || !user) {
-    return null;
-  }
-
-  if (isLoading) {
-    return <div>Loading...</div>;
-  }
-  if (error) {
-    return <div>Error: {error.message}</div>;
+  if (propertiesError) {
+    return <div>Error: {propertiesError.message}</div>;
   }
 
   const isActive = (href: string) => {
@@ -84,15 +80,11 @@ export function LeftNavigation() {
     }
   };
 
-  if (!currentProperty || !properties) {
-    return null;
-  }
-
   return (
     <div className="flex flex-col w-72 bg-white border-r border-gray-200 min-h-screen fixed">
       {/* Logo/Brand */}
       <div className="p-6 border-b border-gray-200">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/properties" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
             <span className="text-white font-bold text-sm">T</span>
           </div>
@@ -103,56 +95,60 @@ export function LeftNavigation() {
         </Link>
       </div>
 
-      {/* Navigation Items */}
-      <nav className="flex-1 p-4">
-        <select
-          className="w-full mb-4 bg-gray-100 text-gray-700 border border-gray-300 rounded-md py-2 px-3"
-          value={currentProperty.id}
-          onChange={e => {
-            const propertyId = e.target.value;
-            router.push(`/property/${propertyId}`);
-          }}
-        >
-          {properties?.map(property => (
-            <option key={property.id} value={property.id}>
-              {property.address}
-            </option>
-          ))}
-        </select>
-        <div className="space-y-2">
-          {getNavigationItems(currentProperty.id).map(item => {
-            const Icon = item.icon;
-            const active = isActive(item.href);
+      {propertiesLoading && <div>Loading...</div>}
 
-            return (
-              <Link key={item.href} href={item.href}>
-                <Button
-                  variant={active ? 'primary' : 'ghost'}
-                  className={cn(
-                    'w-full justify-start gap-3 text-left font-normal',
-                    active
-                      ? 'bg-blue-600 text-white'
-                      : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                  )}
-                >
-                  <Icon className="w-5 h-5" />
-                  <span className="flex-1">{item.title}</span>
-                  {item.badge && (
-                    <span
-                      className={cn(
-                        'px-2 py-1 text-xs rounded-full',
-                        active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                      )}
-                    >
-                      {item.badge}
-                    </span>
-                  )}
-                </Button>
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
+      {/* Navigation Items */}
+      {currentProperty && (
+        <nav className="flex-1 p-4">
+          <select
+            className="w-full mb-4 bg-gray-100 text-gray-700 border border-gray-300 rounded-md py-2 px-3"
+            value={currentProperty.id}
+            onChange={e => {
+              const propertyId = e.target.value;
+              router.push(`/property/${propertyId}`);
+            }}
+          >
+            {properties?.map(property => (
+              <option key={property.id} value={property.id}>
+                {property.address}
+              </option>
+            ))}
+          </select>
+          <div className="space-y-2">
+            {getNavigationItems(currentProperty.id).map(item => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+
+              return (
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant={active ? 'primary' : 'ghost'}
+                    className={cn(
+                      'w-full justify-start gap-3 text-left font-normal',
+                      active
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                    )}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="flex-1">{item.title}</span>
+                    {item.badge && (
+                      <span
+                        className={cn(
+                          'px-2 py-1 text-xs rounded-full',
+                          active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                        )}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Button>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      )}
 
       {/* Footer */}
       <div className="p-4 border-t border-gray-200 space-y-4">
@@ -162,7 +158,7 @@ export function LeftNavigation() {
             <User className="w-4 h-4" />
           </div>
           <div className="flex-1 min-w-0">
-            <p className="font-medium text-gray-900 truncate">{user.email}</p>
+            <p className="font-medium text-gray-900 truncate">{user?.email}</p>
           </div>
         </div>
 

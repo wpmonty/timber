@@ -15,8 +15,6 @@ export async function GET(_request: NextRequest, { params }: Params) {
       .eq('id', params.propertyId)
       .single();
 
-    console.log('data single', data, error);
-
     if (error) {
       if (error.code === 'PGRST116') {
         // No rows returned (404)
