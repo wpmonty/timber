@@ -4,10 +4,11 @@ import { useProperties, useCreateProperty, useDeleteProperty } from '@/hooks/api
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
 import Link from 'next/link';
-import { PropertyInsert } from '@/types/property.types';
+import { Property, PropertyInsert } from '@/types/property.types';
 
 // Default property data for the spoofed create button
 const DEFAULT_PROPERTY: PropertyInsert = {
+  owner_id: 'ad7f1699-b0b3-4882-b210-d2fd92fb62b2',
   address: '123 Sample Street, Sample City, ST 12345',
   data: {
     label: 'Sample Property',
@@ -31,18 +32,8 @@ const DEFAULT_PROPERTY: PropertyInsert = {
   },
 };
 
-export default function PropertiesPage() {
-  const { data: properties, isLoading, error } = useProperties();
-  const createProperty = useCreateProperty();
+const PropertyCard = ({ property }: { property: Property }) => {
   const deleteProperty = useDeleteProperty();
-
-  const handleCreateProperty = async () => {
-    try {
-      await createProperty.mutateAsync(DEFAULT_PROPERTY);
-    } catch (error) {
-      console.error('Error creating property:', error);
-    }
-  };
 
   const handleDeleteProperty = async (id: string) => {
     if (window.confirm('Are you sure you want to delete this property?')) {
@@ -51,6 +42,51 @@ export default function PropertiesPage() {
       } catch (error) {
         console.error('Error deleting property:', error);
       }
+    }
+  };
+  return (
+    <Card key={property.id} className="hover:shadow-lg transition-shadow">
+      <CardHeader>
+        <CardTitle className="truncate">{property.data?.label || 'Unnamed Property'}</CardTitle>
+        <p className="text-sm text-gray-600 truncate">{property.address}</p>
+      </CardHeader>
+
+      <CardContent>
+        <div className="space-y-2 text-sm text-gray-600">
+          {property.data?.property_type && <p>Type: {property.data.property_type}</p>}
+          {property.data?.sqft && <p>Size: {property.data.sqft.toLocaleString()} sq ft</p>}
+          {property.data?.year_built && <p>Built: {property.data.year_built}</p>}
+        </div>
+      </CardContent>
+
+      <CardFooter className="flex justify-between">
+        <Link href={`/property/${property.id}`}>
+          <Button variant="outline" size="sm">
+            View Details
+          </Button>
+        </Link>
+        <Button
+          variant="destructive"
+          size="sm"
+          onClick={() => handleDeleteProperty(property.id)}
+          isLoading={deleteProperty.isPending}
+        >
+          Delete
+        </Button>
+      </CardFooter>
+    </Card>
+  );
+};
+
+export default function PropertiesPage() {
+  const { data: properties, isLoading, error } = useProperties();
+  const createProperty = useCreateProperty();
+
+  const handleCreateProperty = async () => {
+    try {
+      await createProperty.mutateAsync(DEFAULT_PROPERTY);
+    } catch (error) {
+      console.error('Error creating property:', error);
     }
   };
 
@@ -117,38 +153,7 @@ export default function PropertiesPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.map(property => (
-          <Card key={property.id} className="hover:shadow-lg transition-shadow">
-            <CardHeader>
-              <CardTitle className="truncate">
-                {property.data?.label || 'Unnamed Property'}
-              </CardTitle>
-              <p className="text-sm text-gray-600 truncate">{property.address}</p>
-            </CardHeader>
-
-            <CardContent>
-              <div className="space-y-2 text-sm text-gray-600">
-                {property.data?.property_type && <p>Type: {property.data.property_type}</p>}
-                {property.data?.sqft && <p>Size: {property.data.sqft.toLocaleString()} sq ft</p>}
-                {property.data?.year_built && <p>Built: {property.data.year_built}</p>}
-              </div>
-            </CardContent>
-
-            <CardFooter className="flex justify-between">
-              <Link href={`/property/${property.id}`}>
-                <Button variant="outline" size="sm">
-                  View Details
-                </Button>
-              </Link>
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => handleDeleteProperty(property.id)}
-                isLoading={deleteProperty.isPending}
-              >
-                Delete
-              </Button>
-            </CardFooter>
-          </Card>
+          <PropertyCard key={property.id} property={property} />
         ))}
       </div>
     </div>
