@@ -1,78 +1,107 @@
-import { FormExample } from '@/components/examples/form-example';
-import { QueryExample } from '@/components/examples/query-example';
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 
+// Address validation schema
+const addressSchema = z.object({
+  address: z.string().min(1, 'Please enter your home address'),
+});
+
+type AddressFormData = z.infer<typeof addressSchema>;
+
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<AddressFormData>({
+    resolver: zodResolver(addressSchema),
+  });
+
+  const onSubmit = async (data: AddressFormData) => {
+    setIsLoading(true);
+
+    if (data.address.length < 1) {
+      setIsLoading(false);
+      return;
+    }
+
+    // Encode the address for URL
+    const encodedAddress = encodeURIComponent(data.address);
+
+    // Redirect to signup with address parameter
+    router.push(`/signup?address=${encodedAddress}`);
+
+    setIsLoading(false);
+  };
+
   return (
-    <main className="min-h-screen bg-gray-50 py-12">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">Timber - House Manager</h1>
-          <p className="text-xl text-gray-600 mb-8">
-            Framework Setup Complete: Next.js + TypeScript + Tailwind + React Hook Form + React
-            Query
+    <main className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
+      <header className="flex justify-between items-center p-4">
+        <h1 className="text-2xl font-bold">Timber</h1>
+        <div className="flex gap-4 text-blue-500 font-semibold">
+          <Link href="/signup">Signup</Link>
+          <Link href="/login">Login</Link>
+        </div>
+      </header>
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        {/* Hero Section */}
+        <div className="text-center mb-12 pt-20">
+          <h1 className="text-5xl font-bold text-gray-900 mb-6">Timber</h1>
+          <h2 className="text-2xl font-semibold text-gray-700 mb-8">Your Home Manager</h2>
+          <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
+            Track your home&apos;s maintenance, manage appliances, and never miss an important
+            repair again.
           </p>
+        </div>
 
-          {/* Auth Links */}
-          <div className="mb-8 space-y-4">
-            <div className="flex justify-center space-x-4">
-              <Link
-                href="/login"
-                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors"
-              >
-                Sign In
-              </Link>
-              <Link
-                href="/signup"
-                className="inline-flex items-center px-6 py-3 bg-gray-200 text-gray-700 font-medium rounded-lg hover:bg-gray-300 transition-colors"
-              >
-                Sign Up
-              </Link>
+        {/* Address Form */}
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div className="text-center mb-8">
+              <h3 className="text-2xl font-semibold text-gray-900 mb-2">
+                Get started with your home
+              </h3>
+              <p className="text-gray-600">
+                Enter your home address to begin managing your property
+              </p>
             </div>
-            <p className="text-sm text-gray-500 text-center">
-              Sign in to access your home management dashboard
-            </p>
-          </div>
-        </div>
 
-        {/* Tech Stack Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-blue-500">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">TypeScript</h3>
-            <p className="text-gray-600 text-sm">Type-safe development with strict configuration</p>
-          </div>
+            <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+              <div>
+                <label htmlFor="address" className="block text-sm font-medium text-gray-700 mb-2">
+                  Home Address
+                </label>
+                <input
+                  {...register('address')}
+                  type="text"
+                  id="address"
+                  placeholder="123 Main Street, City, State, ZIP"
+                  className="w-full px-4 py-3 text-lg border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                />
+                {errors.address && (
+                  <p className="mt-2 text-sm text-red-600">{errors.address.message}</p>
+                )}
+              </div>
 
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-green-500">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">Tailwind CSS</h3>
-            <p className="text-gray-600 text-sm">Utility-first styling with responsive design</p>
+              <Button
+                type="submit"
+                disabled={isLoading}
+                className="w-full bg-blue-600 text-white py-4 px-6 text-lg rounded-lg hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+              >
+                {isLoading ? 'Processing...' : 'Get Started'}
+              </Button>
+            </form>
           </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-purple-500">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">React Hook Form</h3>
-            <p className="text-gray-600 text-sm">Form management with Zod validation</p>
-          </div>
-
-          <div className="bg-white p-6 rounded-lg shadow-md border-l-4 border-orange-500">
-            <h3 className="text-lg font-semibold text-gray-900 mb-2">React Query</h3>
-            <p className="text-gray-600 text-sm">Server state management and caching</p>
-          </div>
-        </div>
-
-        {/* Framework Examples */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-          <div>
-            <FormExample />
-          </div>
-
-          <div>
-            <QueryExample />
-          </div>
-        </div>
-
-        {/* Footer */}
-        <div className="text-center mt-12 text-gray-500">
-          <p>Framework setup complete. Ready to build the house manager features!</p>
         </div>
       </div>
     </main>

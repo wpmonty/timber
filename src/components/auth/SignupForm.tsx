@@ -31,7 +31,8 @@ export function SignupForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const redirectTo = searchParams.get('redirectTo') || '/property';
+  const address = searchParams.get('address');
+  const redirectTo = searchParams.get('redirectTo') || '/onboarding';
 
   const {
     register,
@@ -52,10 +53,12 @@ export function SignupForm() {
         setAuthError(error.message);
       } else {
         setSuccess(true);
-        // Note: User will need to verify email before they can sign in
-        // In a real app, you might want to redirect to a verification page
+        // Redirect to onboarding with address parameter if available
         setTimeout(() => {
-          router.push(`/login?redirectTo=${redirectTo}`);
+          const onboardingUrl = address
+            ? `/onboarding?address=${encodeURIComponent(address)}`
+            : '/onboarding';
+          router.push(onboardingUrl);
         }, 2000);
       }
     } catch (error) {
@@ -71,8 +74,14 @@ export function SignupForm() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-green-600">Account Created!</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Please check your email to verify your account before signing in.
+            Please check your email to verify your account. You will be redirected to complete your
+            setup.
           </p>
+          {address && (
+            <p className="mt-2 text-sm text-blue-600">
+              We will help you set up your property at: {decodeURIComponent(address)}
+            </p>
+          )}
         </div>
 
         <div className="text-center">
@@ -91,10 +100,18 @@ export function SignupForm() {
     <div className="space-y-6">
       <div className="text-center">
         <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
-        <p className="mt-2 text-sm text-gray-600">
+        {address ? (
+          <div className="mt-2">
+            <p className="text-sm text-gray-600">Setting up your account for:</p>
+            <p className="text-sm font-medium text-blue-600 mt-1">{decodeURIComponent(address)}</p>
+          </div>
+        ) : (
+          <p className="mt-2 text-sm text-gray-600">Join Timber to start managing your home</p>
+        )}
+        <p className="mt-4 text-sm text-gray-600">
           Already have an account?{' '}
           <Link
-            href={`/login${redirectTo !== '/property' ? `?redirectTo=${redirectTo}` : ''}`}
+            href={`/login${redirectTo !== '/onboarding' ? `?redirectTo=${redirectTo}` : ''}`}
             className="text-blue-600 hover:text-blue-500 font-medium"
           >
             Sign in

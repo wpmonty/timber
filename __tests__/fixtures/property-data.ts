@@ -5,29 +5,35 @@ import { PropertyData } from '@/types/property.types';
 
 // Valid property data fixtures
 export const validPropertyData: PropertyData = {
-  name: 'Test Property',
-  address: '123 Main St, Anytown, USA',
-  yearBuilt: 1995,
-  squareFootage: 2500,
-  homeType: 'single-family',
-  bedrooms: 3,
-  bathrooms: 2,
+  label: 'Test Property',
+  address: {
+    line1: '123 Main St',
+    city: 'Anytown',
+    state: 'USA',
+    zip: '12345',
+    latitude: 40.7128,
+    longitude: -74.006,
+  },
+  property_type: 'SFH',
+  zoning_type: 'Residential',
+  sqft: 2500,
+  lot_size_sqft: 8000,
   stories: 2,
-  garages: 2,
-  lotSize: 8000,
+  year_built: 1995,
+  areas: [
+    { type: 'Bedroom', quantity: 3 },
+    { type: 'Bathroom', quantity: 2 },
+    { type: 'Garage', quantity: 2 },
+  ],
 };
 
 export const validMinimalPropertyData: PropertyData = {
-  name: 'Minimal Property',
-  address: '456 Oak Ave',
-  yearBuilt: 2000,
-  squareFootage: 1200,
-  homeType: 'condo',
-  bedrooms: 2,
-  bathrooms: 1,
-  stories: 1,
-  garages: 1,
-  // lotSize is optional
+  address: {
+    line1: '456 Oak Ave',
+    city: 'Springfield',
+    state: 'IL',
+    zip: '62701',
+  },
 };
 
 export const validPropertyDatabaseEntry = {
@@ -40,70 +46,83 @@ export const validPropertyDatabaseEntry = {
 // Malformed data scenarios that could come from database
 export const malformedPropertyData = {
   // Missing required fields
-  missingName: {
-    address: '123 Main St',
-    yearBuilt: 1995,
-    squareFootage: 2500,
-    homeType: 'single-family',
-    bedrooms: 3,
-    bathrooms: 2,
+  missingAddress: {
+    property_type: 'SFH',
+    zoning_type: 'Residential',
+    sqft: 2500,
     stories: 2,
-    garages: 2,
+    year_built: 1995,
+    areas: [
+      { type: 'Bedroom', quantity: 3 },
+      { type: 'Bathroom', quantity: 2 },
+    ],
   },
 
   // Invalid types
   invalidTypes: {
-    name: 123, // should be string
-    address: '456 Oak Ave',
-    yearBuilt: '1995', // should be number
-    squareFootage: 'large', // should be number
-    homeType: 'mansion', // invalid enum value
-    bedrooms: '3', // should be number
-    bathrooms: 2.5,
+    label: 123, // should be string
+    address: {
+      line1: 123,
+      city: 'Springfield',
+      state: 'IL',
+      zip: '62701',
+    },
+    property_type: 'MANSION', // invalid enum value
+    zoning_type: 'Residential',
+    sqft: 'large', // should be number
     stories: 1,
-    garages: 1,
+    year_built: '1995', // should be number
+    areas: [
+      { type: 'Bedroom', quantity: '3' }, // should be number
+    ],
   },
 
   // Negative/invalid values
   invalidValues: {
-    name: '',
-    address: '',
-    yearBuilt: -1995,
-    squareFootage: -2500,
-    homeType: 'single-family',
-    bedrooms: -1,
-    bathrooms: 0,
+    label: '',
+    address: {
+      line1: '',
+      city: '',
+      state: '',
+      zip: '',
+    },
+    property_type: 'SFH',
+    zoning_type: '',
+    sqft: -2500,
     stories: 0,
-    garages: -1,
-    lotSize: -1000,
+    year_built: -1995,
+    lot_size_sqft: -1000,
+    areas: [{ type: '', quantity: -1 }],
   },
 
   // Extreme values
   extremeValues: {
-    name: 'A'.repeat(1000), // extremely long name
-    address: 'B'.repeat(2000), // extremely long address
-    yearBuilt: 3000, // future year
-    squareFootage: 999999999, // unrealistic size
-    homeType: 'single-family',
-    bedrooms: 999,
-    bathrooms: 999,
+    label: 'A'.repeat(1000), // extremely long name
+    address: {
+      line1: 'B'.repeat(2000), // extremely long address
+      city: 'C'.repeat(1000),
+      state: 'D'.repeat(1000),
+      zip: 'E'.repeat(1000),
+    },
+    property_type: 'SFH',
+    zoning_type: 'F'.repeat(1000),
+    sqft: 999999999, // unrealistic size
     stories: 999,
-    garages: 999,
-    lotSize: 999999999,
+    year_built: 3000, // future year
+    lot_size_sqft: 999999999,
+    areas: [{ type: 'G'.repeat(1000), quantity: 999 }],
   },
 
   // Null/undefined values where not allowed
   nullValues: {
-    name: null,
+    label: null,
     address: null,
-    yearBuilt: null,
-    squareFootage: null,
-    homeType: null,
-    bedrooms: null,
-    bathrooms: null,
+    property_type: null,
+    zoning_type: null,
+    sqft: null,
     stories: null,
-    garages: null,
-    lotSize: null,
+    year_built: null,
+    areas: null,
   },
 
   // Completely empty object
@@ -143,7 +162,7 @@ export const malformedDatabaseEntries = {
     id: 'malformed-4',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
-    data: malformedPropertyData.missingName,
+    data: malformedPropertyData.missingAddress,
   },
 };
 
