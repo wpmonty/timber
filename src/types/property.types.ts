@@ -1,4 +1,13 @@
-import { PropertySchema, PropertyDataSchema } from '@/lib/schemas/property.schema';
+import {
+  PropertySchema,
+  PropertyDataSchema,
+  PROPERTY_TYPES,
+  COMMON_AREA_TYPES,
+  PropertyTypeValue,
+  AreaType,
+  getPropertyTypeLabel,
+  formatAreaType,
+} from '@/lib/schemas/property.schema';
 import { Database } from './supabase.types';
 import { z } from 'zod';
 
@@ -23,3 +32,7 @@ export interface PropertyStats {
   totalMaintenanceCost: number;
   avgMaintainableAge: number;
 }
+
+// Re-export schema constants, types, and utilities for easier access
+export { PROPERTY_TYPES, COMMON_AREA_TYPES, getPropertyTypeLabel, formatAreaType };
+export type { PropertyTypeValue, AreaType };

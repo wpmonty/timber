@@ -5,7 +5,12 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { Plus, X } from 'lucide-react';
 import { useEffect } from 'react';
 
-import { PropertyDataSchema } from '@/lib/schemas/property.schema';
+import {
+  PropertyDataSchema,
+  PROPERTY_TYPES,
+  COMMON_AREA_TYPES,
+  formatAreaType,
+} from '@/lib/schemas/property.schema';
 import { PropertyData } from '@/types/property.types';
 
 import { Input } from '@/components/forms/fields/Input';
@@ -21,31 +26,6 @@ export interface PropertyFormProps {
   onCancel?: () => void;
   isLoading?: boolean;
 }
-
-const PROPERTY_TYPES = [
-  { value: 'SFH', label: 'Single Family Home' },
-  { value: 'TH', label: 'Townhouse' },
-  { value: 'CONDO', label: 'Condominium' },
-  { value: 'APARTMENT', label: 'Apartment' },
-  { value: 'OTHER', label: 'Other' },
-] as const;
-
-const COMMON_AREA_TYPES = [
-  'bedroom',
-  'bathroom',
-  'kitchen',
-  'living_room',
-  'dining_room',
-  'family_room',
-  'office',
-  'basement',
-  'garage',
-  'laundry_room',
-  'pantry',
-  'closet',
-  'attic',
-  'other',
-];
 
 // Helper function to safely get error message
 const getErrorMessage = (error: any): string | undefined => {
@@ -340,7 +320,7 @@ export function PropertyForm({
                       >
                         {COMMON_AREA_TYPES.map(type => (
                           <option key={type} value={type}>
-                            {type.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}
+                            {formatAreaType(type)}
                           </option>
                         ))}
                       </Select>
