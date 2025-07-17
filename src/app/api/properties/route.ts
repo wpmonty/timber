@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase.server';
+import { validatePropertyData } from '@/lib/validation/property.validation';
+import { Property } from '@/types/property.types';
 
 export async function GET() {
   const supabase = await createSupabaseServerClient();
@@ -17,11 +19,27 @@ export async function GET() {
   return NextResponse.json(parsedData);
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest & { json(): Promise<Property> }) {
   try {
     const body = await request.json();
+    const validated = validatePropertyData(body.data);
+
+    if (!validated.success) {
+      return NextResponse.json({ error: validated.errors }, { status: 400 });
+    }
+    if (!validated.data) {
+      return NextResponse.json({ error: 'Invalid property data' }, { status: 400 });
+    }
+
     const supabase = await createSupabaseServerClient();
-    const { data: created, error } = await supabase.from('properties').insert(body).select();
+    const { data: created, error } = await supabase
+      .from('properties')
+      .insert({
+        owner_id: body.owner_id, // uses RLS to restrict access to the user
+        address: `${validated.data.address.line1}, ${validated.data.address.city}, ${validated.data.address.state} ${validated.data.address.zip}`,
+        data: validated.data,
+      })
+      .select();
 
     if (error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
