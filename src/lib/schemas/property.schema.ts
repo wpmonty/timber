@@ -85,11 +85,7 @@ export const PropertyDataSchema = z.object({
 
   notes: z.string().max(1000, 'Notes must be less than 1000 characters').optional(),
 
-  areas: z
-    .array(AreaSchema)
-    .min(1, 'At least one area is required')
-    .max(50, 'Too many areas specified')
-    .optional(),
+  areas: z.array(AreaSchema).max(50, 'Too many areas specified').optional(),
 });
 
 export const PartialPropertyDataSchema = PropertyDataSchema.partial();

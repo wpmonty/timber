@@ -1,38 +1,22 @@
 'use client';
 
-import { useProperties, useCreateProperty, useDeleteProperty } from '@/hooks/api/properties';
+import { useState } from 'react';
+import { Edit, Plus } from 'lucide-react';
+import Link from 'next/link';
+
+import { useProperties, useDeleteProperty } from '@/hooks/api/properties';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from '@/components/ui/card';
-import Link from 'next/link';
-import { Property, PropertyInsert } from '@/types/property.types';
+import { PropertyFormModal } from '@/components/forms/PropertyFormModal';
+import { Property } from '@/types/property.types';
 
-// Default property data for the spoofed create button
-const DEFAULT_PROPERTY: PropertyInsert = {
-  owner_id: 'ad7f1699-b0b3-4882-b210-d2fd92fb62b2',
-  address: '123 Sample Street, Sample City, ST 12345',
-  data: {
-    label: 'Sample Property',
-    address: {
-      line1: '123 Sample Street',
-      city: 'Sample City',
-      state: 'ST',
-      zip: '12345',
-    },
-    property_type: 'SFH',
-    sqft: 2000,
-    year_built: 2005,
-    stories: 2,
-    areas: [
-      { type: 'bedroom', quantity: 3 },
-      { type: 'bathroom', quantity: 2 },
-      { type: 'kitchen', quantity: 1 },
-      { type: 'living_room', quantity: 1 },
-    ],
-    notes: 'Sample property created for demonstration',
-  },
-};
-
-const PropertyCard = ({ property }: { property: Property }) => {
+const PropertyCard = ({
+  property,
+  onEdit,
+}: {
+  property: Property;
+  onEdit: (property: Property) => void;
+}) => {
   const deleteProperty = useDeleteProperty();
 
   const handleDeleteProperty = async (id: string) => {
@@ -60,11 +44,22 @@ const PropertyCard = ({ property }: { property: Property }) => {
       </CardContent>
 
       <CardFooter className="flex justify-between">
-        <Link href={`/property/${property.id}`}>
-          <Button variant="outline" size="sm">
-            View Details
+        <div className="flex gap-2">
+          <Link href={`/property/${property.id}`}>
+            <Button variant="outline" size="sm">
+              View Details
+            </Button>
+          </Link>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => onEdit(property)}
+            className="flex items-center gap-1"
+          >
+            <Edit className="h-3 w-3" />
+            Edit
           </Button>
-        </Link>
+        </div>
         <Button
           variant="destructive"
           size="sm"
@@ -80,14 +75,17 @@ const PropertyCard = ({ property }: { property: Property }) => {
 
 export default function PropertiesPage() {
   const { data: properties, isLoading, error } = useProperties();
-  const createProperty = useCreateProperty();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editingProperty, setEditingProperty] = useState<Property | null>(null);
 
-  const handleCreateProperty = async () => {
-    try {
-      await createProperty.mutateAsync(DEFAULT_PROPERTY);
-    } catch (error) {
-      console.error('Error creating property:', error);
-    }
+  const handleCreateProperty = () => {
+    setIsCreateModalOpen(true);
+  };
+
+  const handleEditProperty = (property: Property) => {
+    setEditingProperty(property);
+    setIsEditModalOpen(true);
   };
 
   if (isLoading) {
@@ -129,15 +127,19 @@ export default function PropertiesPage() {
               Create a property to start tracking your home maintenance and appliances.
             </p>
 
-            <Button
-              onClick={handleCreateProperty}
-              isLoading={createProperty.isPending}
-              className="w-full"
-            >
+            <Button onClick={handleCreateProperty} className="w-full flex items-center gap-2">
+              <Plus className="h-4 w-4" />
               Add Property
             </Button>
           </div>
         </div>
+
+        {/* Property Form Modal for empty state */}
+        <PropertyFormModal
+          mode="create"
+          open={isCreateModalOpen}
+          onOpenChange={setIsCreateModalOpen}
+        />
       </div>
     );
   }
@@ -146,16 +148,32 @@ export default function PropertiesPage() {
     <div className="max-w-6xl mx-auto p-8">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold text-gray-900">Properties</h1>
-        <Button onClick={handleCreateProperty} isLoading={createProperty.isPending}>
+        <Button onClick={handleCreateProperty} className="flex items-center gap-2">
+          <Plus className="h-4 w-4" />
           Add Property
         </Button>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {properties.map(property => (
-          <PropertyCard key={property.id} property={property} />
+          <PropertyCard key={property.id} property={property} onEdit={handleEditProperty} />
         ))}
       </div>
+
+      {/* Property Form Modals */}
+      <PropertyFormModal
+        mode="create"
+        open={isCreateModalOpen}
+        onOpenChange={setIsCreateModalOpen}
+      />
+
+      <PropertyFormModal
+        mode="edit"
+        open={isEditModalOpen}
+        onOpenChange={setIsEditModalOpen}
+        initialData={editingProperty?.data || undefined}
+        propertyId={editingProperty?.id}
+      />
     </div>
   );
 }

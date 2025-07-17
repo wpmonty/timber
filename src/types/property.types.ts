@@ -4,11 +4,16 @@ import { z } from 'zod';
 
 export type PropertyDatabaseEntry = Database['public']['Tables']['properties']['Row'];
 export type PropertyDatabaseInsert = Database['public']['Tables']['properties']['Insert'];
+export type PropertyDatabaseUpdate = Database['public']['Tables']['properties']['Update'];
 
 // hydrate the data key from basic json to our own data type from the zod schema
 export type Property = z.infer<typeof PropertySchema>;
 export type PropertyData = z.infer<typeof PropertyDataSchema>;
 export type PropertyInsert = Omit<PropertyDatabaseInsert, 'data'> & { data: PropertyData };
+export type PropertyUpdate = Omit<PropertyDatabaseUpdate, 'data' | 'updated_at'> & {
+  data: PropertyData;
+  updated_at: string;
+};
 
 export interface PropertyStats {
   totalMaintainables: number;
