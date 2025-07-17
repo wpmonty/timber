@@ -12,8 +12,8 @@ export async function GET(_request: NextRequest, { params }: Params) {
     .from('systems')
     .select('*')
     .eq('property_id', params.propertyId);
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  if (!data) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!data) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(data);
 }
 
@@ -26,8 +26,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .update(body)
     .eq('id', params.propertyId)
     .select();
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  if (!updated) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(updated);
 }
 
@@ -39,7 +39,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
     .delete()
     .eq('id', params.propertyId)
     .select();
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  if (!deleted) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ message: `System ${params.propertyId} deleted` });
 }

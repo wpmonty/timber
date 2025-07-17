@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaintenanceLogEntry } from '@/types/maintenance.types';
+import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
 
 const fetchLogs = async (pId: string): Promise<MaintenanceLogEntry[]> => {
   const res = await fetch(`/api/logs/${pId}`);
-  if (!res.ok) throw new Error('Failed to fetch logs');
-  return res.json();
+  return handleApiResponseWithData<MaintenanceLogEntry[]>(res);
 };
 
 export function useLogs(id: string) {
@@ -16,8 +16,7 @@ export function useLog(id: string | undefined) {
     queryKey: ['logs', id],
     queryFn: async () => {
       const res = await fetch(`/api/log/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch log');
-      return res.json();
+      return handleApiResponseWithData<MaintenanceLogEntry>(res);
     },
     enabled: !!id,
   });
@@ -37,13 +36,12 @@ export function useCreateLog() {
       id: string;
       data: Partial<MaintenanceLogEntry> | undefined;
     }) => {
-      const res = await fetch(`/api/log/${id}`, {
+      const res = await fetch(`/api/logs`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data ?? {}),
       });
-      if (!res.ok) throw new Error('Failed to create log');
-      return res.json();
+      return handleApiResponseWithData<MaintenanceLogEntry>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['logs'] });
@@ -64,8 +62,7 @@ export function useUpdateLog() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to update log');
-      return res.json();
+      return handleApiResponseWithData<MaintenanceLogEntry>(res);
     },
     onSuccess: (_data: MaintenanceLogEntry, variables: { id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['logs'] });
@@ -81,8 +78,7 @@ export function useDeleteLog() {
       const res = await fetch(`/api/log/${id}`, {
         method: 'DELETE',
       });
-      if (!res.ok) throw new Error('Failed to delete log');
-      return res.json();
+      return handleApiResponse(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['logs'] });
