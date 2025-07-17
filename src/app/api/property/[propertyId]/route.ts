@@ -1,5 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createSupabaseServerClient } from '@/lib/supabase.server';
+import {
+  validatePropertyData,
+  validatePartialPropertyData,
+} from '@/lib/validation/property.validation';
 
 interface Params {
   params: { propertyId: string };
@@ -35,6 +39,32 @@ export async function GET(_request: NextRequest, { params }: Params) {
 export async function POST(request: NextRequest, { params }: Params) {
   try {
     const body = await request.json();
+
+    // Validate the incoming data structure
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
+    // Extract and validate the property data
+    const { data: propertyData, ...otherFields } = body;
+
+    if (propertyData) {
+      const validation = validatePropertyData(propertyData);
+
+      if (!validation.success) {
+        return NextResponse.json(
+          {
+            error: 'Validation failed',
+            details: validation.errors,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Use validated data
+      body.data = validation.data;
+    }
+
     const supabase = await createSupabaseServerClient();
     const { data: created, error } = await supabase
       .from('properties')
@@ -57,6 +87,33 @@ export async function POST(request: NextRequest, { params }: Params) {
 export async function PATCH(request: NextRequest, { params }: Params) {
   try {
     const body = await request.json();
+
+    // Validate the incoming data structure
+    if (!body || typeof body !== 'object') {
+      return NextResponse.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
+    // Extract and validate the property data if present
+    const { data: propertyData, ...otherFields } = body;
+
+    if (propertyData !== undefined) {
+      // For PATCH operations, we use partial validation since not all fields are required
+      const validation = validatePartialPropertyData(propertyData);
+
+      if (!validation.success) {
+        return NextResponse.json(
+          {
+            error: 'Validation failed',
+            details: validation.errors,
+          },
+          { status: 400 }
+        );
+      }
+
+      // Use validated data
+      body.data = validation.data;
+    }
+
     const supabase = await createSupabaseServerClient();
     const { data: updated, error } = await supabase
       .from('properties')
