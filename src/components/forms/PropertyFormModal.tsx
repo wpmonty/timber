@@ -1,7 +1,7 @@
 'use client';
 
 import { PropertyForm } from './PropertyForm';
-import { Dialog, DialogContent } from '@/components/ui/DialogA';
+import { Dialog, DialogContent } from '@/components/ui/Dialog';
 import { PropertyData, PropertyInsert } from '@/types/property.types';
 import { useCreateProperty, useUpdateProperty } from '@/hooks/api/properties';
 import { useAuth } from '@/hooks/useAuth';
