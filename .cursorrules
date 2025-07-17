@@ -74,7 +74,7 @@ src/
 │   ├── validations.ts # Zod schemas
 │   └── constants.ts   # App constants
 ├── types/             # TypeScript type definitions
-│   ├── supabase.types.ts # Auto-generated Supabase types
+│   ├── supabase.types.ts # Auto-generated Supabase types - DO NOT MODIFY
 │   ├── general.types.ts  # General shared types
 │   ├── maintenance.ts # Maintenance-related types
 │   └── property.types.ts # Property-related types
@@ -499,6 +499,12 @@ export async function GET(request: Request) {
 - Document data entry best practices
 - Explain maintenance recommendations
 - Include troubleshooting guides
+
+## Other Rules
+
+### Do not edit generated files.
+
+- types/supabase.types.ts
 
 ---
 
