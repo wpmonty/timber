@@ -81,7 +81,26 @@ export function PropertyOverview({
     );
   }
 
-  const homeAge = calculateAge(new Date(property.data.yearBuilt, 0, 1));
+  const homeAge = calculateAge(
+    new Date(property.data.year_built || new Date().getFullYear(), 0, 1)
+  );
+
+  // Helper function to get area count by type
+  const getAreaCount = (type: string): number => {
+    const area = property.data?.areas?.find(area => area.type.toLowerCase() === type.toLowerCase());
+    return area?.quantity || 0;
+  };
+
+  // Format address for display
+  const formatAddress = (address: any): string => {
+    if (typeof address === 'string') {
+      return address;
+    }
+    if (address && typeof address === 'object') {
+      return `${address.line1}, ${address.city}, ${address.state} ${address.zip}`;
+    }
+    return 'Address not available';
+  };
 
   // Calculate stats from real data
   const maintainablesNeedingMaintenance = maintainables.filter(
@@ -113,6 +132,18 @@ export function PropertyOverview({
   );
   const thisYearCost = thisYearLogs.reduce((sum, log) => sum + log.data.cost, 0);
 
+  // Get property type display name
+  const getPropertyTypeDisplay = (type: string): string => {
+    const typeMap: Record<string, string> = {
+      SFH: 'Single Family Home',
+      TH: 'Townhouse',
+      CONDO: 'Condominium',
+      APARTMENT: 'Apartment',
+      OTHER: 'Other',
+    };
+    return typeMap[type] || type;
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -127,11 +158,11 @@ export function PropertyOverview({
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Address:</span>
-                  <span className="font-medium">{property.address}</span>
+                  <span className="font-medium">{formatAddress(property.data.address)}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Year Built:</span>
-                  <span className="font-medium">{property.data.yearBuilt}</span>
+                  <span className="font-medium">{property.data.year_built}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Property Age:</span>
@@ -139,15 +170,15 @@ export function PropertyOverview({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Square Footage:</span>
-                  <span className="font-medium">{property.data.squareFootage} sq ft</span>
+                  <span className="font-medium">{property.data.sqft} sq ft</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bedrooms:</span>
-                  <span className="font-medium">{property.data.bedrooms}</span>
+                  <span className="font-medium">{getAreaCount('Bedroom')}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Bathrooms:</span>
-                  <span className="font-medium">{property.data.bathrooms}</span>
+                  <span className="font-medium">{getAreaCount('Bathroom')}</span>
                 </div>
               </div>
             </div>
@@ -221,8 +252,8 @@ export function PropertyOverview({
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Property Type:</span>
-                  <span className="font-medium capitalize">
-                    {property.data.homeType.replace('-', ' ')}
+                  <span className="font-medium">
+                    {getPropertyTypeDisplay(property.data.property_type || 'OTHER')}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -231,12 +262,16 @@ export function PropertyOverview({
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-600">Garages:</span>
-                  <span className="font-medium">{property.data.garages}</span>
+                  <span className="font-medium">{getAreaCount('Garage')}</span>
                 </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Lot Size:</span>
-                  <span className="font-medium">{property.data.lotSize} acres</span>
-                </div>
+                {property.data.lot_size_sqft && (
+                  <div className="flex justify-between">
+                    <span className="text-gray-600">Lot Size:</span>
+                    <span className="font-medium">
+                      {(property.data.lot_size_sqft / 43560).toFixed(2)} acres
+                    </span>
+                  </div>
+                )}
               </div>
             </div>
           </div>

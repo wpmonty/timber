@@ -1,33 +1,39 @@
 import 'dotenv/config';
 
 import { Database } from '../types/supabase.types';
-import { PropertyData } from '../types/property.types';
 import { MaintainableData } from '../types/maintainables.types';
 import { MaintenanceLogEntryData } from '@/types/maintenance.types';
 import { createClient } from '@supabase/supabase-js';
+import { PropertyData, PropertyInsert } from '@/types/property.types';
 
 // PROPERTY
 const ownerId = 'ad7f1699-b0b3-4882-b210-d2fd92fb62b2';
 
-type NewProperty = Database['public']['Tables']['properties']['Insert'];
-type PropertyDataPayload = Omit<PropertyData, 'address'>;
-
-const propertyData: PropertyDataPayload = {
-  name: 'Main Residence',
-  yearBuilt: 2009,
-  squareFootage: 2400,
-  homeType: 'single-family',
-  bedrooms: 4,
-  bathrooms: 3,
+const propertyData: PropertyData = {
+  label: 'Main Residence',
+  address: {
+    line1: '548 W Fullerton Ave',
+    city: 'Chicago',
+    state: 'IL',
+    zip: '60614',
+  },
+  property_type: 'APARTMENT',
+  zoning_type: 'Residential',
+  sqft: 2400,
+  lot_size_sqft: 10890, // 0.25 acres = 10,890 sq ft
   stories: 2,
-  garages: 2,
-  lotSize: 0.25,
+  year_built: 2009,
+  areas: [
+    { type: 'Bedroom', quantity: 4 },
+    { type: 'Bathroom', quantity: 3 },
+    { type: 'Garage', quantity: 2 },
+  ],
 };
 
-const newProperty: NewProperty = {
-  address: '3124 Maple Street, Toronto, ON',
+const newProperty: PropertyInsert = {
   owner_id: ownerId,
   data: propertyData,
+  address: '548 W Fullerton Ave, Chicago, IL 60614',
 };
 
 // MAINTAINABLE

@@ -22,42 +22,46 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 describe('Home', () => {
-  it('renders the homepage title', () => {
+  it('renders the main Timber heading', () => {
     render(<Home />, { wrapper: TestWrapper });
 
-    const heading = screen.getByRole('heading', { level: 1 });
-    expect(heading).toBeInTheDocument();
-    expect(heading).toHaveTextContent('Timber - House Manager');
+    // Look for the main "Timber" heading (there are multiple h1s, so get all and check)
+    const headings = screen.getAllByRole('heading', { level: 1 });
+    const mainHeading = headings.find(heading => heading.textContent === 'Timber');
+    expect(mainHeading).toBeInTheDocument();
   });
 
-  it('renders the framework description', () => {
+  it('renders the home manager subtitle', () => {
     render(<Home />, { wrapper: TestWrapper });
 
-    const description = screen.getByText(/Framework Setup Complete/);
+    const subtitle = screen.getByText('Your Home Manager');
+    expect(subtitle).toBeInTheDocument();
+  });
+
+  it('renders the main description', () => {
+    render(<Home />, { wrapper: TestWrapper });
+
+    const description = screen.getByText(/Track your home's maintenance, manage appliances/);
     expect(description).toBeInTheDocument();
   });
 
-  it('renders all technology cards', () => {
+  it('renders the onboarding form', () => {
     render(<Home />, { wrapper: TestWrapper });
 
-    expect(screen.getByText('TypeScript')).toBeInTheDocument();
-    expect(screen.getByText('Tailwind CSS')).toBeInTheDocument();
-    expect(screen.getByText('React Hook Form')).toBeInTheDocument();
-    expect(screen.getByText('React Query')).toBeInTheDocument();
+    expect(screen.getByText('Get started with your home')).toBeInTheDocument();
+    expect(
+      screen.getByText('Enter your home address to begin managing your property')
+    ).toBeInTheDocument();
   });
 
-  it('renders the form example', () => {
+  it('renders the address input and submit button', () => {
     render(<Home />, { wrapper: TestWrapper });
 
-    expect(screen.getByText('React Hook Form Example')).toBeInTheDocument();
-  });
+    const addressInput = screen.getByRole('textbox', { name: /home address/i });
+    expect(addressInput).toBeInTheDocument();
+    expect(addressInput).toHaveAttribute('placeholder', '123 Main Street, City, State, ZIP');
 
-  it('renders the query example component', () => {
-    render(<Home />, { wrapper: TestWrapper });
-
-    // The React Query example shows a loading skeleton, so we check for that
-    const { container } = render(<Home />, { wrapper: TestWrapper });
-    const loadingElement = container.querySelector('.animate-pulse');
-    expect(loadingElement).toBeTruthy();
+    const submitButton = screen.getByRole('button', { name: /get started/i });
+    expect(submitButton).toBeInTheDocument();
   });
 });

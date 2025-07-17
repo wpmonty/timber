@@ -59,7 +59,8 @@ export default function OnboardingPage() {
         <div className="text-center mb-12 pt-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Timber!</h1>
           <p className="text-lg text-gray-600 mb-8">
-            Let's set up your home so you can start tracking maintenance and managing your property.
+            Let&apos;s set up your home so you can start tracking maintenance and managing your
+            property.
           </p>
         </div>
 

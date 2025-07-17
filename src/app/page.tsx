@@ -59,8 +59,8 @@ export default function Home() {
           <h1 className="text-5xl font-bold text-gray-900 mb-6">Timber</h1>
           <h2 className="text-2xl font-semibold text-gray-700 mb-8">Your Home Manager</h2>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
-            Track your home's maintenance, manage appliances, and never miss an important repair
-            again.
+            Track your home&apos;s maintenance, manage appliances, and never miss an important
+            repair again.
           </p>
         </div>
 

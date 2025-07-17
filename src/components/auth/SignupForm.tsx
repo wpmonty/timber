@@ -55,7 +55,7 @@ export function SignupForm() {
         setSuccess(true);
         // Redirect to onboarding with address parameter if available
         setTimeout(() => {
-          const onboardingUrl = address 
+          const onboardingUrl = address
             ? `/onboarding?address=${encodeURIComponent(address)}`
             : '/onboarding';
           router.push(onboardingUrl);
@@ -74,11 +74,12 @@ export function SignupForm() {
         <div className="text-center">
           <h2 className="text-2xl font-bold text-green-600">Account Created!</h2>
           <p className="mt-2 text-sm text-gray-600">
-            Please check your email to verify your account. You'll be redirected to complete your setup.
+            Please check your email to verify your account. You will be redirected to complete your
+            setup.
           </p>
           {address && (
             <p className="mt-2 text-sm text-blue-600">
-              We'll help you set up your property at: {decodeURIComponent(address)}
+              We will help you set up your property at: {decodeURIComponent(address)}
             </p>
           )}
         </div>
@@ -101,17 +102,11 @@ export function SignupForm() {
         <h2 className="text-2xl font-bold text-gray-900">Create your account</h2>
         {address ? (
           <div className="mt-2">
-            <p className="text-sm text-gray-600">
-              Setting up your account for:
-            </p>
-            <p className="text-sm font-medium text-blue-600 mt-1">
-              {decodeURIComponent(address)}
-            </p>
+            <p className="text-sm text-gray-600">Setting up your account for:</p>
+            <p className="text-sm font-medium text-blue-600 mt-1">{decodeURIComponent(address)}</p>
           </div>
         ) : (
-          <p className="mt-2 text-sm text-gray-600">
-            Join Timber to start managing your home
-          </p>
+          <p className="mt-2 text-sm text-gray-600">Join Timber to start managing your home</p>
         )}
         <p className="mt-4 text-sm text-gray-600">
           Already have an account?{' '}
