@@ -1,6 +1,33 @@
 import { PropertyDatabaseEntry } from '@/types/property.types';
 import { z } from 'zod';
 
+// Property type constants for better type safety and reusability
+export const PROPERTY_TYPES = [
+  { value: 'SFH', label: 'Single Family Home' },
+  { value: 'TH', label: 'Townhouse' },
+  { value: 'CONDO', label: 'Condominium' },
+  { value: 'APARTMENT', label: 'Apartment' },
+  { value: 'OTHER', label: 'Other' },
+];
+// Extract the property type values
+export const PROPERTY_TYPE_VALUES = PROPERTY_TYPES.map(type => type.value);
+// Extract the property type
+export type PropertyTypeValue = (typeof PROPERTY_TYPE_VALUES)[number];
+// Utility function to get the label for a property type
+export const getPropertyTypeLabel = (value: PropertyTypeValue): string => {
+  const type = PROPERTY_TYPES.find(type => type.value === value);
+  return type?.label || value;
+};
+
+// Common area types for property areas/rooms
+export const COMMON_AREA_TYPES = ['bedroom', 'bathroom', 'basement', 'garage', 'attic', 'other'];
+// Extract the property type values for the enum
+export type AreaType = (typeof COMMON_AREA_TYPES)[number];
+// Utility functions for working with property constants
+export const formatAreaType = (areaType: AreaType): string => {
+  return areaType.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase());
+};
+
 // Address schema for nested address object
 const AddressSchema = z.object({
   line1: z
@@ -28,10 +55,9 @@ const AddressSchema = z.object({
 
 // Area schema for rooms/spaces
 const AreaSchema = z.object({
-  type: z
-    .string()
-    .min(1, 'Area type is required')
-    .max(50, 'Area type must be less than 50 characters'),
+  type: z.enum(COMMON_AREA_TYPES as [string, ...string[]], {
+    message: 'Please select a valid area type',
+  }),
   quantity: z
     .number()
     .int('Quantity must be a whole number')
@@ -46,7 +72,7 @@ export const PropertyDataSchema = z.object({
   address: AddressSchema,
 
   property_type: z
-    .enum(['SFH', 'TH', 'CONDO', 'APARTMENT', 'OTHER'], {
+    .enum(PROPERTY_TYPE_VALUES, {
       message: 'Please select a valid property type',
     })
     .optional(),
@@ -85,11 +111,7 @@ export const PropertyDataSchema = z.object({
 
   notes: z.string().max(1000, 'Notes must be less than 1000 characters').optional(),
 
-  areas: z
-    .array(AreaSchema)
-    .min(1, 'At least one area is required')
-    .max(50, 'Too many areas specified')
-    .optional(),
+  areas: z.array(AreaSchema).max(50, 'Too many areas specified').optional(),
 });
 
 export const PartialPropertyDataSchema = PropertyDataSchema.partial();

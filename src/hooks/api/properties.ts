@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Property, PropertyInsert } from '@/types/property.types';
+import { Property, PropertyInsert, PropertyUpdate } from '@/types/property.types';
 
 const fetchProperties = async (): Promise<Property[]> => {
   const res = await fetch('/api/properties');
@@ -59,8 +59,8 @@ export function useDeleteProperty() {
 
 export function useUpdateProperty() {
   const queryClient = useQueryClient();
-  return useMutation<Property, Error, { id: string; data: Partial<Property> }>({
-    mutationFn: async ({ id, data }: { id: string; data: Partial<Property> }) => {
+  return useMutation<Property, Error, { id: string; data: PropertyUpdate }>({
+    mutationFn: async ({ id, data }: { id: string; data: PropertyUpdate }) => {
       const res = await fetch(`/api/property/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
