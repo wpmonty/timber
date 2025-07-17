@@ -17,7 +17,7 @@ export async function GET(_request: NextRequest, { params }: Params) {
       // No rows returned (404)
       return NextResponse.json({ error: 'System not found' }, { status: 404 });
     }
-    return NextResponse.json({ message: error.message }, { status: 500 });
+    return NextResponse.json({ error: error.message }, { status: 500 });
   }
   return NextResponse.json(system);
 }
@@ -27,8 +27,8 @@ export async function POST(request: NextRequest, { params }: Params) {
   const body = await request.json();
   const supabase = await createSupabaseServerClient();
   const { data: created, error } = await supabase.from('systems').insert(body).select();
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  if (!created) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!created) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(created, { status: 201 });
 }
 
@@ -41,8 +41,8 @@ export async function PATCH(request: NextRequest, { params }: Params) {
     .update(body)
     .eq('id', params.systemId)
     .select();
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  if (!updated) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!updated) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json(updated);
 }
 
@@ -54,7 +54,7 @@ export async function DELETE(_request: NextRequest, { params }: Params) {
     .delete()
     .eq('id', params.systemId)
     .select();
-  if (error) return NextResponse.json({ message: error.message }, { status: 500 });
-  if (!deleted) return NextResponse.json({ message: 'Not found' }, { status: 404 });
+  if (error) return NextResponse.json({ error: error.message }, { status: 500 });
+  if (!deleted) return NextResponse.json({ error: 'Not found' }, { status: 404 });
   return NextResponse.json({ message: `System ${params.systemId} deleted` });
 }
