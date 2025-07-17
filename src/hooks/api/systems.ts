@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Maintainable } from '@/types/maintainables.types';
+import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
 
 const fetchSystems = async (pId: string): Promise<Maintainable[]> => {
   const res = await fetch(`/api/systems/${pId}`);
-  if (!res.ok) throw new Error('Failed to fetch systems');
-  return res.json();
+  return handleApiResponseWithData<Maintainable[]>(res);
 };
 
 export function useSystems(pId: string) {
@@ -16,8 +16,7 @@ export function useSystem(id: string) {
     queryKey: ['systems', id],
     queryFn: async () => {
       const res = await fetch(`/api/system/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch system');
-      return res.json();
+      return handleApiResponseWithData<Maintainable>(res);
     },
     enabled: !!id,
   });
@@ -32,8 +31,7 @@ export function useCreateSystem() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to create system');
-      return res.json();
+      return handleApiResponseWithData<Maintainable>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });
@@ -45,13 +43,12 @@ export function useUpdateSystem() {
   const queryClient = useQueryClient();
   return useMutation<Maintainable, Error, { id: string; data: Partial<Maintainable> }>({
     mutationFn: async ({ id, data }: { id: string; data: Partial<Maintainable> }) => {
-      const res = await fetch(`/api/systems/${id}`, {
+      const res = await fetch(`/api/system/${id}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to update system');
-      return res.json();
+      return handleApiResponseWithData<Maintainable>(res);
     },
     onSuccess: (_data: Maintainable, variables: { id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });
@@ -64,9 +61,8 @@ export function useDeleteSystem() {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async (id: string) => {
-      const res = await fetch(`/api/systems/${id}`, { method: 'DELETE' });
-      if (!res.ok) throw new Error('Failed to delete system');
-      return res.json();
+      const res = await fetch(`/api/system/${id}`, { method: 'DELETE' });
+      return handleApiResponse(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });

@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Property, PropertyInsert, PropertyUpdate } from '@/types/property.types';
+import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
 
 const fetchProperties = async (): Promise<Property[]> => {
   const res = await fetch('/api/properties');
-  if (!res.ok) throw new Error('Failed to fetch properties');
-  return res.json();
+  return handleApiResponseWithData<Property[]>(res);
 };
 
 export function useProperties() {
@@ -16,8 +16,7 @@ export function useProperty(id: string) {
     queryKey: ['property', id],
     queryFn: async () => {
       const res = await fetch(`/api/property/${id}`);
-      if (!res.ok) throw new Error('Failed to fetch property');
-      return res.json();
+      return handleApiResponse<Property>(res);
     },
     enabled: !!id,
   });
@@ -32,9 +31,7 @@ export function useCreateProperty() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to create property');
-      const result = await res.json();
-      return Array.isArray(result) ? result[0] : result;
+      return handleApiResponse<Property>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
@@ -49,7 +46,7 @@ export function useDeleteProperty() {
       const res = await fetch(`/api/property/${id}`, {
         method: 'DELETE',
       });
-      if (!res.ok) throw new Error('Failed to delete property');
+      await handleApiResponse<void>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
@@ -66,8 +63,7 @@ export function useUpdateProperty() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error('Failed to update property');
-      return res.json();
+      return handleApiResponse<Property>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['properties'] });
