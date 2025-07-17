@@ -1,21 +1,14 @@
+import { PropertySchema, PropertyDataSchema } from '@/lib/schemas/property.schema';
 import { Database } from './supabase.types';
+import { z } from 'zod';
 
-type PropertyDatabaseEntry = Database['public']['Tables']['properties']['Row'];
-// hydrate the data key from basic json to our own data type
-export type Property = Omit<PropertyDatabaseEntry, 'data'> & { data: PropertyData };
+export type PropertyDatabaseEntry = Database['public']['Tables']['properties']['Row'];
+export type PropertyDatabaseInsert = Database['public']['Tables']['properties']['Insert'];
 
-export interface PropertyData {
-  name: string;
-  address: string;
-  yearBuilt: number;
-  squareFootage: number;
-  homeType: 'single-family' | 'townhouse' | 'condo' | 'apartment' | 'other';
-  bedrooms: number;
-  bathrooms: number;
-  stories: number;
-  garages: number;
-  lotSize?: number;
-}
+// hydrate the data key from basic json to our own data type from the zod schema
+export type Property = z.infer<typeof PropertySchema>;
+export type PropertyData = z.infer<typeof PropertyDataSchema>;
+export type PropertyInsert = Omit<PropertyDatabaseInsert, 'data'> & { data: PropertyData };
 
 export interface PropertyStats {
   totalMaintainables: number;
