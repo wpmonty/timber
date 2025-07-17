@@ -50,9 +50,6 @@ export default function OnboardingPage() {
     await new Promise(resolve => setTimeout(resolve, 1500));
 
     setIsLoading(false);
-
-    // For now, just show an alert - this would normally proceed to the next step
-    alert('Address saved! This would normally continue to property details setup.');
   };
 
   return (
