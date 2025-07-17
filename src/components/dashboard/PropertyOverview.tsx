@@ -64,7 +64,7 @@ export function PropertyOverview({
   const maintainables = systems || [];
   const maintenanceLogs = logs || [];
 
-  if (!property || !systems || !logs) {
+  if (!property || !systems || !logs || !property.data) {
     return (
       <Card>
         <CardHeader>
