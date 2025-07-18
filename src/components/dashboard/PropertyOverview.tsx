@@ -4,7 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
 import { Property } from '@/types/property.types';
-import { Maintainable } from '@/types/maintainables.types';
+import { Maintainable } from '@/types/maintainable.types';
 import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 interface PropertyOverviewProps {
@@ -105,14 +105,12 @@ export function PropertyOverview({
   // Calculate stats from real data
   const maintainablesNeedingMaintenance = maintainables.filter(
     maintainable =>
-      maintainable.data.status === 'needs-maintenance' ||
-      maintainable.data.status === 'needs-repair'
+      maintainable.data.condition === 'poor' || maintainable.data.condition === 'critical'
   ).length;
 
   const criticalIssues = maintainables.filter(
     maintainable =>
-      maintainable.data.status === 'needs-replacement' ||
-      maintainable.data.status === 'needs-repair'
+      maintainable.data.condition === 'poor' || maintainable.data.condition === 'critical'
   ).length;
 
   const totalMaintenanceCost = maintenanceLogs.reduce((sum, log) => sum + log.data.cost, 0);
@@ -120,8 +118,8 @@ export function PropertyOverview({
   const avgAge =
     maintainables.length > 0
       ? maintainables.reduce((sum, maintainable) => {
-          const age = maintainable.data.dateInstalled
-            ? calculateAge(new Date(maintainable.data.dateInstalled))
+          const age = maintainable.data.metadata?.installDate
+            ? calculateAge(new Date(maintainable.data.metadata.installDate as string))
             : 0;
           return sum + age;
         }, 0) / maintainables.length
@@ -206,8 +204,7 @@ export function PropertyOverview({
                   <Badge variant="info">
                     {
                       maintainables.filter(
-                        m =>
-                          m.data.status === 'needs-maintenance' || m.data.status === 'operational'
+                        m => m.data.condition === 'poor' || m.data.condition === 'critical'
                       ).length
                     }
                   </Badge>

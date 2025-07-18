@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { Maintainable, MaintainableLifecycleData } from '@/types/maintainables.types';
+import { Maintainable, MaintainableLifecycleData } from '@/types/maintainable.types';
 
 const mockLifecycleData: MaintainableLifecycleData[] = [
   {
@@ -27,12 +27,12 @@ interface ApplianceCardProps {
 
 function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
   const maintainableData = maintainable.data;
-  const age = maintainableData.dateInstalled
-    ? calculateAge(new Date(maintainableData.dateInstalled))
+  const age = maintainableData.metadata?.installDate
+    ? calculateAge(new Date(maintainableData.metadata.installDate as string))
     : 0;
   const isNearEndOfLife = lifecycleData.remainingLifespan <= 3;
   const needsMaintenance =
-    maintainableData.status === 'needs-maintenance' || maintainableData.status === 'needs-repair';
+    maintainableData.condition === 'poor' || maintainableData.condition === 'critical';
 
   // Category icons
   const getCategoryIcon = (category: string) => {
@@ -82,20 +82,20 @@ function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <span className="text-xl">{getCategoryIcon(maintainableData.category)}</span>
+            <span className="text-xl">{getCategoryIcon(maintainableData.type)}</span>
             <div>
-              <CardTitle className="text-base">{maintainableData.name}</CardTitle>
+              <CardTitle className="text-base">{maintainableData.label}</CardTitle>
               <p className="text-sm text-gray-600">
-                {maintainableData.brand} {maintainableData.model}
+                {maintainableData.metadata?.manufacturer} {maintainableData.metadata?.model}
               </p>
             </div>
           </div>
           <div className="flex flex-col items-end gap-1">
-            <Badge variant={getStatusColor(maintainableData.status) as any} size="sm">
-              {maintainableData.status.replace('-', ' ')}
+            <Badge variant={getStatusColor(maintainableData.condition ?? '')} size="sm">
+              {maintainableData.condition?.replace('-', ' ')}
             </Badge>
-            {maintainableData.warrantyExpiration &&
-              new Date(maintainableData.warrantyExpiration) > new Date() && (
+            {maintainableData.metadata?.installDate &&
+              new Date(maintainableData.metadata.installDate as string) > new Date() && (
                 <Badge variant="info" size="sm">
                   Under Warranty
                 </Badge>
@@ -114,11 +114,11 @@ function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
             <div className="flex items-center gap-1">
               <Badge
                 variant={
-                  maintainableData.condition === 'excellent'
+                  maintainableData.condition === 'good'
                     ? 'success'
-                    : maintainableData.condition === 'good'
+                    : maintainableData.condition === 'fair'
                       ? 'info'
-                      : maintainableData.condition === 'fair'
+                      : maintainableData.condition === 'poor'
                         ? 'warning'
                         : 'error'
                 }
@@ -134,7 +134,7 @@ function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
           </div>
           <div>
             <span className="text-gray-600">Category:</span>
-            <p className="font-medium capitalize">{maintainableData.category}</p>
+            <p className="font-medium capitalize">{maintainableData.type}</p>
           </div>
         </div>
 
@@ -157,7 +157,7 @@ function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
                       : 'bg-green-500'
               }`}
               style={{
-                width: `${Math.max(5, (lifecycleData.remainingLifespan / maintainableData.expectedLifespan) * 100)}%`,
+                width: `${Math.max(5, (lifecycleData.remainingLifespan / 10) * 100)}%`,
               }}
             />
           </div>
@@ -178,10 +178,10 @@ function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
           )}
         </div>
 
-        {maintainableData.notes && (
+        {maintainableData.tags && (
           <div className="text-sm p-2 bg-gray-50 rounded">
             <span className="text-gray-600">Notes:</span>
-            <p className="text-gray-700 mt-1">{maintainableData.notes}</p>
+            <p className="text-gray-700 mt-1">{maintainableData.tags.join(', ')}</p>
           </div>
         )}
       </CardContent>
@@ -248,10 +248,10 @@ export function MaintainablesGrid({
   const appliancesByCategory = systems.reduce(
     (acc, maintainable) => {
       const maintainableData = maintainable.data;
-      if (!acc[maintainableData.category]) {
-        acc[maintainableData.category] = [];
+      if (!acc[maintainableData.type]) {
+        acc[maintainableData.type] = [];
       }
-      acc[maintainableData.category].push(maintainable);
+      acc[maintainableData.type].push(maintainable);
       return acc;
     },
     {} as Record<string, Maintainable[]>
