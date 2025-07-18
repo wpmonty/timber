@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { Database } from '../types/supabase.types';
-import { MaintainableData } from '../types/maintainables.types';
+import { MaintainableData, MaintainableInsert } from '../types/maintainable.types';
 import { MaintenanceLogEntryData } from '@/types/maintenance.types';
 import { createClient } from '@supabase/supabase-js';
 import { PropertyData, PropertyInsert } from '@/types/property.types';
@@ -38,27 +38,23 @@ const newProperty: PropertyInsert = {
 
 // MAINTAINABLE
 
-type NewSystem = Database['public']['Tables']['systems']['Insert'];
-type SystemDataPayload = Omit<MaintainableData, 'id'>;
-
-const systemData: SystemDataPayload = {
-  name: 'Furnace',
-  category: 'hvac',
-  brand: 'LG',
-  model: 'AC-1234567890',
-  serialNumber: '1234567890',
-  dateInstalled: null,
-  datePurchased: null,
-  purchasePrice: 1000,
+const systemData: MaintainableData = {
+  label: 'Furnace',
+  type: 'appliance',
+  subtype: 'furnace',
   condition: 'good',
-  status: 'operational',
-  warrantyExpiration: null,
-  expectedLifespan: 10,
   location: 'basement',
-  notes: 'This is a note',
+  tags: ['hvac', 'furnace', 'lg'],
+  metadata: {
+    installDate: new Date().toISOString(),
+    serialNumber: '1234567890',
+    model: 'AC-1234567890',
+    manufacturer: 'LG',
+    butt: 'ugly',
+  },
 };
 
-const newSystem = (uuid: string): NewSystem => {
+const newSystem = (uuid: string): MaintainableInsert => {
   return {
     data: systemData,
     property_id: uuid,

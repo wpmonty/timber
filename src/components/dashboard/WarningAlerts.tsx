@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { formatCurrency, calculateAge } from '@/lib/utils';
-import { Maintainable, MaintainableLifecycleData } from '@/types/maintainables.types';
+import { Maintainable, MaintainableLifecycleData } from '@/types/maintainable.types';
 import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 type AlertSeverity = 'critical' | 'high' | 'medium' | 'low';
@@ -84,20 +84,17 @@ export function WarningAlerts({
         maintenanceFrequency: 'monthly',
         isUnderWarranty: false,
       };
-      const age = maintainable.data.dateInstalled
-        ? calculateAge(new Date(maintainable.data.dateInstalled))
+      const age = maintainable.data.metadata?.installDate
+        ? calculateAge(new Date(maintainable.data.metadata.installDate as string))
         : 0;
 
       // Check for maintenance issues
-      if (
-        maintainable.data.status === 'needs-maintenance' ||
-        maintainable.data.status === 'needs-repair'
-      ) {
+      if (maintainable.data.condition === 'poor' || maintainable.data.condition === 'critical') {
         alerts.push({
           id: `maintenance-${maintainable.id}`,
-          title: `${maintainable.data.name} Needs Attention`,
+          title: `${maintainable.data.label} Needs Attention`,
           type: 'maintenance-due',
-          severity: maintainable.data.status === 'needs-repair' ? 'high' : 'medium',
+          severity: maintainable.data.condition === 'poor' ? 'high' : 'medium',
           timeframe: 'overdue',
           estimatedCost: mockLifecycleData ? { min: 150, max: 500 } : undefined,
           actionRequired: true,
@@ -105,10 +102,10 @@ export function WarningAlerts({
       }
 
       // Check for replacement needs
-      if (maintainable.data.status === 'needs-replacement') {
+      if (maintainable.data.condition === 'poor' || maintainable.data.condition === 'critical') {
         alerts.push({
           id: `replacement-${maintainable.id}`,
-          title: `${maintainable.data.name} Needs Replacement`,
+          title: `${maintainable.data.label} Needs Replacement`,
           type: 'replacement-needed',
           severity: 'critical',
           timeframe: 'immediate',
@@ -121,7 +118,7 @@ export function WarningAlerts({
       if (mockLifecycleData && mockLifecycleData.remainingLifespan <= 3) {
         alerts.push({
           id: `eol-${maintainable.id}`,
-          title: `${maintainable.data.name} Approaching End of Life`,
+          title: `${maintainable.data.label} Approaching End of Life`,
           type: 'replacement-needed',
           severity: mockLifecycleData.remainingLifespan <= 1 ? 'high' : 'medium',
           timeframe: `within ${mockLifecycleData.remainingLifespan} year${mockLifecycleData.remainingLifespan !== 1 ? 's' : ''}`,
@@ -131,8 +128,8 @@ export function WarningAlerts({
       }
 
       // Check for warranty expiration
-      if (maintainable.data.warrantyExpiration) {
-        const warrantyDate = new Date(maintainable.data.warrantyExpiration);
+      if (maintainable.data.metadata?.warrantyExpiration) {
+        const warrantyDate = new Date(maintainable.data.metadata.warrantyExpiration as string);
         const monthsToExpiry = Math.floor(
           (warrantyDate.getTime() - new Date().getTime()) / (1000 * 60 * 60 * 24 * 30)
         );
@@ -140,7 +137,7 @@ export function WarningAlerts({
         if (monthsToExpiry <= 6 && monthsToExpiry > 0) {
           alerts.push({
             id: `warranty-${maintainable.id}`,
-            title: `${maintainable.data.name} Warranty Expiring Soon`,
+            title: `${maintainable.data.label} Warranty Expiring Soon`,
             type: 'warranty-expiring',
             severity: 'medium',
             timeframe: `in ${monthsToExpiry} month${monthsToExpiry !== 1 ? 's' : ''}`,
@@ -153,15 +150,14 @@ export function WarningAlerts({
       // Check for no recent maintenance
       const recentLogs = maintenanceLogs.filter(
         log =>
-          log.data.name === maintainable.data.name &&
           new Date(log.data.dateCompleted).getTime() >
-            new Date().getTime() - 365 * 24 * 60 * 60 * 1000
+          new Date().getTime() - 365 * 24 * 60 * 60 * 1000
       );
 
       if (recentLogs.length === 0 && age > 2) {
         alerts.push({
           id: `no-maintenance-${maintainable.id}`,
-          title: `${maintainable.data.name} No Recent Maintenance`,
+          title: `${maintainable.data.label} No Recent Maintenance`,
           type: 'no-maintenance-history',
           severity: 'high',
           timeframe: 'overdue',

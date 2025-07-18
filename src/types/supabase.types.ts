@@ -86,21 +86,21 @@ export type Database = {
       systems: {
         Row: {
           created_at: string
-          data: Json | null
+          data: Json
           id: string
           property_id: string
           updated_at: string
         }
         Insert: {
           created_at?: string
-          data?: Json | null
+          data: Json
           id?: string
           property_id: string
           updated_at?: string
         }
         Update: {
           created_at?: string
-          data?: Json | null
+          data?: Json
           id?: string
           property_id?: string
           updated_at?: string

@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Maintainable } from '@/types/maintainables.types';
+import { Maintainable } from '@/types/maintainable.types';
 import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
 
 const fetchSystems = async (pId: string): Promise<Maintainable[]> => {

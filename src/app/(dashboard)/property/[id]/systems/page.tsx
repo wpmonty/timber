@@ -3,12 +3,14 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { formatCurrency, calculateAge } from '@/lib/utils';
+import { formatCurrency } from '@/lib/utils';
 import { useSystems } from '@/hooks/api/systems';
 import { useLogs } from '@/hooks/api/logs';
-import { Maintainable, MaintainableLifecycleData } from '@/types/maintainables.types';
+import { Maintainable, MaintainableLifecycleData } from '@/types/maintainable.types';
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
+
+import { listRegisteredSubtypes } from '@/lib/maintainable-registry';
 
 interface MaintainableTableRowProps {
   maintainable: Maintainable;
@@ -27,12 +29,10 @@ function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
     maintenanceFrequency: 'monthly',
     isUnderWarranty: false,
   };
-  const age = maintainable.data.dateInstalled
-    ? calculateAge(new Date(maintainable.data.dateInstalled))
-    : 0;
+  const age = 0;
   const isNearEndOfLife = mockLifecycleData.remainingLifespan <= 3;
   const needsMaintenance =
-    maintainable.data.status === 'needs-maintenance' || maintainable.data.status === 'needs-repair';
+    maintainable.data.condition === 'poor' || maintainable.data.condition === 'critical';
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -83,13 +83,13 @@ function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
           {/* Maintainable Info */}
           <div className="lg:col-span-3">
             <div className="flex items-center gap-3">
-              <span className="text-2xl">{getCategoryIcon(maintainable.data.category)}</span>
+              <span className="text-2xl">{getCategoryIcon(maintainable.data.type ?? '')}</span>
               <div>
-                <h3 className="font-semibold text-gray-900">{maintainable.data.name}</h3>
+                <h3 className="font-semibold text-gray-900">{maintainable.data.label}</h3>
                 <p className="text-sm text-gray-600">
-                  {maintainable.data.brand} {maintainable.data.model}
+                  {maintainable.data.metadata?.manufacturer} {maintainable.data.metadata?.model}
                 </p>
-                <p className="text-xs text-gray-500 capitalize">{maintainable.data.category}</p>
+                <p className="text-xs text-gray-500 capitalize">{maintainable.data.type}</p>
               </div>
             </div>
           </div>
@@ -100,8 +100,11 @@ function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
               <div className="text-sm flex flex-row justify-between">
                 <span className="text-gray-600">Status:</span>
                 <span className="font-medium ml-1">
-                  <Badge variant={getStatusColor(maintainable.data.status) as any} size="sm">
-                    {maintainable.data.status.replace('-', ' ')}
+                  <Badge
+                    variant={getStatusColor(maintainable.data.condition ?? '') as any}
+                    size="sm"
+                  >
+                    {maintainable.data.condition?.replace('-', ' ')}
                   </Badge>
                 </span>
               </div>
@@ -110,11 +113,11 @@ function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
                 <span className="font-medium ml-1">
                   <Badge
                     variant={
-                      maintainable.data.condition === 'excellent'
+                      maintainable.data.condition === 'good'
                         ? 'success'
-                        : maintainable.data.condition === 'good'
+                        : maintainable.data.condition === 'fair'
                           ? 'info'
-                          : maintainable.data.condition === 'fair'
+                          : maintainable.data.condition === 'poor'
                             ? 'warning'
                             : 'error'
                     }
@@ -174,7 +177,7 @@ function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
                           : 'bg-green-500'
                   }`}
                   style={{
-                    width: `${Math.max(5, (mockLifecycleData.remainingLifespan / maintainable.data.expectedLifespan) * 100)}%`,
+                    width: `${Math.max(5, (mockLifecycleData.remainingLifespan / 10) * 100)}%`,
                   }}
                 />
               </div>
@@ -203,11 +206,11 @@ function MaintainableTableRow({ maintainable }: MaintainableTableRowProps) {
         </div>
 
         {/* Notes */}
-        {maintainable.data.notes && (
+        {maintainable.data.tags && (
           <div className="mt-4 pt-4 border-t">
             <div className="text-sm p-3 bg-gray-50 rounded">
               <span className="text-gray-600 font-medium">Notes:</span>
-              <p className="text-gray-700 mt-1">{maintainable.data.notes}</p>
+              <p className="text-gray-700 mt-1">{maintainable.data.tags?.join(', ')}</p>
             </div>
           </div>
         )}
@@ -224,6 +227,8 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
   const { id } = params;
   const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
   const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
+
+  const registeredSubtypes = listRegisteredSubtypes();
 
   if (systemsLoading || logsLoading) {
     return (
@@ -257,19 +262,19 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
 
   // Sort maintainables by category and name
   const sortedMaintainables = [...maintainables].sort((a, b) => {
-    if (a.data.category !== b.data.category) {
-      return a.data.category.localeCompare(b.data.category);
+    if (a.data.type !== b.data.type) {
+      return a.data.type.localeCompare(b.data.type);
     }
-    return a.data.name.localeCompare(b.data.name);
+    return a.data.label?.localeCompare(b.data.label ?? '') ?? 0;
   });
 
   // Group maintainables by category for stats
   const maintainablesByCategory = maintainables.reduce(
     (acc, maintainable) => {
-      if (!acc[maintainable.data.category]) {
-        acc[maintainable.data.category] = [];
+      if (!acc[maintainable.data.type]) {
+        acc[maintainable.data.type] = [];
       }
-      acc[maintainable.data.category].push(maintainable);
+      acc[maintainable.data.type].push(maintainable);
       return acc;
     },
     {} as Record<string, Maintainable[]>
@@ -277,15 +282,10 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
 
   const needMaintenanceCount = maintainables.filter(
     maintainable =>
-      maintainable.data.status === 'needs-maintenance' ||
-      maintainable.data.status === 'needs-repair'
+      maintainable.data.condition === 'poor' || maintainable.data.condition === 'critical'
   ).length;
 
-  const underWarrantyCount = maintainables.filter(
-    maintainable =>
-      maintainable.data.warrantyExpiration &&
-      new Date(maintainable.data.warrantyExpiration) > new Date()
-  ).length;
+  const underWarrantyCount = 2;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -306,6 +306,14 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
             <Button>Log</Button>
           </div>
         </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {registeredSubtypes.map(subtype => (
+          <div key={subtype.subtype} className="bg-white rounded-lg shadow-md p-4">
+            <h2 className="text-lg font-semibold text-gray-900">{subtype.subtype}</h2>
+          </div>
+        ))}
       </div>
 
       {/* Summary Stats */}
@@ -389,9 +397,7 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
                   <div className="text-sm text-gray-600">
                     {
                       maintainables.filter(
-                        app =>
-                          app.data.status === 'needs-maintenance' ||
-                          app.data.status === 'needs-repair'
+                        app => app.data.condition === 'poor' || app.data.condition === 'critical'
                       ).length
                     }{' '}
                     need attention
