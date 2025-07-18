@@ -1,41 +1,38 @@
-import { Maintainable, MaintainableData } from '@/types/maintainables.types';
+import { Maintainable, MaintainableData } from '@/types/maintainable.types';
 
 // This file contains test fixtures and is not a test file itself
 // jest/no-tests
 
 // Valid system data fixtures
 export const validSystemData: MaintainableData = {
-  name: 'Central Air Conditioning',
-  category: 'hvac',
-  brand: 'Carrier',
-  model: 'CA13NA036',
-  serialNumber: 'AC123456789',
-  dateInstalled: '2020-06-15',
-  datePurchased: '2020-05-01',
-  purchasePrice: 4500,
+  label: 'Central Air Conditioning',
+  type: 'system',
+  subtype: 'hvac',
   condition: 'good',
-  status: 'operational',
-  warrantyExpiration: '2025-05-01',
-  expectedLifespan: 15,
+  tags: ['basement', 'Carrier', 'smart'],
   location: 'basement',
-  notes: 'Regular maintenance scheduled',
+  metadata: {
+    brand: 'Carrier',
+    model: 'CA13NA036',
+    serialNumber: 'AC123456789',
+    installDate: '2020-06-15',
+    manufacturer: 'Carrier',
+    purchasePrice: 4500,
+    warrantyExpiration: '2025-05-01',
+    expectedLifespan: 15,
+    notes: 'Regular maintenance scheduled',
+  },
 };
 
 export const validMinimalSystemData: MaintainableData = {
-  name: 'Water Heater',
-  category: 'plumbing',
-  brand: null,
-  model: null,
-  serialNumber: null,
-  dateInstalled: null,
-  datePurchased: null,
-  purchasePrice: null,
+  label: 'Water Heater',
+  type: 'system',
+  subtype: 'plumbing',
   condition: 'fair',
-  status: 'operational',
-  warrantyExpiration: null,
-  expectedLifespan: 10,
   location: 'utility room',
-  notes: '',
+  metadata: {
+    expectedLifespan: 10,
+  },
 };
 
 export const validSystemDatabaseEntry: Maintainable = {
@@ -49,108 +46,98 @@ export const validSystemDatabaseEntry: Maintainable = {
 // Malformed system data scenarios that could come from database
 export const malformedSystemData = {
   // Missing required fields
-  missingName: {
-    category: 'hvac',
-    brand: 'Carrier',
-    model: 'CA13NA036',
-    serialNumber: 'AC123456789',
-    dateInstalled: '2020-06-15',
-    datePurchased: '2020-05-01',
-    purchasePrice: 4500,
+  missingType: {
+    label: 'Central Air Conditioning',
+    subtype: 'hvac',
     condition: 'good',
-    status: 'operational',
-    warrantyExpiration: '2025-05-01',
-    expectedLifespan: 15,
+    tags: ['basement', 'Carrier', 'smart'],
     location: 'basement',
-    notes: 'Regular maintenance scheduled',
+    metadata: {
+      brand: 'Carrier',
+      model: 'CA13NA036',
+      serialNumber: 'AC123456789',
+      installDate: '2020-06-15',
+      manufacturer: 'Carrier',
+      purchasePrice: 4500,
+      warrantyExpiration: '2025-05-01',
+      expectedLifespan: 15,
+      notes: 'Regular maintenance scheduled',
+    },
   },
 
-  missingCondition: {
-    name: 'Central Air Conditioning',
-    category: 'hvac',
-    brand: 'Carrier',
-    model: 'CA13NA036',
-    serialNumber: 'AC123456789',
-    dateInstalled: '2020-06-15',
-    datePurchased: '2020-05-01',
-    purchasePrice: 4500,
-    status: 'operational',
-    warrantyExpiration: '2025-05-01',
-    expectedLifespan: 15,
+  missingSubtype: {
+    label: 'Central Air Conditioning',
+    type: 'system',
+    condition: 'good',
+    tags: ['basement', 'Carrier', 'smart'],
     location: 'basement',
-    notes: 'Regular maintenance scheduled',
+    metadata: {
+      brand: 'Carrier',
+      model: 'CA13NA036',
+      serialNumber: 'AC123456789',
+      installDate: '2020-06-15',
+      manufacturer: 'Carrier',
+      purchasePrice: 4500,
+      warrantyExpiration: '2025-05-01',
+      expectedLifespan: 15,
+      notes: 'Regular maintenance scheduled',
+    },
   },
 
   // Invalid types
   invalidTypes: {
-    name: 123, // should be string
-    category: 'invalid-category', // invalid enum value
-    brand: 123, // should be string or null
-    model: [], // should be string or null
-    serialNumber: {}, // should be string or null
-    dateInstalled: 123, // should be string or null
-    datePurchased: true, // should be string or null
-    purchasePrice: 'expensive', // should be number or null
+    label: 123, // should be string
+    type: 'invalid-type', // invalid enum value
+    subtype: 123, // should be string
     condition: 'terrible', // invalid enum value
-    status: 'broken', // invalid enum value
-    warrantyExpiration: 456, // should be string or null
-    expectedLifespan: 'forever', // should be number
-    location: null, // should be string (can be empty)
-    notes: 789, // should be string (can be empty)
+    tags: 'not-an-array', // should be array
+    location: 456, // should be string
+    metadata: 'not-an-object', // should be object
   },
 
   // Negative/invalid values
   invalidValues: {
-    name: '', // empty string
-    category: 'hvac',
-    brand: '',
-    model: '',
-    serialNumber: '',
-    dateInstalled: '',
-    datePurchased: '',
-    purchasePrice: -1000, // negative price
+    label: '', // empty string
+    type: 'system',
+    subtype: 'hvac',
     condition: 'good',
-    status: 'operational',
-    warrantyExpiration: '',
-    expectedLifespan: -5, // negative lifespan
+    tags: [''],
     location: '',
-    notes: '',
+    metadata: {
+      purchasePrice: -1000, // negative price
+      expectedLifespan: -5, // negative lifespan
+    },
   },
 
   // Extreme values
   extremeValues: {
-    name: 'A'.repeat(1000), // extremely long name
-    category: 'hvac',
-    brand: 'B'.repeat(500),
-    model: 'C'.repeat(500),
-    serialNumber: 'D'.repeat(500),
-    dateInstalled: '9999-12-31',
-    datePurchased: '1800-01-01',
-    purchasePrice: 999999999,
+    label: 'A'.repeat(1000), // extremely long name
+    type: 'system',
+    subtype: 'hvac',
     condition: 'good',
-    status: 'operational',
-    warrantyExpiration: '3000-01-01',
-    expectedLifespan: 999999,
-    location: 'E'.repeat(1000),
-    notes: 'F'.repeat(10000),
+    tags: ['B'.repeat(500)],
+    location: 'C'.repeat(1000),
+    metadata: {
+      brand: 'D'.repeat(500),
+      model: 'E'.repeat(500),
+      serialNumber: 'F'.repeat(500),
+      installDate: '9999-12-31',
+      purchasePrice: 999999999,
+      warrantyExpiration: '3000-01-01',
+      expectedLifespan: 999999,
+      notes: 'G'.repeat(10000),
+    },
   },
 
   // Null values where not allowed
   nullValues: {
-    name: null,
-    category: null,
-    brand: null,
-    model: null,
-    serialNumber: null,
-    dateInstalled: null,
-    datePurchased: null,
-    purchasePrice: null,
+    label: null,
+    type: null,
+    subtype: null,
     condition: null,
-    status: null,
-    warrantyExpiration: null,
-    expectedLifespan: null,
+    tags: null,
     location: null,
-    notes: null,
+    metadata: null,
   },
 
   // Completely empty object
@@ -194,7 +181,7 @@ export const malformedSystemDatabaseEntries = {
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     property_id: 'test-property-id',
-    data: malformedSystemData.missingName,
+    data: malformedSystemData.missingType,
   },
 };
 
@@ -239,7 +226,7 @@ export const apiRequestPayloads = {
   },
 
   validUpdate: {
-    data: { ...validSystemData, name: 'Updated System Name' },
+    data: { ...validSystemData, label: 'Updated System Name' },
   },
 
   missingPropertyId: {

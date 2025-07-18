@@ -1,7 +1,7 @@
 import 'dotenv/config';
 
 import { Database } from '../types/supabase.types';
-import { MaintainableData, MaintainableInsert } from '../types/maintainables.types';
+import { MaintainableData, MaintainableInsert } from '../types/maintainable.types';
 import { MaintenanceLogEntryData } from '@/types/maintenance.types';
 import { createClient } from '@supabase/supabase-js';
 import { PropertyData, PropertyInsert } from '@/types/property.types';

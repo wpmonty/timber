@@ -65,7 +65,7 @@
  */
 
 import { z } from 'zod';
-import { MaintainableDatabaseEntry } from '@/types/maintainables.types';
+import { MaintainableDatabaseEntry } from '@/types/maintainable.types';
 import { Json } from '@/types/supabase.types';
 
 // Top-level categories
@@ -82,17 +82,10 @@ export const MaintainableTypeOptions = z.enum([
 
 export type MaintainableType = (typeof MaintainableTypeOptions.options)[number];
 
-// JSON-compatible schema that matches Supabase's Json type
-// TODO move this to a shared file
-const JsonSchema: z.ZodType<Json> = z.lazy(() =>
-  z.union([
-    z.string(),
-    z.number(),
-    z.boolean(),
-    z.null(),
-    z.record(z.string(), JsonSchema.optional()),
-    z.array(JsonSchema),
-  ])
+// Simple metadata schema for maintainable items
+const MetadataSchema = z.record(
+  z.string(),
+  z.union([z.string(), z.number(), z.boolean(), z.array(z.string())]).optional()
 );
 
 // Optional subtype string or constrained enum per type later
@@ -106,8 +99,8 @@ export const MaintainableDataSchema = z.object({
   // General optional shared fields
   location: z.string().max(100, 'Location must be less than 100 characters').optional(), // e.g., "basement", "garage left wall"
 
-  // JSON-compatible metadata for typed subschemas
-  metadata: JsonSchema.optional(),
+  // Simple metadata object for maintainable items
+  metadata: MetadataSchema.optional(),
 });
 
 export const MaintainableMetadataBaseSchema = z.object({
@@ -120,13 +113,13 @@ export const MaintainableMetadataBaseSchema = z.object({
 export type MaintainableRegistryEntry = {
   type: MaintainableType;
   subtype: string;
-  metadataSchema: z.ZodTypeAny;
+  metadataSchema: typeof MaintainableMetadataBaseSchema;
 };
 
 export const MaintainableSchema = z.object({
   id: z.string(),
   property_id: z.string(),
-  data: MaintainableDataSchema.nullable(),
+  data: MaintainableDataSchema,
   created_at: z.string(),
   updated_at: z.string(),
 }) satisfies z.ZodType<MaintainableDatabaseEntry>;
