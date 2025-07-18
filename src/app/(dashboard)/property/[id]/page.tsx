@@ -34,7 +34,7 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         <div className="flex justify-between items-center">
           <div>
             {property ? (
-              <h1 className="text-3xl font-bold text-gray-900">{property.name}</h1>
+              <h1 className="text-3xl font-bold text-gray-900">{property.data?.address.line1}</h1>
             ) : (
               <div className="max-w-md mx-auto rounded-lg">
                 <div className="animate-pulse">
