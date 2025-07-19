@@ -83,6 +83,39 @@ export type Database = {
         }
         Relationships: []
       }
+      maintainables: {
+        Row: {
+          created_at: string
+          data: Json
+          id: string
+          property_id: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          data: Json
+          id?: string
+          property_id: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          data?: Json
+          id?: string
+          property_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "maintainables_property_id_fkey"
+            columns: ["property_id"]
+            isOneToOne: false
+            referencedRelation: "properties"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      // systems table is kept for backward compatibility
       systems: {
         Row: {
           created_at: string

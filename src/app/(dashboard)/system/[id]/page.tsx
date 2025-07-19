@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useSystem } from '@/hooks/api/systems';
+import { useMaintainable } from '@/hooks/api/maintainables';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
@@ -13,7 +13,7 @@ interface SystemPageProps {
 
 export default function SystemPage({ params }: SystemPageProps) {
   const { id } = params;
-  const { data: system, isLoading, error } = useSystem(id);
+  const { data: system, isLoading, error } = useMaintainable(id);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {

@@ -3,7 +3,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useSystems } from '@/hooks/api/systems';
+import { useMaintainables } from '@/hooks/api/maintainables';
 import { Maintainable } from '@/types/maintainable.types';
 import Link from 'next/link';
 
@@ -71,7 +71,7 @@ interface SystemsPageProps {
 
 export default function SystemsPage({ params }: SystemsPageProps) {
   const { id } = params;
-  const { data: systems, isLoading, error } = useSystems(id);
+  const { data: systems, isLoading, error } = useMaintainables(id);
   const registeredTypes = listMaintainableTypeNames();
 
   if (isLoading) {

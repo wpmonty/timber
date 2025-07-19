@@ -7,7 +7,7 @@ import { WarningAlerts } from '@/components/dashboard/WarningAlerts';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useProperty } from '@/hooks/api/properties';
-import { useSystems } from '@/hooks/api/systems';
+import { useMaintainables } from '@/hooks/api/maintainables';
 import { useLogs } from '@/hooks/api/logs';
 
 interface PropertyPageProps {
@@ -19,7 +19,11 @@ export default function PropertyPage({ params }: PropertyPageProps) {
 
   // TODO combine into super query
   const { data: property, isLoading: propertyLoading, error: propertyError } = useProperty(id);
-  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
+  const {
+    data: systems,
+    isLoading: systemsLoading,
+    error: systemsError,
+  } = useMaintainables(id);
   const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
 
   // TODO make proper 404 page
