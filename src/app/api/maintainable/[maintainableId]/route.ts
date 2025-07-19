@@ -10,7 +10,7 @@ interface Params {
 export async function GET(_request: NextRequest, { params }: Params) {
   const supabase = await createSupabaseServerClient();
   const { data: maintainable, error } = await supabase
-    .from('maintainables')
+    .from('maintainable')
     .select('*')
     .eq('id', params.maintainableId)
     .single();
@@ -32,7 +32,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const body = await request.json();
   const supabase = await createSupabaseServerClient();
   const { data: updated, error } = await supabase
-    .from('maintainables')
+    .from('maintainable')
     .update(body)
     .eq('id', params.maintainableId)
     .select();
@@ -45,7 +45,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 export async function DELETE(_request: NextRequest, { params }: Params) {
   const supabase = await createSupabaseServerClient();
   const { data: deleted, error } = await supabase
-    .from('maintainables')
+    .from('maintainable')
     .delete()
     .eq('id', params.maintainableId)
     .select();

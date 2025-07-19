@@ -48,10 +48,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "logs_system_id_fkey"
+            foreignKeyName: "logs_maintainable_id_fkey"
             columns: ["system_id"]
             isOneToOne: false
-            referencedRelation: "systems"
+            referencedRelation: "maintainable"
             referencedColumns: ["id"]
           },
         ]
@@ -83,7 +83,7 @@ export type Database = {
         }
         Relationships: []
       }
-      maintainables: {
+      maintainable: {
         Row: {
           created_at: string
           data: Json
@@ -107,7 +107,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "maintainables_property_id_fkey"
+            foreignKeyName: "maintainable_property_id_fkey"
             columns: ["property_id"]
             isOneToOne: false
             referencedRelation: "properties"

@@ -7,9 +7,9 @@ import {
 } from '@/lib/schemas/maintainable.schema';
 import { MaintainableSubtypeType as SubtypeType } from '@/lib/schemas/maintainable/index';
 
-export type MaintainableDatabaseEntry = Database['public']['Tables']['maintainables']['Row'];
-export type MaintainableDatabaseInsert = Database['public']['Tables']['maintainables']['Insert'];
-export type MaintainableDatabaseUpdate = Database['public']['Tables']['maintainables']['Update'];
+export type MaintainableDatabaseEntry = Database['public']['Tables']['maintainable']['Row'];
+export type MaintainableDatabaseInsert = Database['public']['Tables']['maintainable']['Insert'];
+export type MaintainableDatabaseUpdate = Database['public']['Tables']['maintainable']['Update'];
 
 // hydrate the data key from basic json to our own data type
 export type Maintainable = z.infer<typeof MaintainableSchema>;
