@@ -98,9 +98,9 @@ export const malformedSystemData = {
   // Negative/invalid values
   invalidValues: {
     label: '', // empty string
-    type: 'system',
-    subtype: 'hvac',
-    condition: 'good',
+    type: 'not a type',
+    subtype: 'not a subtype',
+    condition: 'not a condition',
     tags: [''],
     location: '',
     metadata: {

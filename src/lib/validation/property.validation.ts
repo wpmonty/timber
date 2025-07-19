@@ -4,13 +4,7 @@ import {
   PropertyDataSchema,
   PropertySchema,
 } from '@/lib/schemas/property.schema';
-
-// Validation result type with structured errors
-export interface ValidationResult<T> {
-  success: boolean;
-  data?: T;
-  errors?: Record<string, string[]>;
-}
+import { ValidationResult } from '@/types/general.types';
 
 // Validate property data
 export function validatePropertyData(data: unknown): ValidationResult<PropertyData> {

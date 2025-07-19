@@ -1,6 +1,11 @@
 import { Database } from './supabase.types';
 import { z } from 'zod';
-import { MaintainableSchema, MaintainableDataSchema } from '@/lib/schemas/maintainable.schema';
+import {
+  MaintainableSchema,
+  MaintainableDataSchema,
+  MaintainableType as MaintainableTypeEnum,
+} from '@/lib/schemas/maintainable.schema';
+import { MaintainableSubtypeType as SubtypeType } from '@/lib/schemas/maintainable/index';
 
 export type MaintainableDatabaseEntry = Database['public']['Tables']['systems']['Row'];
 export type MaintainableDatabaseInsert = Database['public']['Tables']['systems']['Insert'];
@@ -16,6 +21,9 @@ export type MaintainableUpdate = Omit<MaintainableDatabaseUpdate, 'data' | 'upda
   data: MaintainableData;
   updated_at: string;
 };
+
+export type MaintainableTypeType = MaintainableTypeEnum;
+export type MaintainableSubtypeType = SubtypeType;
 
 export interface MaintainableLifecycleData {
   mId: string;

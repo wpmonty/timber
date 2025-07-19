@@ -66,7 +66,6 @@
 
 import { z } from 'zod';
 import { MaintainableDatabaseEntry } from '@/types/maintainable.types';
-import { Json } from '@/types/supabase.types';
 
 // Top-level categories
 export const MaintainableTypeOptions = z.enum([
@@ -104,7 +103,7 @@ export const MaintainableDataSchema = z.object({
 });
 
 export const MaintainableMetadataBaseSchema = z.object({
-  installDate: z.coerce.date().optional(),
+  installDate: z.string().optional(), // Store as ISO string instead of Date object
   serialNumber: z.string().optional(),
   model: z.string().optional(),
   manufacturer: z.string().optional(),
