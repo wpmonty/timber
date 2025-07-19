@@ -10,7 +10,7 @@ import { Maintainable, MaintainableLifecycleData } from '@/types/maintainable.ty
 import Link from 'next/link';
 import { MoreHorizontal } from 'lucide-react';
 
-import { listRegisteredSubtypes } from '@/lib/maintainable-registry';
+import { listMaintainableTypeNames } from '@/lib/maintainable-registry';
 
 interface MaintainableTableRowProps {
   maintainable: Maintainable;
@@ -228,7 +228,7 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
   const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
   const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
 
-  const registeredSubtypes = listRegisteredSubtypes();
+  const registeredTypes = listMaintainableTypeNames();
 
   if (systemsLoading || logsLoading) {
     return (
@@ -309,9 +309,9 @@ export default function MaintainablesPage({ params }: MaintainablesPageProps) {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {registeredSubtypes.map(subtype => (
-          <div key={subtype.subtype} className="bg-white rounded-lg shadow-md p-4">
-            <h2 className="text-lg font-semibold text-gray-900">{subtype.subtype}</h2>
+        {registeredTypes.map(type => (
+          <div key={type} className="bg-white rounded-lg shadow-md p-4">
+            <h2 className="text-lg font-semibold text-gray-900">{type}</h2>
           </div>
         ))}
       </div>

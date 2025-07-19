@@ -5,7 +5,7 @@ import {
   validPropertyData,
 } from './fixtures/property-data';
 
-describe('Better Validation Pattern - Zod with Structured Errors', () => {
+describe('Property Validation', () => {
   describe('validatePropertyData', () => {
     it('returns structured success response for valid data', () => {
       const result = validatePropertyData(validPropertyData);

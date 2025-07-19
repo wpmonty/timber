@@ -1,15 +1,12 @@
 import { z } from 'zod';
-import {
-  MaintainableMetadataBaseSchema,
-  MaintainableRegistryEntry,
-} from '../../maintainable.schema';
+import { MaintainableDataSchema, MaintainableMetadataBaseSchema } from '../../maintainable.schema';
 
-const schema: MaintainableRegistryEntry = {
-  type: 'appliance',
-  subtype: 'dishwasher',
-  metadataSchema: MaintainableMetadataBaseSchema.extend({
+const DishwasherMaintainableDataSchema = MaintainableDataSchema.extend({
+  type: z.literal('appliance'),
+  subtype: z.literal('dishwasher'),
+  metadata: MaintainableMetadataBaseSchema.extend({
     brand: z.string().optional(),
   }),
-};
+});
 
-export default schema;
+export default DishwasherMaintainableDataSchema;

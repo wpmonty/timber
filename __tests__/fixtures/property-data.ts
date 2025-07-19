@@ -21,9 +21,9 @@ export const validPropertyData: PropertyData = {
   stories: 2,
   year_built: 1995,
   areas: [
-    { type: 'Bedroom', quantity: 3 },
-    { type: 'Bathroom', quantity: 2 },
-    { type: 'Garage', quantity: 2 },
+    { type: 'bedroom', quantity: 3 },
+    { type: 'bathroom', quantity: 2 },
+    { type: 'garage', quantity: 2 },
   ],
 };
 

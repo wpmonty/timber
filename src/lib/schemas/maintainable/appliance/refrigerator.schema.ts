@@ -1,12 +1,9 @@
 import { z } from 'zod';
-import {
-  MaintainableMetadataBaseSchema,
-  MaintainableRegistryEntry,
-} from '../../maintainable.schema';
+import { MaintainableDataSchema, MaintainableMetadataBaseSchema } from '../../maintainable.schema';
 
-const schema: MaintainableRegistryEntry = {
-  type: 'appliance',
-  subtype: 'refrigerator',
+const RefrigeratorMaintainableDataSchema = MaintainableDataSchema.extend({
+  type: z.literal('appliance'),
+  subtype: z.literal('refrigerator'),
   metadataSchema: MaintainableMetadataBaseSchema.extend({
     brand: z.string().optional(),
     capacity: z.number().optional(), // in cubic feet
@@ -14,6 +11,6 @@ const schema: MaintainableRegistryEntry = {
     hasIceMaker: z.boolean().optional(),
     energyRating: z.string().optional(), // e.g., "Energy Star"
   }),
-};
+});
 
-export default schema;
+export default RefrigeratorMaintainableDataSchema;
