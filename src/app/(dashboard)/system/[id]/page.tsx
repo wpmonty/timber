@@ -58,7 +58,9 @@ export default function SystemPage({ params }: SystemPageProps) {
           <div className="text-center">
             <div className="text-red-500 text-4xl mb-4">⚠️</div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">System Not Found</h2>
-            <p className="text-gray-600">{error?.message || 'The requested system could not be found.'}</p>
+            <p className="text-gray-600">
+              {error?.message || 'The requested system could not be found.'}
+            </p>
             <Link href={`/property/${system?.property_id}/systems`} className="mt-4 inline-block">
               <Button variant="outline">← Back to Systems</Button>
             </Link>
@@ -80,7 +82,7 @@ export default function SystemPage({ params }: SystemPageProps) {
             </Button>
           </Link>
         </div>
-        
+
         <div className="flex items-start gap-4">
           <span className="text-4xl">{getCategoryIcon(system.data.type ?? '')}</span>
           <div>
@@ -136,15 +138,11 @@ export default function SystemPage({ params }: SystemPageProps) {
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Created</label>
-              <p className="text-gray-900">
-                {new Date(system.created_at).toLocaleDateString()}
-              </p>
+              <p className="text-gray-900">{new Date(system.created_at).toLocaleDateString()}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Last Updated</label>
-              <p className="text-gray-900">
-                {new Date(system.updated_at).toLocaleDateString()}
-              </p>
+              <p className="text-gray-900">{new Date(system.updated_at).toLocaleDateString()}</p>
             </div>
           </CardContent>
         </Card>
@@ -159,7 +157,7 @@ export default function SystemPage({ params }: SystemPageProps) {
           <CardContent>
             <div className="flex flex-wrap gap-2">
               {system.data.tags.map((tag, index) => (
-                <Badge key={index} variant="secondary">
+                <Badge key={index} variant="outline">
                   {tag}
                 </Badge>
               ))}

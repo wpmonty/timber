@@ -12,7 +12,8 @@ export async function GET(_request: NextRequest, { params }: Params) {
   const { data: system, error } = await supabase
     .from('systems')
     .select('*')
-    .eq('id', params.systemId);
+    .eq('id', params.systemId)
+    .single();
   if (error) {
     if (error.code === 'PGRST116') {
       // No rows returned (404)
