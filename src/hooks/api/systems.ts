@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Maintainable } from '@/types/maintainable.types';
-import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
+import { Maintainable, MaintainableData } from '@/types/maintainable.types';
+import { handleApiResponse } from '@/lib/api-client-helpers';
 
 const fetchSystems = async (pId: string): Promise<Maintainable[]> => {
   const res = await fetch(`/api/systems/${pId}`);
-  return handleApiResponseWithData<Maintainable[]>(res);
+  return handleApiResponse<Maintainable[]>(res);
 };
 
 export function useSystems(pId: string) {
@@ -16,7 +16,7 @@ export function useSystem(id: string) {
     queryKey: ['systems', id],
     queryFn: async () => {
       const res = await fetch(`/api/system/${id}`);
-      return handleApiResponseWithData<Maintainable>(res);
+      return handleApiResponse<Maintainable>(res);
     },
     enabled: !!id,
   });
@@ -31,7 +31,7 @@ export function useCreateSystem() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      return handleApiResponseWithData<Maintainable>(res);
+      return handleApiResponse<Maintainable>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });
@@ -48,7 +48,7 @@ export function useUpdateSystem() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      return handleApiResponseWithData<Maintainable>(res);
+      return handleApiResponse<Maintainable>(res);
     },
     onSuccess: (_data: Maintainable, variables: { id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['systems'] });

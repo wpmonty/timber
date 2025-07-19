@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { MaintenanceLogEntry } from '@/types/maintenance.types';
-import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
+import { handleApiResponse } from '@/lib/api-client-helpers';
 
 const fetchLogs = async (pId: string): Promise<MaintenanceLogEntry[]> => {
   const res = await fetch(`/api/logs/${pId}`);
-  return handleApiResponseWithData<MaintenanceLogEntry[]>(res);
+  return handleApiResponse<MaintenanceLogEntry[]>(res);
 };
 
 export function useLogs(id: string) {
@@ -16,7 +16,7 @@ export function useLog(id: string | undefined) {
     queryKey: ['logs', id],
     queryFn: async () => {
       const res = await fetch(`/api/log/${id}`);
-      return handleApiResponseWithData<MaintenanceLogEntry>(res);
+      return handleApiResponse<MaintenanceLogEntry>(res);
     },
     enabled: !!id,
   });
@@ -41,7 +41,7 @@ export function useCreateLog() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data ?? {}),
       });
-      return handleApiResponseWithData<MaintenanceLogEntry>(res);
+      return handleApiResponse<MaintenanceLogEntry>(res);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['logs'] });
@@ -62,7 +62,7 @@ export function useUpdateLog() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
       });
-      return handleApiResponseWithData<MaintenanceLogEntry>(res);
+      return handleApiResponse<MaintenanceLogEntry>(res);
     },
     onSuccess: (_data: MaintenanceLogEntry, variables: { id: string }) => {
       queryClient.invalidateQueries({ queryKey: ['logs'] });

@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Property, PropertyInsert, PropertyUpdate } from '@/types/property.types';
-import { handleApiResponse, handleApiResponseWithData } from '@/lib/api-client-helpers';
+import { handleApiResponse } from '@/lib/api-client-helpers';
 
 const fetchProperties = async (): Promise<Property[]> => {
   const res = await fetch('/api/properties');
-  return handleApiResponseWithData<Property[]>(res);
+  return handleApiResponse<Property[]>(res);
 };
 
 export function useProperties() {

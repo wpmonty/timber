@@ -17,19 +17,3 @@ export async function handleApiResponse<T>(response: Response): Promise<T> {
 
   return response.json();
 }
-
-/**
- * Helper for API calls that should extract data from wrapped responses
- * Some endpoints return { data: T } while others return T directly
- */
-export async function handleApiResponseWithData<T>(response: Response): Promise<T> {
-  const result = await handleApiResponse<{ data?: T } | T>(response);
-
-  // If response is wrapped in { data: ... }, extract it
-  if (result && typeof result === 'object' && 'data' in result) {
-    return result.data as T;
-  }
-
-  // Otherwise return as-is
-  return result as T;
-}
