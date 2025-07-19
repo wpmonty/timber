@@ -7,7 +7,7 @@ import { Maintainable, MaintainableData } from '@/types/maintainable.types';
 export const validSystemData: MaintainableData = {
   label: 'Central Air Conditioning',
   type: 'system',
-  subtype: 'hvac',
+  subtype: 'heat',
   condition: 'good',
   tags: ['basement', 'Carrier', 'smart'],
   location: 'basement',
@@ -27,7 +27,7 @@ export const validSystemData: MaintainableData = {
 export const validMinimalSystemData: MaintainableData = {
   label: 'Water Heater',
   type: 'system',
-  subtype: 'plumbing',
+  subtype: 'heat',
   condition: 'fair',
   location: 'utility room',
   metadata: {

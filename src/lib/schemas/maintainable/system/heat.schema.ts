@@ -4,7 +4,7 @@ import { MaintainableDataSchema, MaintainableMetadataBaseSchema } from '../../ma
 const HeatMaintainableDataSchema = MaintainableDataSchema.extend({
   type: z.literal('system'),
   subtype: z.literal('heat'),
-  metadataSchema: MaintainableMetadataBaseSchema.extend({
+  metadata: MaintainableMetadataBaseSchema.extend({
     brand: z.string().optional(),
     btu: z.number().optional(),
     fuel: z.enum(['electric', 'gas', 'oil', 'wood']).optional(),

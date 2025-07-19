@@ -4,10 +4,15 @@ import { getMaintainableDataSchema, listMaintainableTypeNames } from '@/lib/main
 import { ValidationResult } from '@/types/general.types';
 
 // Validate maintainable data with subtype-specific validation
-export function validateMaintainableDataWithSubtype(
-  data: unknown,
-  subtype: string
-): ValidationResult<MaintainableData> {
+export function validateMaintainableData(data: unknown): ValidationResult<MaintainableData> {
+  const subtype =
+    typeof data === 'object' &&
+    data !== null &&
+    'subtype' in data &&
+    typeof data.subtype === 'string'
+      ? data.subtype
+      : '';
+
   try {
     const maintainableDataSchema = getMaintainableDataSchema(subtype);
     if (!maintainableDataSchema) {
@@ -53,36 +58,6 @@ export function validateMaintainableDataWithSubtype(
       },
     };
   }
-}
-
-// Validate maintainable data without subtype (basic validation)
-export function validateMaintainableData(data: unknown): ValidationResult<MaintainableData> {
-  const result = MaintainableDataSchema.safeParse(data);
-
-  if (result.success) {
-    return {
-      success: true,
-      data: result.data,
-    };
-  }
-
-  // Transform Zod errors into structured format
-  const errors: Record<string, string[]> = {};
-
-  result.error.issues.forEach(error => {
-    const field = error.path.join('.');
-    const message = error.message;
-
-    if (!errors[field]) {
-      errors[field] = [];
-    }
-    errors[field].push(message);
-  });
-
-  return {
-    success: false,
-    errors,
-  };
 }
 
 export function isValidMaintainableData(data: unknown): data is MaintainableData {
