@@ -51,8 +51,8 @@ export default function PropertyPage({ params }: PropertyPageProps) {
             </p>
           </div>
           <div className="flex gap-3">
-            <Link href={`/property/${id}/systems`}>
-              <Button variant="outline">View All Systems</Button>
+            <Link href={`/property/${id}/maintainables`}>
+              <Button variant="outline">View All Maintainables</Button>
             </Link>
           </div>
         </div>
@@ -62,12 +62,12 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       <div className="mb-8">
         <PropertyOverview
           property={property ? property : undefined}
-          systems={maintainables ? maintainables : undefined}
+          maintainables={maintainables ? maintainables : undefined}
           logs={logs ? logs : undefined}
           propertyLoading={propertyLoading}
           propertyError={propertyError}
-          systemsLoading={maintainablesLoading}
-          systemsError={maintainablesError}
+          maintainablesLoading={maintainablesLoading}
+          maintainablesError={maintainablesError}
           logsLoading={logsLoading}
           logsError={logsError}
         />
@@ -93,11 +93,11 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       {/* Warning Alerts */}
       <div className="mt-8">
         <WarningAlerts
-          systems={maintainables ? maintainables : []}
+          maintainables={maintainables ? maintainables : []}
           logs={logs ? logs : []}
-          systemsLoading={maintainablesLoading}
+          maintainablesLoading={maintainablesLoading}
           logsLoading={logsLoading}
-          systemsError={maintainablesError}
+          maintainablesError={maintainablesError}
           logsError={logsError}
         />
       </div>

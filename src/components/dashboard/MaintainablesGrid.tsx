@@ -221,7 +221,7 @@ export function MaintainablesGrid({
         </div>
         <div className="text-center py-12">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Systems</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Maintainables</h3>
           <p className="text-gray-600">{error?.message}</p>
         </div>
       </div>
@@ -237,15 +237,15 @@ export function MaintainablesGrid({
         </div>
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">🏠</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Systems Found</h3>
-          <p className="text-gray-600">Start by adding your first appliance or system.</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Maintainables Found</h3>
+          <p className="text-gray-600">Start by adding your first maintainable or system.</p>
         </div>
       </div>
     );
   }
 
-  // Group systems by category
-  const appliancesByCategory = maintainables.reduce(
+  // Group maintainables by category
+  const maintainablesByCategory = maintainables.reduce(
     (acc, maintainable) => {
       const maintainableData = maintainable.data;
       if (!acc[maintainableData.type]) {
@@ -264,7 +264,7 @@ export function MaintainablesGrid({
         <Badge variant="outline">{maintainables.length} total</Badge>
       </div>
 
-      {Object.entries(appliancesByCategory).map(([category, maintainablesForCategory]) => (
+      {Object.entries(maintainablesByCategory).map(([category, maintainablesForCategory]) => (
         <div key={category} className="space-y-4">
           <h3 className="text-lg font-medium text-gray-800 capitalize border-b pb-2">
             {category.replace('-', ' ')} ({maintainablesForCategory.length})

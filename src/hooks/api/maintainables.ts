@@ -10,7 +10,10 @@ const fetchMaintainables = async (propertyId: string): Promise<Maintainable[]> =
 
 // React-Query hook for list of maintainables for a property
 export function useMaintainables(propertyId: string) {
-  return useQuery({ queryKey: ['maintainables', propertyId], queryFn: () => fetchMaintainables(propertyId) });
+  return useQuery({
+    queryKey: ['maintainables', propertyId],
+    queryFn: () => fetchMaintainables(propertyId),
+  });
 }
 
 // React-Query hook for a single maintainable by id

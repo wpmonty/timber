@@ -9,7 +9,7 @@ interface Params {
 export async function GET(_request: NextRequest, { params }: Params) {
   const supabase = await createSupabaseServerClient();
   const { data, error } = await supabase
-    .from('maintainable')
+    .from('maintainables')
     .select('*')
     .eq('property_id', params.propertyId);
   if (error) return NextResponse.json({ error: error.message }, { status: 500 });
@@ -22,7 +22,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
   const body = await request.json();
   const supabase = await createSupabaseServerClient();
   const { data: updated, error } = await supabase
-    .from('maintainable')
+    .from('maintainables')
     .update(body)
     .eq('id', params.propertyId)
     .select();
@@ -35,7 +35,7 @@ export async function PATCH(request: NextRequest, { params }: Params) {
 export async function DELETE(_request: NextRequest, { params }: Params) {
   const supabase = await createSupabaseServerClient();
   const { data: deleted, error } = await supabase
-    .from('maintainable')
+    .from('maintainables')
     .delete()
     .eq('id', params.propertyId)
     .select();

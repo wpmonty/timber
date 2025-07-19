@@ -19,24 +19,24 @@ export type Database = {
           created_at: string
           data: Json | null
           id: string
+          maintainable_id: string | null
           property_id: string
-          system_id: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           data?: Json | null
           id?: string
+          maintainable_id?: string | null
           property_id: string
-          system_id?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           data?: Json | null
           id?: string
+          maintainable_id?: string | null
           property_id?: string
-          system_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -48,75 +48,15 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "logs_maintainable_id_fkey"
-            columns: ["system_id"]
+            foreignKeyName: "logs_system_id_fkey"
+            columns: ["maintainable_id"]
             isOneToOne: false
-            referencedRelation: "maintainable"
+            referencedRelation: "maintainables"
             referencedColumns: ["id"]
           },
         ]
       }
-      properties: {
-        Row: {
-          address: string
-          created_at: string
-          data: Json | null
-          id: string
-          owner_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          address: string
-          created_at?: string
-          data?: Json | null
-          id?: string
-          owner_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          address?: string
-          created_at?: string
-          data?: Json | null
-          id?: string
-          owner_id?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      maintainable: {
-        Row: {
-          created_at: string
-          data: Json
-          id: string
-          property_id: string
-          updated_at: string
-        }
-        Insert: {
-          created_at?: string
-          data: Json
-          id?: string
-          property_id: string
-          updated_at?: string
-        }
-        Update: {
-          created_at?: string
-          data?: Json
-          id?: string
-          property_id?: string
-          updated_at?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "maintainable_property_id_fkey"
-            columns: ["property_id"]
-            isOneToOne: false
-            referencedRelation: "properties"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      // systems table is kept for backward compatibility
-      systems: {
+      maintainables: {
         Row: {
           created_at: string
           data: Json
@@ -147,6 +87,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      properties: {
+        Row: {
+          address: string
+          created_at: string
+          data: Json | null
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {
