@@ -38,7 +38,7 @@ const newProperty: PropertyInsert = {
 
 // MAINTAINABLE
 
-const systemData: MaintainableData = {
+const maintainableData: MaintainableData = {
   label: 'Furnace',
   type: 'appliance',
   subtype: 'furnace',
@@ -54,9 +54,9 @@ const systemData: MaintainableData = {
   },
 };
 
-const newSystem = (uuid: string): MaintainableInsert => {
+const newMaintainable = (uuid: string): MaintainableInsert => {
   return {
-    data: systemData,
+    data: maintainableData,
     property_id: uuid,
   };
 };
@@ -77,10 +77,10 @@ const logData: LogDataPayload = {
   serviceProvider: 'John Doe',
 };
 
-const newLog = (propertyId: string, systemId: string): NewLog => {
+const newLog = (propertyId: string, maintainableId: string): NewLog => {
   return {
     property_id: propertyId,
-    system_id: systemId,
+    maintainable_id: maintainableId,
     data: logData,
   };
 };
@@ -98,17 +98,17 @@ const seed = async () => {
   if (!propertyError && propertyData && propertyData.length > 0) {
     console.log('Property created successfully', propertyData[0].id);
 
-    const { data: systemData, error: systemError } = await supabase
-      .from('systems')
-      .insert(newSystem(propertyData[0].id))
+    const { data: maintainableData, error: maintainableError } = await supabase
+      .from('maintainables')
+      .insert(newMaintainable(propertyData[0].id))
       .select();
 
-    if (!systemError && systemData && systemData.length > 0) {
-      console.log('System created successfully', systemData[0].id);
+    if (!maintainableError && maintainableData && maintainableData.length > 0) {
+      console.log('Maintainable created successfully', maintainableData[0].id);
 
       const { data: logData, error: logError } = await supabase
         .from('logs')
-        .insert(newLog(propertyData[0].id, systemData[0].id))
+        .insert(newLog(propertyData[0].id, maintainableData[0].id))
         .select();
 
       if (!logError && logData && logData.length > 0) {
@@ -117,7 +117,7 @@ const seed = async () => {
         console.error('Error creating log');
       }
     } else {
-      console.error('Error creating system');
+      console.error('Error creating maintainable');
     }
   } else {
     console.error('Error creating property', propertyError);

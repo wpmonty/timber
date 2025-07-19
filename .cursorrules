@@ -437,7 +437,7 @@ export async function GET(request: Request) {
 
 ### Endpoint Naming
 
-- Use RESTful conventions: `/api/properties`, `/api/systems`, `/api/logs`
+- Use RESTful conventions: `/api/properties`, `/api/maintainables`, `/api/logs`
 - Use HTTP methods appropriately: GET, POST, PUT, DELETE
 - Follow Next.js App Router conventions for dynamic routes
 

@@ -190,11 +190,11 @@ function ApplianceCard({ maintainable, lifecycleData }: ApplianceCardProps) {
 }
 
 export function MaintainablesGrid({
-  systems,
+  maintainables,
   isLoading,
   error,
 }: {
-  systems: Maintainable[];
+  maintainables: Maintainable[];
   isLoading: boolean;
   error: Error | null;
 }) {
@@ -212,7 +212,7 @@ export function MaintainablesGrid({
     );
   }
 
-  if (error || !systems) {
+  if (error || !maintainables) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
@@ -221,14 +221,14 @@ export function MaintainablesGrid({
         </div>
         <div className="text-center py-12">
           <div className="text-red-500 text-4xl mb-4">⚠️</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Systems</h3>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Unable to Load Maintainables</h3>
           <p className="text-gray-600">{error?.message}</p>
         </div>
       </div>
     );
   }
 
-  if (systems.length === 0 || systems === undefined) {
+  if (maintainables.length === 0 || maintainables === undefined) {
     return (
       <div className="space-y-6">
         <div className="flex justify-between items-center">
@@ -237,15 +237,15 @@ export function MaintainablesGrid({
         </div>
         <div className="text-center py-12">
           <div className="text-gray-400 text-6xl mb-4">🏠</div>
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Systems Found</h3>
-          <p className="text-gray-600">Start by adding your first appliance or system.</p>
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Maintainables Found</h3>
+          <p className="text-gray-600">Start by adding your first maintainable or system.</p>
         </div>
       </div>
     );
   }
 
-  // Group systems by category
-  const appliancesByCategory = systems.reduce(
+  // Group maintainables by category
+  const maintainablesByCategory = maintainables.reduce(
     (acc, maintainable) => {
       const maintainableData = maintainable.data;
       if (!acc[maintainableData.type]) {
@@ -261,23 +261,23 @@ export function MaintainablesGrid({
     <div className="space-y-6">
       <div className="flex justify-between items-center">
         <h2 className="text-xl font-semibold text-gray-900">Appliances & Systems</h2>
-        <Badge variant="outline">{systems.length} total</Badge>
+        <Badge variant="outline">{maintainables.length} total</Badge>
       </div>
 
-      {Object.entries(appliancesByCategory).map(([category, systems]) => (
+      {Object.entries(maintainablesByCategory).map(([category, maintainablesForCategory]) => (
         <div key={category} className="space-y-4">
           <h3 className="text-lg font-medium text-gray-800 capitalize border-b pb-2">
-            {category.replace('-', ' ')} ({systems.length})
+            {category.replace('-', ' ')} ({maintainablesForCategory.length})
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {systems.map(system => {
-              const lifecycleData = mockLifecycleData.find(data => data.mId === system.id);
+            {maintainablesForCategory.map(maintainable => {
+              const lifecycleData = mockLifecycleData.find(data => data.mId === maintainable.id);
               if (!lifecycleData) return null;
 
               return (
                 <ApplianceCard
-                  key={system.id}
-                  maintainable={system}
+                  key={maintainable.id}
+                  maintainable={maintainable}
                   lifecycleData={lifecycleData}
                 />
               );

@@ -25,7 +25,7 @@ const getNavigationItems = (slug: string): NavigationItem[] => [
   },
   {
     title: 'Systems & Appliances',
-    href: `/property/${slug}/systems`,
+    href: `/property/${slug}/maintainables`,
     icon: Settings,
   },
   {

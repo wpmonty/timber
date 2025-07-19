@@ -19,24 +19,24 @@ export type Database = {
           created_at: string
           data: Json | null
           id: string
+          maintainable_id: string | null
           property_id: string
-          system_id: string | null
           updated_at: string
         }
         Insert: {
           created_at?: string
           data?: Json | null
           id?: string
+          maintainable_id?: string | null
           property_id: string
-          system_id?: string | null
           updated_at?: string
         }
         Update: {
           created_at?: string
           data?: Json | null
           id?: string
+          maintainable_id?: string | null
           property_id?: string
-          system_id?: string | null
           updated_at?: string
         }
         Relationships: [
@@ -49,41 +49,14 @@ export type Database = {
           },
           {
             foreignKeyName: "logs_system_id_fkey"
-            columns: ["system_id"]
+            columns: ["maintainable_id"]
             isOneToOne: false
-            referencedRelation: "systems"
+            referencedRelation: "maintainables"
             referencedColumns: ["id"]
           },
         ]
       }
-      properties: {
-        Row: {
-          address: string
-          created_at: string
-          data: Json | null
-          id: string
-          owner_id: string | null
-          updated_at: string
-        }
-        Insert: {
-          address: string
-          created_at?: string
-          data?: Json | null
-          id?: string
-          owner_id?: string | null
-          updated_at?: string
-        }
-        Update: {
-          address?: string
-          created_at?: string
-          data?: Json | null
-          id?: string
-          owner_id?: string | null
-          updated_at?: string
-        }
-        Relationships: []
-      }
-      systems: {
+      maintainables: {
         Row: {
           created_at: string
           data: Json
@@ -114,6 +87,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      properties: {
+        Row: {
+          address: string
+          created_at: string
+          data: Json | null
+          id: string
+          owner_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          address: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          address?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          owner_id?: string | null
+          updated_at?: string
+        }
+        Relationships: []
       }
     }
     Views: {

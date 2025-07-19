@@ -19,21 +19,21 @@ interface Alert {
 }
 
 export function WarningAlerts({
-  systems,
+  maintainables,
   logs,
-  systemsLoading,
+  maintainablesLoading,
   logsLoading,
-  systemsError,
+  maintainablesError,
   logsError,
 }: {
-  systems: Maintainable[];
+  maintainables: Maintainable[];
   logs: MaintenanceLogEntry[];
-  systemsLoading: boolean;
+  maintainablesLoading: boolean;
   logsLoading: boolean;
-  systemsError: Error | null;
+  maintainablesError: Error | null;
   logsError: Error | null;
 }) {
-  if (systemsLoading || logsLoading) {
+  if (maintainablesLoading || logsLoading) {
     return (
       <Card>
         <CardHeader>
@@ -48,23 +48,22 @@ export function WarningAlerts({
     );
   }
 
-  if (systemsError || logsError) {
+  if (maintainablesError || logsError) {
     return (
       <Card>
         <CardHeader>
-          <CardTitle>System Alerts</CardTitle>
+          <CardTitle>Alerts</CardTitle>
         </CardHeader>
         <CardContent>
           <div className="text-center py-8">
             <div className="text-red-500 text-2xl mb-2">⚠️</div>
-            <p className="text-gray-600">Unable to load system alerts</p>
+            <p className="text-gray-600">Unable to load alerts</p>
           </div>
         </CardContent>
       </Card>
     );
   }
 
-  const maintainables = systems || [];
   const maintenanceLogs = logs || [];
 
   // Generate alerts from real data

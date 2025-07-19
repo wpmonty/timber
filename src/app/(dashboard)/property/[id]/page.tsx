@@ -7,7 +7,7 @@ import { WarningAlerts } from '@/components/dashboard/WarningAlerts';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { useProperty } from '@/hooks/api/properties';
-import { useSystems } from '@/hooks/api/systems';
+import { useMaintainables } from '@/hooks/api/maintainables';
 import { useLogs } from '@/hooks/api/logs';
 
 interface PropertyPageProps {
@@ -19,7 +19,11 @@ export default function PropertyPage({ params }: PropertyPageProps) {
 
   // TODO combine into super query
   const { data: property, isLoading: propertyLoading, error: propertyError } = useProperty(id);
-  const { data: systems, isLoading: systemsLoading, error: systemsError } = useSystems(id);
+  const {
+    data: maintainables,
+    isLoading: maintainablesLoading,
+    error: maintainablesError,
+  } = useMaintainables(id);
   const { data: logs, isLoading: logsLoading, error: logsError } = useLogs(id);
 
   // TODO make proper 404 page
@@ -47,8 +51,8 @@ export default function PropertyPage({ params }: PropertyPageProps) {
             </p>
           </div>
           <div className="flex gap-3">
-            <Link href={`/property/${id}/systems`}>
-              <Button variant="outline">View All Systems</Button>
+            <Link href={`/property/${id}/maintainables`}>
+              <Button variant="outline">View All Maintainables</Button>
             </Link>
           </div>
         </div>
@@ -58,12 +62,12 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       <div className="mb-8">
         <PropertyOverview
           property={property ? property : undefined}
-          systems={systems ? systems : undefined}
+          maintainables={maintainables ? maintainables : undefined}
           logs={logs ? logs : undefined}
           propertyLoading={propertyLoading}
           propertyError={propertyError}
-          systemsLoading={systemsLoading}
-          systemsError={systemsError}
+          maintainablesLoading={maintainablesLoading}
+          maintainablesError={maintainablesError}
           logsLoading={logsLoading}
           logsError={logsError}
         />
@@ -74,9 +78,9 @@ export default function PropertyPage({ params }: PropertyPageProps) {
         {/* Appliances Grid - Takes up 2 columns on large screens */}
         <div className="lg:col-span-2">
           <MaintainablesGrid
-            systems={systems ? systems : []}
-            isLoading={systemsLoading}
-            error={systemsError}
+            maintainables={maintainables ? maintainables : []}
+            isLoading={maintainablesLoading}
+            error={maintainablesError}
           />
         </div>
 
@@ -89,11 +93,11 @@ export default function PropertyPage({ params }: PropertyPageProps) {
       {/* Warning Alerts */}
       <div className="mt-8">
         <WarningAlerts
-          systems={systems ? systems : []}
+          maintainables={maintainables ? maintainables : []}
           logs={logs ? logs : []}
-          systemsLoading={systemsLoading}
+          maintainablesLoading={maintainablesLoading}
           logsLoading={logsLoading}
-          systemsError={systemsError}
+          maintainablesError={maintainablesError}
           logsError={logsError}
         />
       </div>

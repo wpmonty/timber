@@ -3,8 +3,8 @@ import { Maintainable, MaintainableData } from '@/types/maintainable.types';
 // This file contains test fixtures and is not a test file itself
 // jest/no-tests
 
-// Valid system data fixtures
-export const validSystemData: MaintainableData = {
+// Valid maintainable data fixtures
+export const validMaintainableData: MaintainableData = {
   label: 'Central Air Conditioning',
   type: 'system',
   subtype: 'heat',
@@ -24,7 +24,7 @@ export const validSystemData: MaintainableData = {
   },
 };
 
-export const validMinimalSystemData: MaintainableData = {
+export const validMinimalMaintainableData: MaintainableData = {
   label: 'Water Heater',
   type: 'system',
   subtype: 'heat',
@@ -35,16 +35,16 @@ export const validMinimalSystemData: MaintainableData = {
   },
 };
 
-export const validSystemDatabaseEntry: Maintainable = {
-  id: 'test-system-id',
+export const validMaintainableDatabaseEntry: Maintainable = {
+  id: 'test-maintainable-id',
   created_at: '2024-01-01T00:00:00Z',
   updated_at: '2024-01-01T00:00:00Z',
   property_id: 'test-property-id',
-  data: validSystemData,
+  data: validMaintainableData,
 };
 
-// Malformed system data scenarios that could come from database
-export const malformedSystemData = {
+// Malformed maintainable data scenarios that could come from database
+export const malformedMaintainableData = {
   // Missing required fields
   missingType: {
     label: 'Central Air Conditioning',
@@ -151,9 +151,9 @@ export const malformedSystemData = {
 };
 
 // Database entries with malformed data field
-export const malformedSystemDatabaseEntries = {
+export const malformedMaintainableDatabaseEntries = {
   invalidJson: {
-    id: 'malformed-system-1',
+    id: 'malformed-maintainable-1',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     property_id: 'test-property-id',
@@ -161,7 +161,7 @@ export const malformedSystemDatabaseEntries = {
   },
 
   nullData: {
-    id: 'malformed-system-2',
+    id: 'malformed-maintainable-2',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     property_id: 'test-property-id',
@@ -169,7 +169,7 @@ export const malformedSystemDatabaseEntries = {
   },
 
   missingDataField: {
-    id: 'malformed-system-3',
+    id: 'malformed-maintainable-3',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     property_id: 'test-property-id',
@@ -177,35 +177,35 @@ export const malformedSystemDatabaseEntries = {
   },
 
   corruptedData: {
-    id: 'malformed-system-4',
+    id: 'malformed-maintainable-4',
     created_at: '2024-01-01T00:00:00Z',
     updated_at: '2024-01-01T00:00:00Z',
     property_id: 'test-property-id',
-    data: malformedSystemData.missingType,
+    data: malformedMaintainableData.missingType,
   },
 };
 
 // API response scenarios
 export const mockApiResponses = {
-  validSingleSystem: validSystemDatabaseEntry,
+  validSingleMaintainable: validMaintainableDatabaseEntry,
 
-  validSystemsList: [
-    validSystemDatabaseEntry,
+  validMaintainablesList: [
+    validMaintainableDatabaseEntry,
     {
-      ...validSystemDatabaseEntry,
-      id: 'test-system-id-2',
-      data: validMinimalSystemData,
+      ...validMaintainableDatabaseEntry,
+      id: 'test-maintainable-id-2',
+      data: validMinimalMaintainableData,
     },
   ],
 
-  emptySystemsList: [],
+  emptyMaintainablesList: [],
 
-  malformedSingleSystem: malformedSystemDatabaseEntries.corruptedData,
+  malformedSingleMaintainable: malformedMaintainableDatabaseEntries.corruptedData,
 
-  malformedSystemsList: [
-    validSystemDatabaseEntry,
-    malformedSystemDatabaseEntries.nullData,
-    malformedSystemDatabaseEntries.corruptedData,
+  malformedMaintainablesList: [
+    validMaintainableDatabaseEntry,
+    malformedMaintainableDatabaseEntries.nullData,
+    malformedMaintainableDatabaseEntries.corruptedData,
   ],
 
   networkError: new Error('Failed to fetch'),
@@ -222,15 +222,15 @@ export const mockApiResponses = {
 export const apiRequestPayloads = {
   validCreate: {
     property_id: 'test-property-id',
-    data: validSystemData,
+    data: validMaintainableData,
   },
 
   validUpdate: {
-    data: { ...validSystemData, label: 'Updated System Name' },
+    data: { ...validMaintainableData, label: 'Updated Maintainable Name' },
   },
 
   missingPropertyId: {
-    data: validSystemData,
+    data: validMaintainableData,
   },
 
   missingDataField: {
@@ -239,7 +239,7 @@ export const apiRequestPayloads = {
 
   invalidDataField: {
     property_id: 'test-property-id',
-    data: malformedSystemData.invalidTypes,
+    data: malformedMaintainableData.invalidTypes,
   },
 
   emptyPayload: {},

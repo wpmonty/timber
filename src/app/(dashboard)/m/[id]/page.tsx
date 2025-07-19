@@ -3,17 +3,17 @@
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { useSystem } from '@/hooks/api/systems';
+import { useMaintainable } from '@/hooks/api/maintainables';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
 
-interface SystemPageProps {
+interface MaintainablePageProps {
   params: { id: string };
 }
 
-export default function SystemPage({ params }: SystemPageProps) {
+export default function MaintainablePage({ params }: MaintainablePageProps) {
   const { id } = params;
-  const { data: system, isLoading, error } = useSystem(id);
+  const { data: maintainable, isLoading, error } = useMaintainable(id);
 
   const getCategoryIcon = (category: string) => {
     switch (category) {
@@ -44,14 +44,14 @@ export default function SystemPage({ params }: SystemPageProps) {
         <div className="flex items-center justify-center min-h-96">
           <div className="text-center">
             <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
-            <p className="mt-4 text-gray-600">Loading system...</p>
+            <p className="mt-4 text-gray-600">Loading maintainable...</p>
           </div>
         </div>
       </div>
     );
   }
 
-  if (error || !system) {
+  if (error || !maintainable) {
     return (
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="flex items-center justify-center min-h-96">
@@ -59,10 +59,13 @@ export default function SystemPage({ params }: SystemPageProps) {
             <div className="text-red-500 text-4xl mb-4">⚠️</div>
             <h2 className="text-xl font-semibold text-gray-900 mb-2">System Not Found</h2>
             <p className="text-gray-600">
-              {error?.message || 'The requested system could not be found.'}
+              {error?.message || 'The requested maintainable could not be found.'}
             </p>
-            <Link href={`/property/${system?.property_id}/systems`} className="mt-4 inline-block">
-              <Button variant="outline">← Back to Systems</Button>
+            <Link
+              href={`/property/${maintainable?.property_id}/maintainables`}
+              className="mt-4 inline-block"
+            >
+              <Button variant="outline">← Back to Maintainables</Button>
             </Link>
           </div>
         </div>
@@ -75,25 +78,27 @@ export default function SystemPage({ params }: SystemPageProps) {
       {/* Header */}
       <div className="mb-8">
         <div className="flex items-center gap-4 mb-4">
-          <Link href={`/property/${system.property_id}/systems`}>
+          <Link href={`/property/${maintainable.property_id}/maintainables`}>
             <Button variant="outline" size="sm">
               <ArrowLeft className="w-4 h-4 mr-2" />
-              Back to Systems
+              Back to Maintainables
             </Button>
           </Link>
         </div>
 
         <div className="flex items-start gap-4">
-          <span className="text-4xl">{getCategoryIcon(system.data.type ?? '')}</span>
+          <span className="text-4xl">{getCategoryIcon(maintainable.data.type ?? '')}</span>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">{system.data.label}</h1>
-            <p className="text-lg text-gray-600 capitalize mt-1">{system.data.subtype}</p>
-            <p className="text-sm text-gray-500 mt-1">{system.data.type?.replace('-', ' ')}</p>
+            <h1 className="text-3xl font-bold text-gray-900">{maintainable.data.label}</h1>
+            <p className="text-lg text-gray-600 capitalize mt-1">{maintainable.data.subtype}</p>
+            <p className="text-sm text-gray-500 mt-1">
+              {maintainable.data.type?.replace('-', ' ')}
+            </p>
           </div>
         </div>
       </div>
 
-      {/* System Details */}
+      {/* Maintainable Details */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Basic Information */}
         <Card>
@@ -102,24 +107,26 @@ export default function SystemPage({ params }: SystemPageProps) {
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-500">System Type</label>
-              <p className="text-gray-900 capitalize">{system.data.type?.replace('-', ' ')}</p>
+              <label className="text-sm font-medium text-gray-500">Maintainable Type</label>
+              <p className="text-gray-900 capitalize">
+                {maintainable.data.type?.replace('-', ' ')}
+              </p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Subtype</label>
-              <p className="text-gray-900 capitalize">{system.data.subtype}</p>
+              <p className="text-gray-900 capitalize">{maintainable.data.subtype}</p>
             </div>
-            {system.data.location && (
+            {maintainable.data.location && (
               <div>
                 <label className="text-sm font-medium text-gray-500">Location</label>
-                <p className="text-gray-900">{system.data.location}</p>
+                <p className="text-gray-900">{maintainable.data.location}</p>
               </div>
             )}
-            {system.data.condition && (
+            {maintainable.data.condition && (
               <div>
                 <label className="text-sm font-medium text-gray-500">Condition</label>
                 <div className="mt-1">
-                  <Badge variant="outline">{system.data.condition}</Badge>
+                  <Badge variant="outline">{maintainable.data.condition}</Badge>
                 </div>
               </div>
             )}
@@ -129,34 +136,38 @@ export default function SystemPage({ params }: SystemPageProps) {
         {/* Additional Details */}
         <Card>
           <CardHeader>
-            <CardTitle>System Details</CardTitle>
+            <CardTitle>Maintainable Details</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div>
-              <label className="text-sm font-medium text-gray-500">System ID</label>
-              <p className="text-gray-900 font-mono text-sm">{system.id}</p>
+              <label className="text-sm font-medium text-gray-500">Maintainable ID</label>
+              <p className="text-gray-900 font-mono text-sm">{maintainable.id}</p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Created</label>
-              <p className="text-gray-900">{new Date(system.created_at).toLocaleDateString()}</p>
+              <p className="text-gray-900">
+                {new Date(maintainable.created_at).toLocaleDateString()}
+              </p>
             </div>
             <div>
               <label className="text-sm font-medium text-gray-500">Last Updated</label>
-              <p className="text-gray-900">{new Date(system.updated_at).toLocaleDateString()}</p>
+              <p className="text-gray-900">
+                {new Date(maintainable.updated_at).toLocaleDateString()}
+              </p>
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Tags */}
-      {system.data.tags && system.data.tags.length > 0 && (
+      {maintainable.data.tags && maintainable.data.tags.length > 0 && (
         <Card className="mt-6">
           <CardHeader>
             <CardTitle>Tags</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="flex flex-wrap gap-2">
-              {system.data.tags.map((tag, index) => (
+              {maintainable.data.tags.map((tag, index) => (
                 <Badge key={index} variant="outline">
                   {tag}
                 </Badge>

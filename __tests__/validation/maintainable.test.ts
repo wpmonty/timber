@@ -6,12 +6,12 @@ import {
 } from '@/lib/validation/maintainable.validation';
 
 import {
-  malformedSystemData,
-  malformedSystemDatabaseEntries,
-  validMinimalSystemData,
-  validSystemData,
-  validSystemDatabaseEntry,
-} from '../fixtures/system-data';
+  malformedMaintainableData,
+  malformedMaintainableDatabaseEntries,
+  validMinimalMaintainableData,
+  validMaintainableData,
+  validMaintainableDatabaseEntry,
+} from '../fixtures/maintainable-data';
 import DishwasherMaintainableDataSchema from '@/lib/schemas/maintainable/appliance/dishwasher.schema';
 import RefrigeratorMaintainableDataSchema from '@/lib/schemas/maintainable/appliance/refrigerator.schema';
 
@@ -21,15 +21,15 @@ type DishwasherData = z.infer<typeof DishwasherMaintainableDataSchema>;
 describe('Maintainable Validation', () => {
   describe('isValidMaintainable (no subtype checking)', () => {
     it('returns true for valid data', () => {
-      const result = isValidMaintainable(validSystemDatabaseEntry);
+      const result = isValidMaintainable(validMaintainableDatabaseEntry);
       expect(result).toEqual(true);
     });
 
     it('returns false for invalid data', () => {
-      const result = isValidMaintainable(malformedSystemDatabaseEntries.invalidJson);
-      const result2 = isValidMaintainable(malformedSystemDatabaseEntries.nullData);
-      const result3 = isValidMaintainable(malformedSystemDatabaseEntries.missingDataField);
-      const result4 = isValidMaintainable(malformedSystemDatabaseEntries.corruptedData);
+      const result = isValidMaintainable(malformedMaintainableDatabaseEntries.invalidJson);
+      const result2 = isValidMaintainable(malformedMaintainableDatabaseEntries.nullData);
+      const result3 = isValidMaintainable(malformedMaintainableDatabaseEntries.missingDataField);
+      const result4 = isValidMaintainable(malformedMaintainableDatabaseEntries.corruptedData);
 
       expect(result).toEqual(false);
       expect(result2).toEqual(false);
@@ -40,23 +40,23 @@ describe('Maintainable Validation', () => {
 
   describe('isValidMaintainableData (no subtype checking)', () => {
     it('returns true for untyped valid data', () => {
-      const result = isValidMaintainableData(validSystemData);
-      const result2 = isValidMaintainableData(validMinimalSystemData);
+      const result = isValidMaintainableData(validMaintainableData);
+      const result2 = isValidMaintainableData(validMinimalMaintainableData);
 
       expect(result).toEqual(true);
       expect(result2).toEqual(true);
     });
 
     it('returns false for invalid data', () => {
-      const result = isValidMaintainableData(malformedSystemData.missingType);
-      const result2 = isValidMaintainableData(malformedSystemData.missingSubtype); // should pass actually
-      const result3 = isValidMaintainableData(malformedSystemData.invalidTypes);
-      const result4 = isValidMaintainableData(malformedSystemData.invalidValues);
-      const result5 = isValidMaintainableData(malformedSystemData.empty);
-      const result6 = isValidMaintainableData(malformedSystemData.notAnObject);
-      const result7 = isValidMaintainableData(malformedSystemData.arrayData);
-      const result8 = isValidMaintainableData(malformedSystemData.extremeValues);
-      const result9 = isValidMaintainableData(malformedSystemData.nullValues);
+      const result = isValidMaintainableData(malformedMaintainableData.missingType);
+      const result2 = isValidMaintainableData(malformedMaintainableData.missingSubtype); // should pass actually
+      const result3 = isValidMaintainableData(malformedMaintainableData.invalidTypes);
+      const result4 = isValidMaintainableData(malformedMaintainableData.invalidValues);
+      const result5 = isValidMaintainableData(malformedMaintainableData.empty);
+      const result6 = isValidMaintainableData(malformedMaintainableData.notAnObject);
+      const result7 = isValidMaintainableData(malformedMaintainableData.arrayData);
+      const result8 = isValidMaintainableData(malformedMaintainableData.extremeValues);
+      const result9 = isValidMaintainableData(malformedMaintainableData.nullValues);
 
       expect(result).toEqual(false);
       expect(result2).toEqual(false);
@@ -108,15 +108,15 @@ describe('Maintainable Validation', () => {
     });
 
     it('returns false for invalid data', () => {
-      const result = validateMaintainableData(malformedSystemData.missingType);
-      const result2 = validateMaintainableData(malformedSystemData.missingSubtype);
-      const result3 = validateMaintainableData(malformedSystemData.invalidTypes);
-      const result4 = validateMaintainableData(malformedSystemData.invalidValues);
-      const result5 = validateMaintainableData(malformedSystemData.empty);
-      const result6 = validateMaintainableData(malformedSystemData.notAnObject);
-      const result7 = validateMaintainableData(malformedSystemData.arrayData);
-      const result8 = validateMaintainableData(malformedSystemData.extremeValues);
-      const result9 = validateMaintainableData(malformedSystemData.nullValues);
+      const result = validateMaintainableData(malformedMaintainableData.missingType);
+      const result2 = validateMaintainableData(malformedMaintainableData.missingSubtype);
+      const result3 = validateMaintainableData(malformedMaintainableData.invalidTypes);
+      const result4 = validateMaintainableData(malformedMaintainableData.invalidValues);
+      const result5 = validateMaintainableData(malformedMaintainableData.empty);
+      const result6 = validateMaintainableData(malformedMaintainableData.notAnObject);
+      const result7 = validateMaintainableData(malformedMaintainableData.arrayData);
+      const result8 = validateMaintainableData(malformedMaintainableData.extremeValues);
+      const result9 = validateMaintainableData(malformedMaintainableData.nullValues);
 
       expect(result.success).toEqual(false);
       expect(result2.success).toEqual(false);
