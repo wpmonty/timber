@@ -4,7 +4,7 @@ import { MaintainableDataSchema, MaintainableMetadataBaseSchema } from '../../ma
 const RefrigeratorMaintainableDataSchema = MaintainableDataSchema.extend({
   type: z.literal('appliance'),
   subtype: z.literal('refrigerator'),
-  metadataSchema: MaintainableMetadataBaseSchema.extend({
+  metadata: MaintainableMetadataBaseSchema.extend({
     brand: z.string().optional(),
     capacity: z.number().optional(), // in cubic feet
     style: z.enum(['top-freezer', 'bottom-freezer', 'side-by-side', 'french-door']).optional(),

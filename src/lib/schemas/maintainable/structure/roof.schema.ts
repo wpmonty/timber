@@ -4,7 +4,7 @@ import { MaintainableDataSchema, MaintainableMetadataBaseSchema } from '../../ma
 const RoofMaintainableDataSchema = MaintainableDataSchema.extend({
   type: z.literal('structure'),
   subtype: z.literal('roof'),
-  metadataSchema: MaintainableMetadataBaseSchema.extend({
+  metadata: MaintainableMetadataBaseSchema.extend({
     material: z.string().optional(),
   }),
 });

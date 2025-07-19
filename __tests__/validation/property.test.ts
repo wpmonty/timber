@@ -3,7 +3,7 @@ import {
   malformedPropertyData,
   validMinimalPropertyData,
   validPropertyData,
-} from './fixtures/property-data';
+} from '../fixtures/property-data';
 
 describe('Property Validation', () => {
   describe('validatePropertyData', () => {
