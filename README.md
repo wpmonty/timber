@@ -1,10 +1,10 @@
-# Timber - House Manager
+# Maintainable.app - Personal Inventory Manager
 
-A comprehensive house manager web app for tracking major appliances and home maintenance items. Users can log their home assets, view maintenance timelines, cost projections, and receive proactive warnings about upcoming maintenance needs.
+A comprehensive inventory manager web app for tracking major appliances, systems, and other maintenance items. Users can log their assets, view maintenance tasks & schedules, cost projections, and receive proactive warnings about upcoming maintenance needs.
 
 ## 🏠 Features
 
-- Track home appliances and maintenance items
+- Track home appliances, systems, assets, and any other maintainable items
 - View maintenance timelines and cost projections
 - Receive proactive warnings for upcoming maintenance
 - Example: "Your roof is 23 years old, expect to replace it in 7 years for about $32,500"
@@ -33,7 +33,7 @@ A comprehensive house manager web app for tracking major appliances and home mai
 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd timber
+cd maintainable
 ```
 
 2. Install dependencies

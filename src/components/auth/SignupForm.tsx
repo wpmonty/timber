@@ -106,7 +106,9 @@ export function SignupForm() {
             <p className="text-sm font-medium text-blue-600 mt-1">{decodeURIComponent(address)}</p>
           </div>
         ) : (
-          <p className="mt-2 text-sm text-gray-600">Join Timber to start managing your home</p>
+          <p className="mt-2 text-sm text-gray-600">
+            Join Maintainable to start managing your everything
+          </p>
         )}
         <p className="mt-4 text-sm text-gray-600">
           Already have an account?{' '}

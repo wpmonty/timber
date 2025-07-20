@@ -9,28 +9,28 @@ import { MaintenanceLogEntry } from '@/types/maintenance.types';
 
 interface PropertyOverviewProps {
   property: Property | undefined;
-  systems: Maintainable[] | undefined;
+  maintainables: Maintainable[] | undefined;
   logs: MaintenanceLogEntry[] | undefined;
   propertyLoading: boolean;
   propertyError: Error | null;
-  systemsLoading: boolean;
-  systemsError: Error | null;
+  maintainablesLoading: boolean;
+  maintainablesError: Error | null;
   logsLoading: boolean;
   logsError: Error | null;
 }
 
 export function PropertyOverview({
   property,
-  systems,
+  maintainables,
   logs,
   propertyLoading,
   propertyError,
-  systemsLoading,
-  systemsError,
+  maintainablesLoading,
+  maintainablesError,
   logsLoading,
   logsError,
 }: PropertyOverviewProps) {
-  if (propertyLoading || systemsLoading || logsLoading) {
+  if (propertyLoading || maintainablesLoading || logsLoading) {
     return (
       <Card>
         <CardHeader>
@@ -45,7 +45,7 @@ export function PropertyOverview({
     );
   }
 
-  if (propertyError || systemsError || logsError) {
+  if (propertyError || maintainablesError || logsError) {
     return (
       <Card>
         <CardHeader>
@@ -61,10 +61,9 @@ export function PropertyOverview({
     );
   }
 
-  const maintainables = systems || [];
   const maintenanceLogs = logs || [];
 
-  if (!property || !systems || !logs || !property.data) {
+  if (!property || !maintainables || !logs || !property.data) {
     return (
       <Card>
         <CardHeader>
