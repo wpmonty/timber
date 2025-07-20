@@ -16,7 +16,7 @@ export function useNavigation() {
 
   const currentPropertyId = useMemo(() => {
     if (context === 'property') {
-      // Extract property ID from pathname like /property/123/systems
+      // Extract property ID from pathname like /property/123/maintainables
       const match = pathname.match(/^\/property\/([^\/]+)/);
       return match ? match[1] : null;
     }

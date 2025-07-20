@@ -30,9 +30,34 @@ interface NavigationItem {
 
 const getGlobalNavigationItems = (): NavigationItem[] => [
   {
+    title: 'Home',
+    href: '/all',
+    icon: Home,
+  },
+  {
     title: 'Properties',
     href: '/properties',
     icon: Home,
+  },
+  {
+    title: 'Vehicles',
+    href: '/inventory',
+    icon: Settings,
+  },
+  {
+    title: 'Tools',
+    href: '/inventory',
+    icon: Settings,
+  },
+  {
+    title: 'Clothing',
+    href: '/inventory',
+    icon: Settings,
+  },
+  {
+    title: 'Electronics',
+    href: '/settings',
+    icon: Settings,
   },
 ];
 
@@ -44,7 +69,7 @@ const getPropertyNavigationItems = (propertyId: string): NavigationItem[] => [
   },
   {
     title: 'Systems & Appliances',
-    href: `/property/${propertyId}/systems`,
+    href: `/property/${propertyId}/maintainables`,
     icon: Settings,
   },
   {
@@ -160,12 +185,7 @@ export function TopNavigation() {
                 <Link key={item.href} href={item.href}>
                   <Button
                     variant={active ? 'primary' : 'ghost'}
-                    className={cn(
-                      'flex items-center gap-2',
-                      active
-                        ? 'bg-blue-100 text-blue-700'
-                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                    )}
+                    className={cn('flex items-center gap-2')}
                   >
                     <Icon className="w-4 h-4" />
                     {item.title}
@@ -173,30 +193,6 @@ export function TopNavigation() {
                 </Link>
               );
             })}
-
-            {/* Property Address/Selector - only show when on property pages */}
-            {context === 'property' && currentProperty && (
-              <div className="flex items-center gap-2 ml-4">
-                {properties && properties.length > 1 ? (
-                  <select
-                    className="bg-white text-gray-700 border border-gray-300 rounded-md py-1 px-3 text-sm"
-                    value={currentProperty.id}
-                    onChange={e => {
-                      const propertyId = e.target.value;
-                      router.push(`/property/${propertyId}`);
-                    }}
-                  >
-                    {properties.map(property => (
-                      <option key={property.id} value={property.id}>
-                        {property.address}
-                      </option>
-                    ))}
-                  </select>
-                ) : (
-                  <span className="text-sm text-gray-600">{currentProperty.address}</span>
-                )}
-              </div>
-            )}
           </nav>
         </div>
 
@@ -256,41 +252,65 @@ export function TopNavigation() {
       {context === 'property' && currentProperty && !propertiesLoading && (
         <div className="border-t border-gray-100 bg-gray-50">
           <div className="max-w-7xl mx-auto px-6 py-3">
-            {/* Property Navigation */}
-            <nav className="flex items-center gap-1">
-              {getPropertyNavigationItems(currentProperty.id).map(item => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
+            <div className="flex items-center justify-between">
+              {/* Property Navigation */}
+              <nav className="flex items-center gap-1">
+                {getPropertyNavigationItems(currentProperty.id).map(item => {
+                  const Icon = item.icon;
+                  const active = isActive(item.href);
 
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <Button
-                      variant={active ? 'primary' : 'ghost'}
-                      size="sm"
-                      className={cn(
-                        'flex items-center gap-2',
-                        active
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                      )}
-                    >
-                      <Icon className="w-4 h-4" />
-                      {item.title}
-                      {item.badge && (
-                        <span
-                          className={cn(
-                            'px-2 py-0.5 text-xs rounded-full',
-                            active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                          )}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Button>
-                  </Link>
-                );
-              })}
-            </nav>
+                  return (
+                    <Link key={item.href} href={item.href}>
+                      <Button
+                        variant={active ? 'primary' : 'ghost'}
+                        size="sm"
+                        className={cn(
+                          'flex items-center gap-2',
+                          active
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                        )}
+                      >
+                        <Icon className="w-4 h-4" />
+                        {item.title}
+                        {item.badge && (
+                          <span
+                            className={cn(
+                              'px-2 py-0.5 text-xs rounded-full',
+                              active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                            )}
+                          >
+                            {item.badge}
+                          </span>
+                        )}
+                      </Button>
+                    </Link>
+                  );
+                })}
+              </nav>
+
+              {/* Property Address/Selector - aligned to the right */}
+              <div className="flex items-center gap-2">
+                {properties && properties.length > 1 ? (
+                  <select
+                    className="bg-white text-gray-700 border border-gray-300 rounded-md py-1 px-3 text-sm"
+                    value={currentProperty.id}
+                    onChange={e => {
+                      const propertyId = e.target.value;
+                      router.push(`/property/${propertyId}`);
+                    }}
+                  >
+                    {properties.map(property => (
+                      <option key={property.id} value={property.id}>
+                        {property.address}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="text-sm text-gray-600">{currentProperty.address}</span>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       )}
