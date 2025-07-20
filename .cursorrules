@@ -1,8 +1,8 @@
-# Timber - House Manager Web App
+# Maintable.app - Personal Inventory Manager Web App
 
 ## Project Overview
 
-A comprehensive house manager web app for tracking major appliances and home maintenance items. Users can log their home assets, view maintenance timelines, cost projections, and receive proactive warnings about upcoming maintenance needs.
+A comprehensive personal inventory manager web app for tracking any maintainable items. Users can log their assets, view maintenance timelines, cost projections, and receive proactive warnings about upcoming maintenance needs.
 
 ## Tech Stack
 
@@ -22,8 +22,8 @@ A comprehensive house manager web app for tracking major appliances and home mai
 
 This project uses Supabase as the database backend. The database configuration is handled through:
 
-- `src/lib/supabase.ts` - Supabase client configuration
-- `src/types/supabase.types.ts` - Auto-generated TypeScript types from Supabase schema
+- `src/lib/supabase.*.ts` - Supabase client & middleware configurations
+- `src/types/supabase.types.ts` - Auto-generated TypeScript types from Supabase schema (DO NOT EDIT)
 
 ### Environment Variables
 
@@ -56,29 +56,37 @@ const { data, error } = await supabaseServer.from('properties').select('*');
 
 ```
 src/
-├── app/                 # Next.js App Router pages
+├── app/                # Next.js App Router pages
 │   ├── api/            # API routes for database operations
 │   ├── (auth)/         # Auth-related pages
-│   ├── dashboard/      # Dashboard pages
-│   ├── property/       # Property management pages
-│   └── maintenance/    # Maintenance scheduling pages
+│   ├── (dashboard)/    # Dashboard pages
+│   │   ├── property/   # Single Property management pages
+│   │   ├── properties/ # Properties management page
+│   │   ├── m/          # Single Maintainable management page
+│   └── onboarding/     # Initial user onboarding flow
 ├── components/         # Reusable UI components
-│   ├── ui/            # Base UI components (buttons, inputs, etc.)
-│   ├── forms/         # Form components
-│   ├── charts/        # Data visualization components
-│   ├── dashboard/     # Dashboard-specific components
-│   └── layout/        # Layout components
-├── lib/               # Utility functions and configurations
-│   ├── utils.ts       # General utilities
-│   ├── supabase.ts    # Supabase client configuration
-│   ├── validations.ts # Zod schemas
-│   └── constants.ts   # App constants
+│   ├── ui/             # Base UI components (buttons, inputs, etc.)
+│   ├── forms/          # Form components
+│   ├── dashboard/      # Dashboard-specific components
+│   └── layout/         # Layout components
+│   └── auth/           # Login & signup components
+│   └── providers/      # Context providers
+├── lib/                # Utility functions and configurations
+│   ├── utils.ts        # General utilities
+│   ├── supabase.*.ts   # Supabase client & middleware configurations
+│   ├── schemas/        # Zod schemas
+│   ├── validation/     # Zod schema validators
+│   ├── maintainable-registry.ts     # Exports for all zod schemas
+│   └── api-client-helpers.ts        # Next API helper
 ├── types/             # TypeScript type definitions
 │   ├── supabase.types.ts # Auto-generated Supabase types - DO NOT MODIFY
 │   ├── general.types.ts  # General shared types
-│   ├── maintenance.ts # Maintenance-related types
-│   └── property.types.ts # Property-related types
+│   ├── maintenance.ts    # Core maintenance-log types, with DB
+│   ├── maintainable.ts   # Core maintainable types, with DB
+│   ├── auth.ts           # Auth types
+│   └── property.types.ts # Core property types, with DB
 ├── hooks/             # Custom React hooks
+│   ├── useAuth.ts     # Core auth hook
 │   └── api/           # API-specific hooks for data fetching
 ├── data/              # Static data and seed files
 └── scripts/           # Database scripts
