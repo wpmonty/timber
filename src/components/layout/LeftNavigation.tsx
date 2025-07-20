@@ -34,7 +34,7 @@ const getPropertyNavigationItems = (propertyId: string): NavigationItem[] => [
   },
   {
     title: 'Systems & Appliances',
-    href: `/property/${slug}/maintainables`,
+    href: `/property/${propertyId}/maintainables`,
     icon: Settings,
   },
   {
@@ -123,105 +123,104 @@ export function LeftNavigation() {
         </Link>
       </div>
 
-        {/* Global Create Button */}
-        <div className="p-4 border-b border-gray-200">
-          <Button
-            onClick={handleCreate}
-            className="w-full flex items-center gap-2"
-            variant="secondary"
-          >
-            <Plus className="h-4 w-4" />
-            Create
-          </Button>
+      {/* Global Create Button */}
+      <div className="p-4 border-b border-gray-200">
+        <Button
+          onClick={handleCreate}
+          className="w-full flex items-center gap-2"
+          variant="secondary"
+        >
+          <Plus className="h-4 w-4" />
+          Create
+        </Button>
+      </div>
+
+      {/* Navigation Items */}
+      {!propertiesLoading ? (
+        <nav className="flex-1 p-4">
+          {/* Property Selector - only show when on property pages */}
+          {context === 'property' && currentProperty && properties && properties.length > 1 && (
+            <select
+              className="w-full mb-4 bg-gray-100 text-gray-700 border border-gray-300 rounded-md py-2 px-3"
+              value={currentProperty.id}
+              onChange={e => {
+                const propertyId = e.target.value;
+                router.push(`/property/${propertyId}`);
+              }}
+            >
+              {properties.map(property => (
+                <option key={property.id} value={property.id}>
+                  {property.address}
+                </option>
+              ))}
+            </select>
+          )}
+
+          <div className="space-y-2">
+            {navigationItems.map(item => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
+
+              return (
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant={active ? 'primary' : 'ghost'}
+                    className={cn(
+                      'w-full justify-start gap-3 text-left font-normal',
+                      active
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                    )}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span className="flex-1">{item.title}</span>
+                    {item.badge && (
+                      <span
+                        className={cn(
+                          'px-2 py-1 text-xs rounded-full',
+                          active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
+                        )}
+                      >
+                        {item.badge}
+                      </span>
+                    )}
+                  </Button>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
+      ) : (
+        <div className="flex-1 p-4"></div>
+      )}
+
+      {/* Footer */}
+      <div className="p-4 border-t border-gray-200 space-y-4">
+        {/* User Info */}
+        <div className="flex items-center gap-3 text-sm text-gray-600">
+          <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+            <User className="w-4 h-4" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="font-medium text-gray-900 truncate">{user?.email}</p>
+          </div>
         </div>
 
-        {/* Navigation Items */}
-        {!propertiesLoading ? (
-          <nav className="flex-1 p-4">
-            {/* Property Selector - only show when on property pages */}
-            {context === 'property' && currentProperty && properties && properties.length > 1 && (
-              <select
-                className="w-full mb-4 bg-gray-100 text-gray-700 border border-gray-300 rounded-md py-2 px-3"
-                value={currentProperty.id}
-                onChange={e => {
-                  const propertyId = e.target.value;
-                  router.push(`/property/${propertyId}`);
-                }}
-              >
-                {properties.map(property => (
-                  <option key={property.id} value={property.id}>
-                    {property.address}
-                  </option>
-                ))}
-              </select>
-            )}
-
-            <div className="space-y-2">
-              {navigationItems.map(item => {
-                const Icon = item.icon;
-                const active = isActive(item.href);
-
-                return (
-                  <Link key={item.href} href={item.href}>
-                    <Button
-                      variant={active ? 'primary' : 'ghost'}
-                      className={cn(
-                        'w-full justify-start gap-3 text-left font-normal',
-                        active
-                          ? 'bg-blue-600 text-white'
-                          : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
-                      )}
-                    >
-                      <Icon className="w-5 h-5" />
-                      <span className="flex-1">{item.title}</span>
-                      {item.badge && (
-                        <span
-                          className={cn(
-                            'px-2 py-1 text-xs rounded-full',
-                            active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
-                          )}
-                        >
-                          {item.badge}
-                        </span>
-                      )}
-                    </Button>
-                  </Link>
-                );
-              })}
-            </div>
-          </nav>
-        ) : (
-          <div className="flex-1 p-4"></div>
-        )}
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 space-y-4">
-          {/* User Info */}
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate">{user?.email}</p>
-            </div>
-          </div>
-
-          {/* Notifications */}
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <Bell className="w-4 h-4" />
-            <span>Notifications</span>
-          </div>
-
-          {/* Logout */}
-          <Button
-            onClick={handleSignOut}
-            variant="ghost"
-            className="w-full justify-start gap-3 text-left font-normal text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </Button>
+        {/* Notifications */}
+        <div className="flex items-center gap-3 text-sm text-gray-600">
+          <Bell className="w-4 h-4" />
+          <span>Notifications</span>
         </div>
+
+        {/* Logout */}
+        <Button
+          onClick={handleSignOut}
+          variant="ghost"
+          className="w-full justify-start gap-3 text-left font-normal text-gray-700 hover:text-gray-900 hover:bg-gray-100"
+        >
+          <LogOut className="w-4 h-4" />
+          <span>Sign Out</span>
+        </Button>
       </div>
     </div>
   );

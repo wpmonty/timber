@@ -2,14 +2,24 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Home, Settings, AlertTriangle, Bell, List, LogOut, User, Plus } from 'lucide-react';
+import {
+  Home,
+  Settings,
+  AlertTriangle,
+  Bell,
+  List,
+  LogOut,
+  User,
+  Plus,
+  ChevronDown,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { cn } from '@/lib/utils';
 import { Property } from '@/types/property.types';
 import { useProperties } from '@/hooks/api/properties';
 import { useAuth } from '@/hooks/useAuth';
 import { useNavigation } from '@/hooks/useNavigation';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 interface NavigationItem {
   title: string;
@@ -59,9 +69,25 @@ export function TopNavigation() {
     error: propertiesError,
   } = useProperties();
   const [currentProperty, setCurrentProperty] = useState<Property | null>(null);
+  const [isUserDropdownOpen, setIsUserDropdownOpen] = useState(false);
   const { context, currentPropertyId, pathname } = useNavigation();
+  const userDropdownRef = useRef<HTMLDivElement>(null);
 
   const router = useRouter();
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userDropdownRef.current && !userDropdownRef.current.contains(event.target as Node)) {
+        setIsUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   useEffect(() => {
     if (properties && properties.length > 0) {
@@ -120,7 +146,7 @@ export function TopNavigation() {
             </div>
             <div>
               <h1 className="text-xl font-bold text-gray-900">Maintainable</h1>
-              <p className="text-xs text-gray-600">House Manager</p>
+              <p className="text-xs text-gray-600">Personal Inventory Manager</p>
             </div>
           </Link>
 
@@ -177,28 +203,51 @@ export function TopNavigation() {
         {/* Right Side Actions */}
         <div className="flex items-center gap-4">
           {/* Notifications */}
-          <Button variant="ghost" size="sm" className="relative">
+          <Button variant="ghost" size="md" className="relative">
             <Bell className="w-5 h-5" />
             <span className="sr-only">Notifications</span>
           </Button>
 
-          {/* User Menu */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 text-sm text-gray-600">
-              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+          {/* User Menu Dropdown */}
+          <div className="relative" ref={userDropdownRef}>
+            <Button
+              variant="outline"
+              size="md"
+              className="flex items-center gap-2 px-2"
+              onClick={() => setIsUserDropdownOpen(!isUserDropdownOpen)}
+            >
+              <div className="w-8 h-8 flex items-center justify-center">
                 <User className="w-4 h-4" />
               </div>
               <span className="hidden md:block font-medium text-gray-900">{user?.email}</span>
-            </div>
-            <Button
-              onClick={handleSignOut}
-              variant="ghost"
-              size="sm"
-              className="flex items-center gap-2"
-            >
-              <LogOut className="w-4 h-4" />
-              <span className="hidden md:block">Sign Out</span>
+              <ChevronDown
+                className={cn('w-4 h-4 transition-transform', isUserDropdownOpen && 'rotate-180')}
+              />
             </Button>
+
+            {/* Dropdown Menu */}
+            {isUserDropdownOpen && (
+              <div className="absolute right-0 mt-2 w-52 bg-white rounded-md shadow-lg border border-gray-200 z-50">
+                <Link
+                  href="/profile"
+                  className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={() => setIsUserDropdownOpen(false)}
+                >
+                  <User className="w-4 h-4" />
+                  Profile
+                </Link>
+                <button
+                  onClick={() => {
+                    setIsUserDropdownOpen(false);
+                    handleSignOut();
+                  }}
+                  className="flex items-center gap-2 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                >
+                  <LogOut className="w-4 h-4" />
+                  Sign Out
+                </button>
+              </div>
+            )}
           </div>
         </div>
       </div>
