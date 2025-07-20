@@ -2,7 +2,7 @@
 
 ## 🎯 Overview
 
-Successfully implemented a complete authentication system for the Timber app using Supabase email/password authentication with Next.js 14 App Router. The system includes user registration, login, session management, route protection, and a seamless user experience.
+Successfully implemented a complete authentication system for the Maintainable app using Supabase email/password authentication with Next.js 14 App Router. The system includes user registration, login, session management, route protection, and a seamless user experience.
 
 ## 🏗️ Architecture
 

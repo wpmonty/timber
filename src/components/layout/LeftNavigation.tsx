@@ -86,11 +86,11 @@ export function LeftNavigation() {
       <div className="p-6 border-b border-gray-200">
         <Link href="/properties" className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-            <span className="text-white font-bold text-sm">T</span>
+            <span className="text-white font-bold text-sm">M</span>
           </div>
           <div>
-            <h1 className="text-xl font-bold text-gray-900">Timber</h1>
-            <p className="text-xs text-gray-600">House Manager</p>
+            <h1 className="text-xl font-bold text-gray-900">Maintainable</h1>
+            <p className="text-xs text-gray-600">Personal Inventory Manager</p>
           </div>
         </Link>
       </div>

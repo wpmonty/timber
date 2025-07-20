@@ -33,7 +33,7 @@ A comprehensive inventory manager web app for tracking major appliances, systems
 1. Clone the repository
 ```bash
 git clone <repository-url>
-cd timber
+cd maintainable
 ```
 
 2. Install dependencies

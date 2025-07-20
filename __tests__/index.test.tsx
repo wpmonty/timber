@@ -22,12 +22,12 @@ const TestWrapper = ({ children }: { children: React.ReactNode }) => {
 };
 
 describe('Home', () => {
-  it('renders the main Timber heading', () => {
+  it('renders the main heading', () => {
     render(<Home />, { wrapper: TestWrapper });
 
-    // Look for the main "Timber" heading (there are multiple h1s, so get all and check)
+    // Look for the main "Maintainable" heading (there are multiple h1s, so get all and check)
     const headings = screen.getAllByRole('heading', { level: 1 });
-    const mainHeading = headings.find(heading => heading.textContent === 'Timber');
+    const mainHeading = headings.find(heading => heading.textContent === 'Maintainable');
     expect(mainHeading).toBeInTheDocument();
   });
 
