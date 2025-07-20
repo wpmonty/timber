@@ -34,7 +34,7 @@ describe('Home', () => {
   it('renders the home manager subtitle', () => {
     render(<Home />, { wrapper: TestWrapper });
 
-    const subtitle = screen.getByText('Your Home Manager');
+    const subtitle = screen.getByText('Your Personal Inventory Manager');
     expect(subtitle).toBeInTheDocument();
   });
 
