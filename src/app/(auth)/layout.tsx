@@ -5,10 +5,10 @@ export default async function AuthLayout({ children }: { children: React.ReactNo
         {/* Logo/Brand */}
         <div className="text-center">
           <div className="mx-auto w-16 h-16 bg-blue-600 rounded-xl flex items-center justify-center mb-4">
-            <span className="text-white font-bold text-2xl">T</span>
+            <span className="text-white font-bold text-2xl">M</span>
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Timber</h1>
-          <p className="text-gray-600 mt-2">House Manager</p>
+          <h1 className="text-3xl font-bold text-gray-900">Maintainable</h1>
+          <p className="text-gray-600 mt-2">Personal Inventory Manager</p>
         </div>
 
         {/* Auth Form */}

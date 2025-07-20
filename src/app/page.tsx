@@ -70,7 +70,7 @@ export default function Home() {
           </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
             Track your home&apos;s maintenance, manage appliances, and never miss an important
-            repair again.
+            repair again. Track any maintainable item you can think of.
           </p>
         </div>
 

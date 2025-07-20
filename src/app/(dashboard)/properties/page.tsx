@@ -116,7 +116,7 @@ export default function PropertiesPage() {
     return (
       <div className="max-w-4xl mx-auto p-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Timber!</h1>
+          <h1 className="text-3xl font-bold text-gray-900 mb-4">Welcome to Maintainable!</h1>
           <p className="text-lg text-gray-600 mb-8">
             Let&apos;s get started by adding your first property.
           </p>

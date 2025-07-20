@@ -34,7 +34,7 @@ const getPropertyNavigationItems = (propertyId: string): NavigationItem[] => [
   },
   {
     title: 'Systems & Appliances',
-    href: `/property/${propertyId}/systems`,
+    href: `/property/${slug}/maintainables`,
     icon: Settings,
   },
   {
@@ -109,20 +109,19 @@ export function LeftNavigation() {
       : getGlobalNavigationItems();
 
   return (
-    <div className="w-72 bg-white border-r border-gray-200 m-h-screen relative">
-      <div className="fixed top-0 left-0 w-72 h-screen flex flex-col">
-        {/* Logo/Brand */}
-        <div className="p-6 border-b border-gray-200">
-          <Link href="/properties" className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-sm">M</span>
-            </div>
-            <div>
-              <h1 className="text-xl font-bold text-gray-900">Maintainable</h1>
-              <p className="text-xs text-gray-600">House Manager</p>
-            </div>
-          </Link>
-        </div>
+    <div className="flex flex-col w-72 bg-white border-r border-gray-200 min-h-screen fixed">
+      {/* Logo/Brand */}
+      <div className="p-6 border-b border-gray-200">
+        <Link href="/properties" className="flex items-center gap-3">
+          <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+            <span className="text-white font-bold text-sm">M</span>
+          </div>
+          <div>
+            <h1 className="text-xl font-bold text-gray-900">Maintainable</h1>
+            <p className="text-xs text-gray-600">Personal Inventory Manager</p>
+          </div>
+        </Link>
+      </div>
 
         {/* Global Create Button */}
         <div className="p-4 border-b border-gray-200">

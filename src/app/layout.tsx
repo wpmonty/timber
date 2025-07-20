@@ -8,9 +8,9 @@ import { AppLayoutContent } from '@/components/layout/AppLayoutContent';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Timber - House Manager',
+  title: 'Maintainable - Personal Inventory Manager',
   description:
-    'A comprehensive house manager web app for tracking major appliances and home maintenance items.',
+    'A comprehensive personal inventory manager web app for tracking any maintainable items.',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
