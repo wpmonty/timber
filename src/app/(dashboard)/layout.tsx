@@ -1,10 +1,12 @@
-import { LeftNavigation } from '@/components/layout/LeftNavigation';
+import { TopNavigation } from '@/components/layout/TopNavigation';
+// import { LeftNavigation } from '@/components/layout/LeftNavigation';
 
 export default async function DashboardLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      <LeftNavigation />
-      <main className="flex-1 overflow-auto ml-32">{children}</main>
+    <div className="flex flex-col min-h-screen bg-gray-50">
+      <TopNavigation />
+      {/* <LeftNavigation /> */}
+      <section className="flex-1 overflow-auto">{children}</section>
     </div>
   );
 }
