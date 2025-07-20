@@ -51,7 +51,7 @@ const getPropertyNavigationItems = (propertyId: string): NavigationItem[] => [
   },
 ];
 
-export function LeftNavigation() {
+export function TopNavigation() {
   const { user, isLoading: authLoading, signOut } = useAuth();
   const {
     data: properties,
@@ -109,10 +109,11 @@ export function LeftNavigation() {
       : getGlobalNavigationItems();
 
   return (
-    <div className="w-72 bg-white border-r border-gray-200 m-h-screen relative">
-      <div className="fixed top-0 left-0 w-72 h-screen flex flex-col">
-        {/* Logo/Brand */}
-        <div className="p-6 border-b border-gray-200">
+    <div className="bg-white border-b border-gray-200">
+      {/* Main Navigation Bar */}
+      <div className="flex items-center justify-between px-6 py-4">
+        {/* Logo and Brand */}
+        <div className="flex items-center gap-6">
           <Link href="/properties" className="flex items-center gap-3">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-sm">M</span>
@@ -122,43 +123,93 @@ export function LeftNavigation() {
               <p className="text-xs text-gray-600">House Manager</p>
             </div>
           </Link>
-        </div>
 
-        {/* Global Create Button */}
-        <div className="p-4 border-b border-gray-200">
-          <Button
-            onClick={handleCreate}
-            className="w-full flex items-center gap-2"
-            variant="secondary"
-          >
-            <Plus className="h-4 w-4" />
-            Create
-          </Button>
-        </div>
+          {/* Global Navigation */}
+          <nav className="flex items-center gap-1">
+            {getGlobalNavigationItems().map(item => {
+              const Icon = item.icon;
+              const active = isActive(item.href);
 
-        {/* Navigation Items */}
-        {!propertiesLoading ? (
-          <nav className="flex-1 p-4">
-            {/* Property Selector - only show when on property pages */}
-            {context === 'property' && currentProperty && properties && properties.length > 1 && (
-              <select
-                className="w-full mb-4 bg-gray-100 text-gray-700 border border-gray-300 rounded-md py-2 px-3"
-                value={currentProperty.id}
-                onChange={e => {
-                  const propertyId = e.target.value;
-                  router.push(`/property/${propertyId}`);
-                }}
-              >
-                {properties.map(property => (
-                  <option key={property.id} value={property.id}>
-                    {property.address}
-                  </option>
-                ))}
-              </select>
+              return (
+                <Link key={item.href} href={item.href}>
+                  <Button
+                    variant={active ? 'primary' : 'ghost'}
+                    className={cn(
+                      'flex items-center gap-2',
+                      active
+                        ? 'bg-blue-100 text-blue-700'
+                        : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
+                    )}
+                  >
+                    <Icon className="w-4 h-4" />
+                    {item.title}
+                  </Button>
+                </Link>
+              );
+            })}
+
+            {/* Property Address/Selector - only show when on property pages */}
+            {context === 'property' && currentProperty && (
+              <div className="flex items-center gap-2 ml-4">
+                {properties && properties.length > 1 ? (
+                  <select
+                    className="bg-white text-gray-700 border border-gray-300 rounded-md py-1 px-3 text-sm"
+                    value={currentProperty.id}
+                    onChange={e => {
+                      const propertyId = e.target.value;
+                      router.push(`/property/${propertyId}`);
+                    }}
+                  >
+                    {properties.map(property => (
+                      <option key={property.id} value={property.id}>
+                        {property.address}
+                      </option>
+                    ))}
+                  </select>
+                ) : (
+                  <span className="text-sm text-gray-600">{currentProperty.address}</span>
+                )}
+              </div>
             )}
+          </nav>
+        </div>
 
-            <div className="space-y-2">
-              {navigationItems.map(item => {
+        {/* Right Side Actions */}
+        <div className="flex items-center gap-4">
+          {/* Notifications */}
+          <Button variant="ghost" size="sm" className="relative">
+            <Bell className="w-5 h-5" />
+            <span className="sr-only">Notifications</span>
+          </Button>
+
+          {/* User Menu */}
+          <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
+                <User className="w-4 h-4" />
+              </div>
+              <span className="hidden md:block font-medium text-gray-900">{user?.email}</span>
+            </div>
+            <Button
+              onClick={handleSignOut}
+              variant="ghost"
+              size="sm"
+              className="flex items-center gap-2"
+            >
+              <LogOut className="w-4 h-4" />
+              <span className="hidden md:block">Sign Out</span>
+            </Button>
+          </div>
+        </div>
+      </div>
+
+      {/* Property Subnavigation */}
+      {context === 'property' && currentProperty && !propertiesLoading && (
+        <div className="border-t border-gray-100 bg-gray-50">
+          <div className="max-w-7xl mx-auto px-6 py-3">
+            {/* Property Navigation */}
+            <nav className="flex items-center gap-1">
+              {getPropertyNavigationItems(currentProperty.id).map(item => {
                 const Icon = item.icon;
                 const active = isActive(item.href);
 
@@ -166,19 +217,20 @@ export function LeftNavigation() {
                   <Link key={item.href} href={item.href}>
                     <Button
                       variant={active ? 'primary' : 'ghost'}
+                      size="sm"
                       className={cn(
-                        'w-full justify-start gap-3 text-left font-normal',
+                        'flex items-center gap-2',
                         active
                           ? 'bg-blue-600 text-white'
                           : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100'
                       )}
                     >
-                      <Icon className="w-5 h-5" />
-                      <span className="flex-1">{item.title}</span>
+                      <Icon className="w-4 h-4" />
+                      {item.title}
                       {item.badge && (
                         <span
                           className={cn(
-                            'px-2 py-1 text-xs rounded-full',
+                            'px-2 py-0.5 text-xs rounded-full',
                             active ? 'bg-blue-500 text-white' : 'bg-gray-200 text-gray-700'
                           )}
                         >
@@ -189,41 +241,10 @@ export function LeftNavigation() {
                   </Link>
                 );
               })}
-            </div>
-          </nav>
-        ) : (
-          <div className="flex-1 p-4"></div>
-        )}
-
-        {/* Footer */}
-        <div className="p-4 border-t border-gray-200 space-y-4">
-          {/* User Info */}
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <div className="w-8 h-8 bg-gray-200 rounded-full flex items-center justify-center">
-              <User className="w-4 h-4" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <p className="font-medium text-gray-900 truncate">{user?.email}</p>
-            </div>
+            </nav>
           </div>
-
-          {/* Notifications */}
-          <div className="flex items-center gap-3 text-sm text-gray-600">
-            <Bell className="w-4 h-4" />
-            <span>Notifications</span>
-          </div>
-
-          {/* Logout */}
-          <Button
-            onClick={handleSignOut}
-            variant="ghost"
-            className="w-full justify-start gap-3 text-left font-normal text-gray-700 hover:text-gray-900 hover:bg-gray-100"
-          >
-            <LogOut className="w-4 h-4" />
-            <span>Sign Out</span>
-          </Button>
         </div>
-      </div>
+      )}
     </div>
   );
 }

@@ -7,6 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
+import { useAuth } from '@/hooks/useAuth';
 
 // Address validation schema
 const addressSchema = z.object({
@@ -18,6 +19,7 @@ type AddressFormData = z.infer<typeof addressSchema>;
 export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const { user } = useAuth();
 
   const {
     register,
@@ -46,18 +48,26 @@ export default function Home() {
 
   return (
     <main className="min-h-screen bg-gradient-to-br from-blue-50 to-white">
-      <header className="flex justify-between items-center p-4">
-        <h1 className="text-2xl font-bold">Timber</h1>
-        <div className="flex gap-4 text-blue-500 font-semibold">
-          <Link href="/signup">Signup</Link>
-          <Link href="/login">Login</Link>
-        </div>
+      <header className="flex justify-between items-center py-4 px-8">
+        <h1 className="text-2xl font-bold">Maintainable.app</h1>
+        {user ? (
+          <div className="flex gap-4 text-blue-500 font-semibold">
+            <Link href="/properties">Dashboard</Link>
+          </div>
+        ) : (
+          <div className="flex gap-4 text-blue-500 font-semibold">
+            <Link href="/signup">Signup</Link>
+            <Link href="/login">Login</Link>
+          </div>
+        )}
       </header>
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Hero Section */}
         <div className="text-center mb-12 pt-20">
-          <h1 className="text-5xl font-bold text-gray-900 mb-6">Timber</h1>
-          <h2 className="text-2xl font-semibold text-gray-700 mb-8">Your Home Manager</h2>
+          <h1 className="text-5xl font-bold text-gray-900 mb-6">
+            <span className="text-blue-700">Maintain</span>
+            <span className="text-gray-900">able</span>
+          </h1>
           <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
             Track your home&apos;s maintenance, manage appliances, and never miss an important
             repair again.
