@@ -81,6 +81,53 @@ export const MaintainableTypeOptions = z.enum([
 
 export type MaintainableType = (typeof MaintainableTypeOptions.options)[number];
 
+// Onboarding metadata as a Zod schema
+export const OnboardingMetadataSchema = z
+  .object({
+    order: z.number(),
+    required: z.boolean(),
+    skipable: z.boolean().optional(),
+    skip: z.boolean().optional(), // Skip this field entirely in onboarding
+    priority: z.enum(['high', 'medium', 'low']).optional(),
+    question: z.string(),
+    placeholder: z.string().optional(),
+    helpText: z.string().optional(),
+    options: z
+      .array(
+        z.object({
+          value: z.string(),
+          label: z.string(),
+          description: z.string().optional(),
+        })
+      )
+      .optional(),
+    conditional: z.any().optional(), // Function type - will be validated at runtime
+    defaultValue: z.any().optional(),
+  })
+  .passthrough(); // Allow additional properties
+
+export type OnboardingMetadata = z.infer<typeof OnboardingMetadataSchema>;
+
+// Create a registry for onboarding metadata
+export const onboardingRegistry = z.registry<OnboardingMetadata>();
+
+// Helper function to add onboarding metadata to a Zod schema
+export function withOnboarding<T extends z.ZodTypeAny>(schema: T, metadata: OnboardingMetadata): T {
+  // Validate metadata before adding to registry
+  const validationResult = OnboardingMetadataSchema.safeParse(metadata);
+  if (!validationResult.success) {
+    throw new Error(`Invalid onboarding metadata: ${validationResult.error.message}`);
+  }
+
+  onboardingRegistry.add(schema, validationResult.data);
+  return schema;
+}
+
+// Helper function to get metadata from a Zod schema
+export function getSchemaMetadata(schema: z.ZodTypeAny): OnboardingMetadata | undefined {
+  return onboardingRegistry.get(schema);
+}
+
 // Simple metadata schema for maintainable items
 const MetadataSchema = z.record(
   z.string(),
@@ -122,3 +169,46 @@ export const MaintainableSchema = z.object({
   created_at: z.string(),
   updated_at: z.string(),
 }) satisfies z.ZodType<MaintainableDatabaseEntry>;
+
+// Helper function to extract onboarding questions from a schema
+export function getOnboardingQuestions(schema: z.ZodObject<any>) {
+  const shape = schema.shape;
+  const questions: Array<{
+    field: string;
+    schema: z.ZodTypeAny;
+    metadata: OnboardingMetadata;
+  }> = [];
+
+  Object.entries(shape).forEach(([fieldName, fieldSchema]) => {
+    const zodField = fieldSchema as z.ZodTypeAny;
+    const metadata = getSchemaMetadata(zodField);
+
+    // Handle top-level fields
+    if (metadata && !metadata.skip) {
+      questions.push({
+        field: fieldName,
+        schema: zodField,
+        metadata,
+      });
+    }
+
+    // Handle nested metadata fields
+    if (fieldName === 'metadata' && zodField._def?.type === 'object') {
+      const metadataShape = (zodField as z.ZodObject<any>).shape;
+      Object.entries(metadataShape).forEach(([nestedFieldName, nestedFieldSchema]) => {
+        const nestedZodField = nestedFieldSchema as z.ZodTypeAny;
+        const nestedMetadata = getSchemaMetadata(nestedZodField);
+        if (nestedMetadata && !nestedMetadata.skip && Object.keys(nestedMetadata).length > 0) {
+          questions.push({
+            field: `metadata.${nestedFieldName}`,
+            schema: nestedZodField,
+            metadata: nestedMetadata,
+          });
+        }
+      });
+    }
+  });
+
+  // Sort by order
+  return questions.sort((a, b) => a.metadata.order - b.metadata.order);
+}
