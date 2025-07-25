@@ -31,10 +31,10 @@ const HeatMaintainableDataSchema = MaintainableDataSchema.extend({
     required: true,
     question: "How would you rate this system's condition?",
     options: [
-      { value: 'good', label: 'Good', description: 'Works well' },
-      { value: 'fair', label: 'Fair', description: 'Some issues' },
-      { value: 'poor', label: 'Poor', description: 'Needs attention' },
-      { value: 'critical', label: 'Critical', description: 'Broken' },
+      { value: 'good', label: 'Good' },
+      { value: 'fair', label: 'Fair' },
+      { value: 'poor', label: 'Poor' },
+      { value: 'critical', label: 'Critical' },
     ],
     defaultValue: 'good',
   }),
@@ -62,7 +62,7 @@ const HeatMaintainableDataSchema = MaintainableDataSchema.extend({
           { value: 'oil', label: 'Oil' },
           { value: 'electric', label: 'Electric' },
           { value: 'wood', label: 'Wood' },
-          { value: 'heat-pump', label: 'Heat Pump (no fuel)' },
+          { value: 'heat-pump', label: 'Heat Pump' },
         ],
         conditional: (answers: any) => answers.type !== 'heat-pump', // Skip for heat pumps
       }

@@ -2,14 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useRouter, useParams } from 'next/navigation';
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { ArrowLeft, Plus, Check } from 'lucide-react';
-import {
-  getMaintainableSubtypeNames,
-  getMaintainableDataSchema,
-} from '@/lib/maintainable-registry';
+import { getMaintainableSubtypeNames } from '@/lib/maintainable-registry';
 import { MaintainableTypeType, MaintainableData } from '@/types/maintainable.types';
+import { ProgressiveForm } from '@/components/forms/ProgressiveForm';
 import { MaintainableForm } from '@/components/forms/MaintainableForm';
 
 interface SubtypeCardProps {
@@ -48,13 +46,13 @@ function SubtypeCard({ subtype, onSelect, isSelected }: SubtypeCardProps) {
 }
 
 const typeDisplayNames: Record<MaintainableTypeType, string> = {
-  appliance: 'Appliances',
-  structure: 'Structures',
-  utility: 'Utilities',
-  system: 'Systems',
-  vehicle: 'Vehicles',
-  instrument: 'Instruments & Tools',
-  landscape: 'Landscape & Garden',
+  appliance: 'Appliance',
+  structure: 'Structure',
+  utility: 'Utility',
+  system: 'System',
+  vehicle: 'Vehicle',
+  instrument: 'Instrument',
+  landscape: 'Landscape',
   other: 'Other',
 };
 
@@ -68,6 +66,10 @@ export default function CreateTypePage() {
 
   const subtypes = getMaintainableSubtypeNames(type);
   const displayName = typeDisplayNames[type] || type;
+  const capitalizedSubtype = selectedSubtype
+    ? selectedSubtype.replace(/-/g, ' ').charAt(0).toUpperCase() +
+      selectedSubtype.replace(/-/g, ' ').slice(1)
+    : '';
 
   useEffect(() => {
     // Validate that the type is valid
@@ -98,7 +100,7 @@ export default function CreateTypePage() {
       // TODO: Implement actual API call to create maintainable
       console.log('Creating maintainable:', data);
       // For now, just redirect back to the main page
-      router.push('/all');
+      // router.push('/all');
     } catch (error) {
       console.error('Error creating maintainable:', error);
     }
@@ -108,6 +110,8 @@ export default function CreateTypePage() {
     setStep('subtype');
     setSelectedSubtype(null);
   };
+
+  const shouldShowMaintainableForm = selectedSubtype === 'custom';
 
   if (step === 'form') {
     return (
@@ -132,20 +136,29 @@ export default function CreateTypePage() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-gray-900">
-                  Create {displayName} - {selectedSubtype?.replace(/-/g, ' ')}
+                  Add {displayName} - {capitalizedSubtype}
                 </h1>
                 <p className="text-gray-600">Fill in the details for your new maintainable</p>
               </div>
             </div>
           </div>
 
-          {/* Actual Form */}
-          <MaintainableForm
-            type={type}
-            subtype={selectedSubtype || 'custom'}
-            onSubmit={handleFormSubmit}
-            onCancel={handleCancel}
-          />
+          {/* Progressive Form or maintainable form */}
+          {shouldShowMaintainableForm ? (
+            <MaintainableForm
+              type={type}
+              subtype={selectedSubtype}
+              onSubmit={handleFormSubmit}
+              onCancel={handleCancel}
+            />
+          ) : (
+            <ProgressiveForm
+              type={type}
+              subtype={selectedSubtype || 'custom'}
+              onSubmit={handleFormSubmit}
+              onCancel={handleCancel}
+            />
+          )}
         </div>
       </div>
     );
