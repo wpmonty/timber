@@ -41,7 +41,7 @@ const getGlobalNavigationItems = (): NavigationItem[] => [
   },
   {
     title: 'Vehicles',
-    href: '/inventory',
+    href: '/vehicles',
     icon: Settings,
   },
   {
@@ -51,7 +51,7 @@ const getGlobalNavigationItems = (): NavigationItem[] => [
   },
   {
     title: 'Clothing',
-    href: '/inventory',
+    href: '/clothing',
     icon: Settings,
   },
   {
